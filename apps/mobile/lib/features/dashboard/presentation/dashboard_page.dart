@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/widgets/sunya_metric_card.dart';
+import '../../hydration/presentation/hydration_controller.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});
 
   static const modules = <_DashboardModule>[
@@ -16,29 +18,29 @@ class DashboardPage extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final hydration = ref.watch(hydrationProvider);
+    final hour = DateTime.now().hour;
+    final greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('SUNYA'),
         actions: [
-          IconButton(
-            onPressed: () => context.push('/profile'),
-            icon: const Icon(Icons.person_outline),
-            tooltip: 'Profile',
-          ),
+          IconButton(onPressed: () => context.push('/profile'), icon: const Icon(Icons.person_outline), tooltip: 'Profile'),
         ],
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
         children: [
-          Text('Good evening', style: Theme.of(context).textTheme.headlineSmall),
+          Text(greeting, style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 4),
           Text('Your body, habits, data and goals in one place.', style: Theme.of(context).textTheme.bodyMedium),
           const SizedBox(height: 20),
-          const Row(children: [
-            Expanded(child: SunyaMetricCard(label: 'Water', value: '0', unit: 'ml', icon: Icons.water_drop_outlined)),
-            SizedBox(width: 12),
-            Expanded(child: SunyaMetricCard(label: 'Calories', value: '0', unit: 'kcal', icon: Icons.local_fire_department_outlined)),
+          Row(children: [
+            Expanded(child: SunyaMetricCard(label: 'Water', value: '${hydration.consumedMl}', unit: 'ml', icon: Icons.water_drop_outlined)),
+            const SizedBox(width: 12),
+            const Expanded(child: SunyaMetricCard(label: 'Calories', value: '0', unit: 'kcal', icon: Icons.local_fire_department_outlined)),
           ]),
           const SizedBox(height: 12),
           const Row(children: [
@@ -46,6 +48,18 @@ class DashboardPage extends StatelessWidget {
             SizedBox(width: 12),
             Expanded(child: SunyaMetricCard(label: 'Workouts', value: '0', unit: 'week', icon: Icons.fitness_center_outlined)),
           ]),
+          const SizedBox(height: 28),
+          Text('Today', style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 12),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.water_drop_outlined),
+              title: Text('${hydration.consumedMl} / ${hydration.goalMl} ml water'),
+              subtitle: LinearProgressIndicator(value: hydration.progress),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/hydration'),
+            ),
+          ),
           const SizedBox(height: 28),
           Text('Modules', style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 12),
@@ -77,7 +91,7 @@ class DashboardPage extends StatelessWidget {
             child: ListTile(
               leading: const Icon(Icons.auto_awesome_outlined),
               title: const Text('SUNYA AI'),
-              subtitle: const Text('Your personal intelligence layer will appear here.'),
+              subtitle: const Text('Personal insights will be generated from your data.'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => context.push('/ai'),
             ),
