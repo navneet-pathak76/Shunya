@@ -1,0 +1,14 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  skeleton-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Repository structure check
+        run: test -f README.md && test -f ARCHITECTURE.md && test -d apps && test -d backend && test -d docs
