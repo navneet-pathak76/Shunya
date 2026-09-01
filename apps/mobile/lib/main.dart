@@ -1,5 +1,9 @@
-// SUNYA mobile entry point.
-// Implementation intentionally deferred.
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'app/sunya_app.dart';
+
 void main() {
-  // TODO: bootstrap dependency injection, database, router and app shell.
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const ProviderScope(child: SunyaApp()));
 }
