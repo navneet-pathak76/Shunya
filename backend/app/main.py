@@ -1,3 +1,8 @@
-"""SUNYA FastAPI entrypoint placeholder."""
+from fastapi import FastAPI
 
-# TODO: create application, middleware, routers and lifecycle hooks.
+app = FastAPI(title='SUNYA API', version='0.1.0')
+
+
+@app.get('/health')
+async def health() -> dict[str, str]:
+    return {'status': 'ok', 'service': 'sunya-api'}
