@@ -1,34 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/body/presentation/body_page.dart';
 import '../../features/dashboard/presentation/dashboard_page.dart';
+import '../../features/habits/presentation/habits_page.dart';
+import '../../features/hydration/presentation/hydration_page.dart';
+import '../../features/nutrition/presentation/nutrition_page.dart';
+import '../../features/sleep/presentation/sleep_page.dart';
+import '../../features/workout/presentation/workout_page.dart';
 
 final sunyaRouter = GoRouter(
   initialLocation: '/dashboard',
   routes: [
-    GoRoute(
-      path: '/dashboard',
-      name: 'dashboard',
-      builder: (context, state) => const DashboardPage(),
-    ),
-    GoRoute(
-      path: '/profile',
-      name: 'profile',
-      builder: (context, state) => const _PlaceholderPage(title: 'Profile'),
-    ),
+    GoRoute(path: '/dashboard', name: 'dashboard', builder: (context, state) => const DashboardPage()),
+    GoRoute(path: '/body', name: 'body', builder: (context, state) => const BodyPage()),
+    GoRoute(path: '/nutrition', name: 'nutrition', builder: (context, state) => const NutritionPage()),
+    GoRoute(path: '/hydration', name: 'hydration', builder: (context, state) => const HydrationPage()),
+    GoRoute(path: '/workout', name: 'workout', builder: (context, state) => const WorkoutPage()),
+    GoRoute(path: '/sleep', name: 'sleep', builder: (context, state) => const SleepPage()),
+    GoRoute(path: '/habits', name: 'habits', builder: (context, state) => const HabitsPage()),
+    GoRoute(path: '/profile', name: 'profile', builder: (context, state) => const _PlaceholderPage(title: 'Profile')),
+    GoRoute(path: '/ai', name: 'ai', builder: (context, state) => const _PlaceholderPage(title: 'SUNYA AI')),
   ],
 );
 
 class _PlaceholderPage extends StatelessWidget {
   const _PlaceholderPage({required this.title});
-
   final String title;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: const Center(child: Text('Module skeleton — implementation pending.')),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            const Icon(Icons.construction_outlined, size: 48),
+            const SizedBox(height: 16),
+            Text('$title module', style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 8),
+            const Text('Foundation is ready. Feature implementation will be added next.'),
+          ]),
+        ),
+      ),
     );
   }
 }
