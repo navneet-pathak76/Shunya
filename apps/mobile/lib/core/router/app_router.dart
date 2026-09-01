@@ -1,0 +1,1 @@
+// Central navigation contract placeholder.
