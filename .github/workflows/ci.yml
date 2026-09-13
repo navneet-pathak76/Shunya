@@ -6,6 +6,27 @@ on:
   pull_request:
 
 jobs:
+  flutter-check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+          channel: stable
+          cache: true
+      - name: Install Flutter dependencies
+        run: flutter pub get
+      - name: Regenerate Isar code
+        run: dart run build_runner build --delete-conflicting-outputs
+      - name: Analyze Flutter project
+        run: flutter analyze
+      - name: Run Flutter tests
+        run: flutter test
+
   backend-tests:
     runs-on: ubuntu-latest
     steps:
