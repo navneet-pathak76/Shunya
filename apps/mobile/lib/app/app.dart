@@ -1,1 +1,0 @@
-// Root application shell placeholder.
