@@ -1,29 +1,49 @@
+import 'dart:convert';
+
+import '../../../core/providers/database_provider.dart';
+import '../../../database/local_record_repository.dart';
 import '../domain/entities/workout_session.dart';
 
 abstract interface class WorkoutRepository {
-  List<WorkoutSession> getSessions();
+  Future<List<WorkoutSession>> getSessions();
   Future<void> saveSession(WorkoutSession session);
   Future<void> deleteSession(String id);
 }
 
-class InMemoryWorkoutRepository implements WorkoutRepository {
-  final List<WorkoutSession> _sessions = [];
+/// Isar-backed repository. The domain model stays independent from Isar.
+class LocalWorkoutRepository implements WorkoutRepository {
+  LocalWorkoutRepository(this._records);
+  final LocalRecordRepository _records;
+  static const domain = 'workout.session';
 
   @override
-  List<WorkoutSession> getSessions() => List.unmodifiable(_sessions);
-
-  @override
-  Future<void> saveSession(WorkoutSession session) async {
-    final index = _sessions.indexWhere((item) => item.id == session.id);
-    if (index == -1) {
-      _sessions.add(session);
-    } else {
-      _sessions[index] = session;
+  Future<List<WorkoutSession>> getSessions() async {
+    final records = await _records.listDomain(domain);
+    final sessions = <WorkoutSession>[];
+    for (final record in records) {
+      try {
+        sessions.add(WorkoutSession.fromJson(jsonDecode(record.payload) as Map<String, dynamic>));
+      } catch (_) {
+        // Ignore malformed legacy records rather than breaking the workout screen.
+      }
     }
+    sessions.sort((a, b) => b.startedAt.compareTo(a.startedAt));
+    return sessions;
   }
 
   @override
-  Future<void> deleteSession(String id) async {
-    _sessions.removeWhere((item) => item.id == id);
-  }
+  Future<void> saveSession(WorkoutSession session) => _records.upsert(
+        domain,
+        session.id,
+        session.toJson(),
+        recordDate: session.startedAt,
+      );
+
+  @override
+  Future<void> deleteSession(String id) => _records.delete(domain, id);
 }
+
+final workoutRepositoryProvider = FutureProvider<WorkoutRepository>((ref) async {
+  final database = await ref.watch(sunyaDatabaseProvider.future);
+  return LocalWorkoutRepository(LocalRecordRepository(database));
+});
