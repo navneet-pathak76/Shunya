@@ -3,6 +3,7 @@ import 'dart:convert';
 import '../../../database/local_record_repository.dart';
 import '../domain/entities/body_measurement.dart';
 import '../domain/entities/body_profile.dart';
+import '../domain/entities/body_region_measurement.dart';
 
 class BodyRepository {
   BodyRepository(this._localRepository);
@@ -11,6 +12,7 @@ class BodyRepository {
 
   static const String measurementDomain = 'body_measurement';
   static const String profileDomain = 'body_profile';
+  static const String regionDomain = 'body_region';
   static const String profileKey = 'profile';
 
   Future<List<BodyMeasurement>> listAll() async {
@@ -54,6 +56,26 @@ class BodyRepository {
       key: profileKey,
       payload: profile.toJson(),
       recordDate: profile.updatedAt,
+    );
+  }
+
+  Future<List<BodyRegionMeasurement>> listRegions() async {
+    final records = await _localRepository.listDomain(regionDomain);
+    final items = <BodyRegionMeasurement>[];
+    for (final record in records) {
+      final payload = jsonDecode(record.payload) as Map<String, dynamic>;
+      items.add(BodyRegionMeasurement.fromJson(payload));
+    }
+    items.sort((a, b) => a.recordedAt.compareTo(b.recordedAt));
+    return items;
+  }
+
+  Future<void> saveRegion(BodyRegionMeasurement measurement) async {
+    await _localRepository.upsert(
+      domain: regionDomain,
+      key: measurement.id,
+      payload: measurement.toJson(),
+      recordDate: measurement.recordedAt,
     );
   }
 }
