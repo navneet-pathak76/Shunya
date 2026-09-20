@@ -8,6 +8,7 @@ import 'body_atlas.dart';
 import 'body_controller.dart';
 import 'body_insights.dart';
 import 'body_region_section.dart';
+import 'package:go_router/go_router.dart';
 
 class BodyPage extends ConsumerWidget {
   const BodyPage({super.key});
@@ -31,6 +32,7 @@ class BodyPage extends ConsumerWidget {
             icon: const Icon(Icons.add_rounded),
           ),
           const SizedBox(width: 8),
+          IconButton(tooltip: 'Body goals', onPressed: () => context.push('/body/goals'), icon: const Icon(Icons.flag_outlined)),
         ],
       ),
       body: ListView(
