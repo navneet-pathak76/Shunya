@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../core/widgets/sunya_glass.dart';
@@ -18,6 +19,11 @@ class AppearancePage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Appearance'),
         actions: [
+          IconButton(
+            tooltip: 'Reminders',
+            onPressed: () => context.go('/reminders'),
+            icon: const Icon(Icons.notifications_none_outlined),
+          ),
           IconButton(
             tooltip: 'Appearance plan',
             onPressed: () => Navigator.of(context).push(
