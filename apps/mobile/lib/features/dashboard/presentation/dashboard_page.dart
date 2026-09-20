@@ -229,7 +229,7 @@ class _SunyaBodyCenter extends StatelessWidget {
                       gradient: RadialGradient(
                         center: Alignment.center,
                         radius: 0.75,
-                        colors: [const Color(0xFF59C9FF).withValues(alpha: 0.35), const Color(0xFF59C9FF).withValues(alpha: 0.06), Colors.transparent],
+                        colors: [const Color(0xFF59C9FF).withOpacity(0.35), const Color(0xFF59C9FF).withOpacity(0.06), Colors.transparent],
                       ),
                     ),
                   ),
@@ -242,7 +242,7 @@ class _SunyaBodyCenter extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: const LinearGradient(colors: [Color(0xFF8FE7FF), Color(0xFF1D9BF0)]),
-                      boxShadow: [BoxShadow(color: const Color(0xFF1D9BF0).withValues(alpha: 0.6), blurRadius: 44)],
+                      boxShadow: [BoxShadow(color: const Color(0xFF1D9BF0).withOpacity(0.6), blurRadius: 44)],
                     ),
                   ),
                 ),
@@ -253,8 +253,8 @@ class _SunyaBodyCenter extends StatelessWidget {
                     height: 120,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(28),
-                      color: const Color(0xFF19A3FF).withValues(alpha: 0.22),
-                      border: Border.all(color: const Color(0xFF7DE4FF).withValues(alpha: 0.6)),
+                      color: const Color(0xFF19A3FF).withOpacity(0.22),
+                      border: Border.all(color: const Color(0xFF7DE4FF).withOpacity(0.6)),
                     ),
                   ),
                 ),
@@ -298,8 +298,8 @@ class _DataPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF111B2A).withValues(alpha: 0.9),
-        border: Border.all(color: color.withValues(alpha: 0.7)),
+        color: const Color(0xFF111B2A).withOpacity(0.9),
+        border: Border.all(color: color.withOpacity(0.7)),
         borderRadius: BorderRadius.circular(18),
       ),
       child: Column(
@@ -371,7 +371,7 @@ class _ModuleTile extends StatelessWidget {
         width: 150,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: SunyaTheme.surface.withValues(alpha: 0.65),
+          color: SunyaTheme.surface.withOpacity(0.65),
           borderRadius: BorderRadius.circular(SunyaTheme.radiusMedium),
           border: Border.all(color: SunyaTheme.border),
         ),
