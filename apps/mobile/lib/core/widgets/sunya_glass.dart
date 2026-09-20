@@ -17,7 +17,7 @@ class SunyaGlassCard extends StatelessWidget {
           child: Container(
             padding: padding,
             decoration: BoxDecoration(
-              color: SunyaTheme.surface.withValues(alpha: opacity),
+              color: SunyaTheme.surface.withOpacity(opacity),
               borderRadius: BorderRadius.circular(borderRadius),
               border: Border.all(color: SunyaTheme.border),
               boxShadow: const [BoxShadow(color: Colors.black38, blurRadius: 18, offset: Offset(0, 8))],
