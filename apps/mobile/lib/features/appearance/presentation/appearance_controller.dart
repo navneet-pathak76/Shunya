@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,9 +50,7 @@ class AppearanceController extends StateNotifier<List<AppearanceSnapshot>> {
       id: const Uuid().v4(),
       capturedAt: DateTime.now().toUtc(),
       imagePath: path,
-      imageDataBase64: imageBytes == null
-          ? null
-          : Uri.dataFromBytes(imageBytes, mimeType: 'image/jpeg').data,
+      imageDataBase64: imageBytes == null ? null : base64Encode(imageBytes),
       area: area,
       notes: notes,
       userScore: userScore,
