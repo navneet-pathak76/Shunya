@@ -9,6 +9,7 @@ import '../../features/profile/presentation/profile_page.dart';
 import '../../features/ai/presentation/ai_page.dart';
 import '../../features/analytics/presentation/analytics_page.dart';
 import '../../features/appearance/presentation/appearance_page.dart';
+import '../../features/appearance/presentation/appearance_recommendations_page.dart';
 import '../../features/hydration/presentation/hydration_page.dart';
 import '../../features/nutrition/presentation/nutrition_page.dart';
 import '../../features/sleep/presentation/sleep_page.dart';
@@ -33,6 +34,7 @@ final sunyaRouter = GoRouter(
     GoRoute(path: '/ai', name: 'ai', builder: (_, __) => const AiPage()),
     GoRoute(path: '/analytics', name: 'analytics', builder: (_, __) => const AnalyticsPage()),
     GoRoute(path: '/appearance', name: 'appearance', builder: (_, __) => const AppearancePage()),
+    GoRoute(path: '/appearance/recommendations', name: 'appearanceRecommendations', builder: (_, __) => const AppearanceRecommendationsPage()),
   ],
 );
 
