@@ -6,7 +6,7 @@ class HabitsPage extends StatelessWidget {
   const HabitsPage({super.key});
 
   @override
-  Widget build(BuildContext context) => SunyaModulePage(
+  Widget build(BuildContext context) => const SunyaModulePage(
         title: 'Habits',
         description: 'Daily routines, streaks and repeatable behaviors.',
         metrics: const [
