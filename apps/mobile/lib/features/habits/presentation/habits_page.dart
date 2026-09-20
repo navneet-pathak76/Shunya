@@ -1,19 +1,7 @@
 import 'package:flutter/material.dart';
-
-import '../../../core/widgets/sunya_module_page.dart';
-
-class HabitsPage extends StatelessWidget {
-  const HabitsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) => const SunyaModulePage(
-        title: 'Habits',
-        description: 'Daily routines, streaks and repeatable behaviors.',
-        metrics: const [
-          SunyaModuleMetric(label: 'Active', value: '0', unit: 'habits', icon: Icons.repeat_outlined),
-          SunyaModuleMetric(label: 'Completed', value: '0', unit: 'today', icon: Icons.check_circle_outline),
-          SunyaModuleMetric(label: 'Best streak', value: '0', unit: 'days', icon: Icons.local_fire_department_outlined),
-          SunyaModuleMetric(label: 'Consistency', value: '—', unit: '%', icon: Icons.insights_outlined),
-        ],
-      );
-}
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/widgets/sunya_glass.dart';
+import 'habits_controller.dart';
+class HabitsPage extends ConsumerWidget{const HabitsPage({super.key});
+@override Widget build(BuildContext context,WidgetRef ref){final s=ref.watch(habitsProvider);return Scaffold(appBar:AppBar(title:const Text('Habits')),floatingActionButton:FloatingActionButton.extended(onPressed:()=>_add(context,ref),icon:const Icon(Icons.add),label:const Text('Habit')),body:ListView(padding:const EdgeInsets.all(20),children:[Text('Small actions compound.',style:Theme.of(context).textTheme.displaySmall),const SizedBox(height:6),Text(s.completedToday.toString()+' of '+s.items.length.toString()+' completed today',style:Theme.of(context).textTheme.bodyLarge),const SizedBox(height:20),if(s.items.isEmpty)const SunyaGlassCard(padding:EdgeInsets.all(20),child:Text('Create your first habit.')) else ...s.items.map((h)=>Padding(padding:const EdgeInsets.only(bottom:10),child:SunyaGlassCard(padding:const EdgeInsets.symmetric(horizontal:8),child:CheckboxListTile(value:h.completedOn(DateTime.now()),onChanged:(_)=>ref.read(habitsProvider.notifier).toggle(h),title:Text(h.name),subtitle:Text(h.completedDates.length.toString()+' completions'))))) ]));}
+static Future<void> _add(BuildContext context,WidgetRef ref)async{final c=TextEditingController();await showDialog(context:context,builder:(d)=>AlertDialog(title:const Text('New habit'),content:TextField(controller:c,autofocus:true,decoration:const InputDecoration(labelText:'Habit name')),actions:[TextButton(onPressed:()=>Navigator.pop(d),child:const Text('Cancel')),FilledButton(onPressed:(){if(c.text.trim().isNotEmpty)ref.read(habitsProvider.notifier).add(c.text);Navigator.pop(d);},child:const Text('Create'))]));c.dispose();}}
