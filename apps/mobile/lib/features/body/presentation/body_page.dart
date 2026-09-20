@@ -5,6 +5,7 @@ import '../../../core/theme/sunya_theme.dart';
 import '../../../core/widgets/sunya_glass.dart';
 import '../domain/entities/body_profile.dart';
 import 'body_controller.dart';
+import 'body_region_section.dart';
 
 class BodyPage extends ConsumerWidget {
   const BodyPage({super.key});
@@ -68,6 +69,8 @@ class BodyPage extends ConsumerWidget {
               _DataRow('Temperature', body.profile?.bodyTemperatureC, '°C'),
             ],
           ),
+          const SizedBox(height: 16),
+          const BodyRegionSection(),
           const SizedBox(height: 16),
           _SectionCard(
             title: 'Measurement history',
