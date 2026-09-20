@@ -5,6 +5,7 @@ import '../../../core/providers/database_provider.dart';
 import '../data/body_repository.dart';
 import '../domain/entities/body_measurement.dart';
 import '../domain/entities/body_profile.dart';
+import '../domain/entities/body_region_measurement.dart';
 
 class BodyState {
   const BodyState({
@@ -13,6 +14,7 @@ class BodyState {
     this.bodyFatPercent,
     this.profile,
     this.measurements = const [],
+    this.regionMeasurements = const [],
   });
 
   final double? weightKg;
@@ -20,6 +22,7 @@ class BodyState {
   final double? bodyFatPercent;
   final BodyProfile? profile;
   final List<BodyMeasurement> measurements;
+  final List<BodyRegionMeasurement> regionMeasurements;
 
   double? get bmi {
     final weight = weightKg;
@@ -35,6 +38,7 @@ class BodyState {
     double? bodyFatPercent,
     BodyProfile? profile,
     List<BodyMeasurement>? measurements,
+    List<BodyRegionMeasurement>? regionMeasurements,
   }) =>
       BodyState(
         weightKg: weightKg ?? this.weightKg,
@@ -42,6 +46,7 @@ class BodyState {
         bodyFatPercent: bodyFatPercent ?? this.bodyFatPercent,
         profile: profile ?? this.profile,
         measurements: measurements ?? this.measurements,
+        regionMeasurements: regionMeasurements ?? this.regionMeasurements,
       );
 }
 
@@ -64,6 +69,7 @@ class BodyController extends StateNotifier<BodyState> {
     final latest = await repository.latest();
     final profile = await repository.loadProfile();
     final measurements = await repository.listAll();
+    final regionMeasurements = await repository.listRegions();
 
     state = BodyState(
       weightKg: latest?.weightKg,
@@ -71,6 +77,7 @@ class BodyController extends StateNotifier<BodyState> {
       bodyFatPercent: profile?.bodyFatPercent ?? latest?.bodyFatPercent,
       profile: profile,
       measurements: measurements,
+      regionMeasurements: regionMeasurements,
     );
   }
 
@@ -94,11 +101,10 @@ class BodyController extends StateNotifier<BodyState> {
     final measurements = [...current.measurements, next]
       ..sort((a, b) => a.date.compareTo(b.date));
 
-    state = BodyState(
+    state = state.copyWith(
       weightKg: next.weightKg == 0 ? current.weightKg : next.weightKg,
       heightCm: next.heightCm == 0 ? current.heightCm : next.heightCm,
       bodyFatPercent: next.bodyFatPercent == 0 ? current.bodyFatPercent : next.bodyFatPercent,
-      profile: current.profile,
       measurements: measurements,
     );
   }
@@ -110,6 +116,27 @@ class BodyController extends StateNotifier<BodyState> {
       heightCm: profile.heightCm,
       bodyFatPercent: profile.bodyFatPercent,
       profile: profile,
+    );
+  }
+
+  Future<void> saveRegion({
+    required BodyRegion region,
+    required double centimetres,
+    String note = '',
+  }) async {
+    final repository = await ref.read(bodyRepositoryProvider.future);
+    final measurement = BodyRegionMeasurement(
+      id: const Uuid().v4(),
+      region: region,
+      centimetres: centimetres,
+      recordedAt: DateTime.now().toUtc(),
+      note: note,
+    );
+    await repository.saveRegion(measurement);
+
+    state = state.copyWith(
+      regionMeasurements: [...state.regionMeasurements, measurement]
+        ..sort((a, b) => a.recordedAt.compareTo(b.recordedAt)),
     );
   }
 }
