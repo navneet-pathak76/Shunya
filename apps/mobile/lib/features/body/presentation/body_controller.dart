@@ -4,12 +4,22 @@ import 'package:uuid/uuid.dart';
 import '../../../core/providers/database_provider.dart';
 import '../data/body_repository.dart';
 import '../domain/entities/body_measurement.dart';
+import '../domain/entities/body_profile.dart';
 
 class BodyState {
-  const BodyState({this.weightKg, this.heightCm, this.bodyFatPercent});
+  const BodyState({
+    this.weightKg,
+    this.heightCm,
+    this.bodyFatPercent,
+    this.profile,
+    this.measurements = const [],
+  });
+
   final double? weightKg;
   final double? heightCm;
   final double? bodyFatPercent;
+  final BodyProfile? profile;
+  final List<BodyMeasurement> measurements;
 
   double? get bmi {
     final weight = weightKg;
@@ -19,10 +29,19 @@ class BodyState {
     return weight / (metres * metres);
   }
 
-  BodyState copyWith({double? weightKg, double? heightCm, double? bodyFatPercent}) => BodyState(
+  BodyState copyWith({
+    double? weightKg,
+    double? heightCm,
+    double? bodyFatPercent,
+    BodyProfile? profile,
+    List<BodyMeasurement>? measurements,
+  }) =>
+      BodyState(
         weightKg: weightKg ?? this.weightKg,
         heightCm: heightCm ?? this.heightCm,
         bodyFatPercent: bodyFatPercent ?? this.bodyFatPercent,
+        profile: profile ?? this.profile,
+        measurements: measurements ?? this.measurements,
       );
 }
 
@@ -43,21 +62,26 @@ class BodyController extends StateNotifier<BodyState> {
   Future<void> _load() async {
     final repository = await ref.read(bodyRepositoryProvider.future);
     final latest = await repository.latest();
-    if (latest == null) {
-      state = const BodyState();
-      return;
-    }
+    final profile = await repository.loadProfile();
+    final measurements = await repository.listAll();
 
     state = BodyState(
-      weightKg: latest.weightKg,
-      heightCm: latest.heightCm,
-      bodyFatPercent: latest.bodyFatPercent,
+      weightKg: latest?.weightKg,
+      heightCm: profile?.heightCm ?? latest?.heightCm,
+      bodyFatPercent: profile?.bodyFatPercent ?? latest?.bodyFatPercent,
+      profile: profile,
+      measurements: measurements,
     );
   }
 
-  Future<void> save({double? weightKg, double? heightCm, double? bodyFatPercent}) async {
+  Future<void> save({
+    double? weightKg,
+    double? heightCm,
+    double? bodyFatPercent,
+  }) async {
     final repository = await ref.read(bodyRepositoryProvider.future);
     final current = state;
+
     final next = BodyMeasurement(
       id: const Uuid().v4(),
       date: DateTime.now().toUtc(),
@@ -67,10 +91,25 @@ class BodyController extends StateNotifier<BodyState> {
     );
 
     await repository.save(next);
+    final measurements = [...current.measurements, next]
+      ..sort((a, b) => a.date.compareTo(b.date));
+
     state = BodyState(
       weightKg: next.weightKg == 0 ? current.weightKg : next.weightKg,
       heightCm: next.heightCm == 0 ? current.heightCm : next.heightCm,
       bodyFatPercent: next.bodyFatPercent == 0 ? current.bodyFatPercent : next.bodyFatPercent,
+      profile: current.profile,
+      measurements: measurements,
+    );
+  }
+
+  Future<void> saveProfile(BodyProfile profile) async {
+    final repository = await ref.read(bodyRepositoryProvider.future);
+    await repository.saveProfile(profile);
+    state = state.copyWith(
+      heightCm: profile.heightCm,
+      bodyFatPercent: profile.bodyFatPercent,
+      profile: profile,
     );
   }
 }
