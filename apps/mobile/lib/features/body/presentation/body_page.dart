@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/sunya_theme.dart';
 import '../../../core/widgets/sunya_glass.dart';
 import '../domain/entities/body_profile.dart';
+import 'body_atlas.dart';
 import 'body_controller.dart';
+import 'body_insights.dart';
 import 'body_region_section.dart';
 
 class BodyPage extends ConsumerWidget {
@@ -41,7 +43,7 @@ class BodyPage extends ConsumerWidget {
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 20),
-          const _BodyAtlasCard(),
+          const BodyAtlas(),
           const SizedBox(height: 16),
           _OverviewCard(body: body),
           const SizedBox(height: 16),
@@ -71,6 +73,8 @@ class BodyPage extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           const BodyRegionSection(),
+          const SizedBox(height: 16),
+          const BodyInsights(),
           const SizedBox(height: 16),
           _SectionCard(
             title: 'Measurement history',
