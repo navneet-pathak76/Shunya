@@ -44,9 +44,9 @@ class DashboardPage extends ConsumerWidget {
                 const SizedBox(height: 10),
                 _MetricGrid(hydration: hydration, body: body, hasBody: hasBody),
                 const SizedBox(height: 22),
-                _SectionTitle(title: 'Modules'),
+                const _SectionTitle(title: 'Modules'),
                 const SizedBox(height: 10),
-                _ModuleGrid(modules: modules),
+                const _ModuleGrid(modules: modules),
                 const SizedBox(height: 22),
                 SunyaGlassCard(
                   padding: const EdgeInsets.all(18),
@@ -154,16 +154,18 @@ class _HeroCard extends StatelessWidget {
           ),
           child: Stack(
             children: [
-              Positioned(
+              const Positioned(
                 right: -80,
                 top: -100,
-                child: Container(
+                child: SizedBox(
                   width: 280,
                   height: 280,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [SunyaTheme.orange, Colors.transparent],
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [SunyaTheme.orange, Colors.transparent],
+                      ),
                     ),
                   ),
                 ),
@@ -393,11 +395,11 @@ class _DesktopRail extends StatelessWidget {
               const SizedBox(height: 28),
               Text('OVERVIEW', style: Theme.of(context).textTheme.bodySmall?.copyWith(letterSpacing: 1.4)),
               const SizedBox(height: 10),
-              _RailItem(label: 'Dashboard', icon: Icons.dashboard_outlined, route: '/dashboard', selected: true),
-              _RailItem(label: 'Body', icon: Icons.accessibility_new_outlined, route: '/body'),
-              _RailItem(label: 'Hydration', icon: Icons.water_drop_outlined, route: '/hydration'),
-              _RailItem(label: 'Nutrition', icon: Icons.restaurant_outlined, route: '/nutrition'),
-              _RailItem(label: 'Workout', icon: Icons.fitness_center_outlined, route: '/workout'),
+              const _RailItem(label: 'Dashboard', icon: Icons.dashboard_outlined, route: '/dashboard', selected: true),
+              const _RailItem(label: 'Body', icon: Icons.accessibility_new_outlined, route: '/body'),
+              const _RailItem(label: 'Hydration', icon: Icons.water_drop_outlined, route: '/hydration'),
+              const _RailItem(label: 'Nutrition', icon: Icons.restaurant_outlined, route: '/nutrition'),
+              const _RailItem(label: 'Workout', icon: Icons.fitness_center_outlined, route: '/workout'),
               const Spacer(),
               Text('0 + ∞', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: SunyaTheme.orange)),
               const SizedBox(height: 4),
@@ -448,7 +450,7 @@ class _DesktopInsights extends StatelessWidget {
                   const SizedBox(height: 16),
                   _InsightRow('Water', '${hydration.consumedMl} ml', SunyaTheme.hydration),
                   _InsightRow('Body', hasBody ? 'Tracked' : 'Not logged', SunyaTheme.orange),
-                  _InsightRow('Sleep', 'Not logged', SunyaTheme.sleep),
+                  const _InsightRow('Sleep', 'Not logged', SunyaTheme.sleep),
                 ],
               ),
             ),
