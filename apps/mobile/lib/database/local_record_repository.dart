@@ -1,21 +1,17 @@
 import 'dart:convert';
 
-import 'package:isar/isar.dart';
-
 import 'database.dart';
 import 'sunya_record.dart';
 
-/// Small persistence API shared by feature repositories.
-///
-/// Feature code stores typed JSON payloads here while the Isar schema remains
-/// stable. Domain-specific repositories should own serialization and validation.
+/// Shared local-first persistence API used by feature repositories.
+/// Native builds use Isar; web builds use persistent browser storage.
 class LocalRecordRepository {
   LocalRecordRepository(this.database);
 
   final SunyaDatabase database;
 
   Future<SunyaRecord?> find(String domain, String key) async {
-    final records = await database.records.where().findAll();
+    final records = await database.listAll();
     for (final record in records) {
       if (!record.deleted && record.domain == domain && record.key == key) {
         return record;
@@ -32,20 +28,19 @@ class LocalRecordRepository {
   }) async {
     final now = DateTime.now().toUtc();
     final existing = await find(domain, key);
-    final record = existing ?? SunyaRecord();
+    final record = (existing ?? SunyaRecord(domain: domain, key: key, payload: ''))
+        .copyWith(
+      domain: domain,
+      key: key,
+      payload: jsonEncode(payload),
+      recordDate: recordDate?.toUtc(),
+      createdAt: existing?.createdAt ?? now,
+      updatedAt: now,
+      version: (existing?.version ?? 0) + 1,
+      deleted: false,
+    );
 
-    record.domain = domain;
-    record.key = key;
-    record.payload = jsonEncode(payload);
-    record.recordDate = recordDate?.toUtc();
-    record.createdAt = existing?.createdAt ?? now;
-    record.updatedAt = now;
-    record.version = (existing?.version ?? 0) + 1;
-    record.deleted = false;
-
-    await database.write(() async {
-      await database.records.put(record);
-    });
+    await database.put(record);
     return record;
   }
 
@@ -58,16 +53,16 @@ class LocalRecordRepository {
   Future<void> delete(String domain, String key) async {
     final record = await find(domain, key);
     if (record == null) return;
-    record.deleted = true;
-    record.updatedAt = DateTime.now().toUtc();
-    record.version += 1;
-    await database.write(() async {
-      await database.records.put(record);
-    });
+    final updated = record.copyWith(
+      deleted: true,
+      updatedAt: DateTime.now().toUtc(),
+      version: record.version + 1,
+    );
+    await database.put(updated);
   }
 
   Future<List<SunyaRecord>> listDomain(String domain) async {
-    final records = await database.records.where().findAll();
+    final records = await database.listAll();
     return records
         .where((record) => record.domain == domain && !record.deleted)
         .toList(growable: false);

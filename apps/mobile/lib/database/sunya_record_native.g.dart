@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'sunya_record.dart';
+part of 'sunya_record_native.dart';
 
 // **************************************************************************
 // IsarCollectionGenerator
@@ -9,13 +9,13 @@ part of 'sunya_record.dart';
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
-extension GetSunyaRecordCollection on Isar {
-  IsarCollection<SunyaRecord> get sunyaRecords => this.collection();
+extension GetSunyaRecordNativeCollection on Isar {
+  IsarCollection<SunyaRecordNative> get sunyaRecordNatives => this.collection();
 }
 
-const SunyaRecordSchema = CollectionSchema(
-  name: r'SunyaRecord',
-  id: 4663418765445930486,
+const SunyaRecordNativeSchema = CollectionSchema(
+  name: r'SunyaRecordNative',
+  id: -974737791205703178,
   properties: {
     r'createdAt': PropertySchema(
       id: 0,
@@ -58,22 +58,22 @@ const SunyaRecordSchema = CollectionSchema(
       type: IsarType.long,
     )
   },
-  estimateSize: _sunyaRecordEstimateSize,
-  serialize: _sunyaRecordSerialize,
-  deserialize: _sunyaRecordDeserialize,
-  deserializeProp: _sunyaRecordDeserializeProp,
+  estimateSize: _sunyaRecordNativeEstimateSize,
+  serialize: _sunyaRecordNativeSerialize,
+  deserialize: _sunyaRecordNativeDeserialize,
+  deserializeProp: _sunyaRecordNativeDeserializeProp,
   idName: r'id',
   indexes: {},
   links: {},
   embeddedSchemas: {},
-  getId: _sunyaRecordGetId,
-  getLinks: _sunyaRecordGetLinks,
-  attach: _sunyaRecordAttach,
+  getId: _sunyaRecordNativeGetId,
+  getLinks: _sunyaRecordNativeGetLinks,
+  attach: _sunyaRecordNativeAttach,
   version: '3.1.0+1',
 );
 
-int _sunyaRecordEstimateSize(
-  SunyaRecord object,
+int _sunyaRecordNativeEstimateSize(
+  SunyaRecordNative object,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
@@ -84,8 +84,8 @@ int _sunyaRecordEstimateSize(
   return bytesCount;
 }
 
-void _sunyaRecordSerialize(
-  SunyaRecord object,
+void _sunyaRecordNativeSerialize(
+  SunyaRecordNative object,
   IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
@@ -100,13 +100,13 @@ void _sunyaRecordSerialize(
   writer.writeLong(offsets[7], object.version);
 }
 
-SunyaRecord _sunyaRecordDeserialize(
+SunyaRecordNative _sunyaRecordNativeDeserialize(
   Id id,
   IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = SunyaRecord();
+  final object = SunyaRecordNative();
   object.createdAt = reader.readDateTime(offsets[0]);
   object.deleted = reader.readBool(offsets[1]);
   object.domain = reader.readString(offsets[2]);
@@ -119,7 +119,7 @@ SunyaRecord _sunyaRecordDeserialize(
   return object;
 }
 
-P _sunyaRecordDeserializeProp<P>(
+P _sunyaRecordNativeDeserializeProp<P>(
   IsarReader reader,
   int propertyId,
   int offset,
@@ -147,31 +147,33 @@ P _sunyaRecordDeserializeProp<P>(
   }
 }
 
-Id _sunyaRecordGetId(SunyaRecord object) {
+Id _sunyaRecordNativeGetId(SunyaRecordNative object) {
   return object.id;
 }
 
-List<IsarLinkBase<dynamic>> _sunyaRecordGetLinks(SunyaRecord object) {
+List<IsarLinkBase<dynamic>> _sunyaRecordNativeGetLinks(
+    SunyaRecordNative object) {
   return [];
 }
 
-void _sunyaRecordAttach(
-    IsarCollection<dynamic> col, Id id, SunyaRecord object) {
+void _sunyaRecordNativeAttach(
+    IsarCollection<dynamic> col, Id id, SunyaRecordNative object) {
   object.id = id;
 }
 
-extension SunyaRecordQueryWhereSort
-    on QueryBuilder<SunyaRecord, SunyaRecord, QWhere> {
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterWhere> anyId() {
+extension SunyaRecordNativeQueryWhereSort
+    on QueryBuilder<SunyaRecordNative, SunyaRecordNative, QWhere> {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
 }
 
-extension SunyaRecordQueryWhere
-    on QueryBuilder<SunyaRecord, SunyaRecord, QWhereClause> {
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterWhereClause> idEqualTo(Id id) {
+extension SunyaRecordNativeQueryWhere
+    on QueryBuilder<SunyaRecordNative, SunyaRecordNative, QWhereClause> {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterWhereClause>
+      idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
         lower: id,
@@ -180,8 +182,8 @@ extension SunyaRecordQueryWhere
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterWhereClause> idNotEqualTo(
-      Id id) {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterWhereClause>
+      idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -203,8 +205,8 @@ extension SunyaRecordQueryWhere
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterWhereClause> idGreaterThan(Id id,
-      {bool include = false}) {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterWhereClause>
+      idGreaterThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -212,8 +214,8 @@ extension SunyaRecordQueryWhere
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterWhereClause> idLessThan(Id id,
-      {bool include = false}) {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterWhereClause>
+      idLessThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -221,7 +223,8 @@ extension SunyaRecordQueryWhere
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterWhereClause> idBetween(
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterWhereClause>
+      idBetween(
     Id lowerId,
     Id upperId, {
     bool includeLower = true,
@@ -238,9 +241,9 @@ extension SunyaRecordQueryWhere
   }
 }
 
-extension SunyaRecordQueryFilter
-    on QueryBuilder<SunyaRecord, SunyaRecord, QFilterCondition> {
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+extension SunyaRecordNativeQueryFilter
+    on QueryBuilder<SunyaRecordNative, SunyaRecordNative, QFilterCondition> {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       createdAtEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -250,7 +253,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       createdAtGreaterThan(
     DateTime value, {
     bool include = false,
@@ -264,7 +267,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       createdAtLessThan(
     DateTime value, {
     bool include = false,
@@ -278,7 +281,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       createdAtBetween(
     DateTime lower,
     DateTime upper, {
@@ -296,8 +299,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> deletedEqualTo(
-      bool value) {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      deletedEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'deleted',
@@ -306,7 +309,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> domainEqualTo(
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      domainEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -319,7 +323,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       domainGreaterThan(
     String value, {
     bool include = false,
@@ -335,7 +339,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> domainLessThan(
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      domainLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -350,7 +355,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> domainBetween(
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      domainBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -369,7 +375,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       domainStartsWith(
     String value, {
     bool caseSensitive = true,
@@ -383,7 +389,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> domainEndsWith(
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      domainEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -396,9 +403,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> domainContains(
-      String value,
-      {bool caseSensitive = true}) {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      domainContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'domain',
@@ -408,9 +414,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> domainMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      domainMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'domain',
@@ -420,7 +425,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       domainIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -430,7 +435,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       domainIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
@@ -440,8 +445,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> idEqualTo(
-      Id value) {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
@@ -450,7 +455,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> idGreaterThan(
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      idGreaterThan(
     Id value, {
     bool include = false,
   }) {
@@ -463,7 +469,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> idLessThan(
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      idLessThan(
     Id value, {
     bool include = false,
   }) {
@@ -476,7 +483,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> idBetween(
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      idBetween(
     Id lower,
     Id upper, {
     bool includeLower = true,
@@ -493,7 +501,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> keyEqualTo(
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      keyEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -506,7 +515,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> keyGreaterThan(
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      keyGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -521,7 +531,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> keyLessThan(
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      keyLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -536,7 +547,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> keyBetween(
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      keyBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -555,7 +567,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> keyStartsWith(
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      keyStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -568,7 +581,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> keyEndsWith(
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      keyEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -581,9 +595,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> keyContains(
-      String value,
-      {bool caseSensitive = true}) {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      keyContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'key',
@@ -593,9 +606,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> keyMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      keyMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'key',
@@ -605,7 +617,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> keyIsEmpty() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      keyIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'key',
@@ -614,7 +627,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       keyIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
@@ -624,7 +637,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> payloadEqualTo(
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      payloadEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -637,7 +651,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       payloadGreaterThan(
     String value, {
     bool include = false,
@@ -653,7 +667,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> payloadLessThan(
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      payloadLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -668,7 +683,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> payloadBetween(
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      payloadBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -687,7 +703,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       payloadStartsWith(
     String value, {
     bool caseSensitive = true,
@@ -701,7 +717,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> payloadEndsWith(
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      payloadEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -714,9 +731,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> payloadContains(
-      String value,
-      {bool caseSensitive = true}) {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      payloadContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'payload',
@@ -726,9 +742,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> payloadMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      payloadMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'payload',
@@ -738,7 +753,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       payloadIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -748,7 +763,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       payloadIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
@@ -758,7 +773,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       recordDateIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -767,7 +782,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       recordDateIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
@@ -776,7 +791,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       recordDateEqualTo(DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -786,7 +801,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       recordDateGreaterThan(
     DateTime? value, {
     bool include = false,
@@ -800,7 +815,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       recordDateLessThan(
     DateTime? value, {
     bool include = false,
@@ -814,7 +829,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       recordDateBetween(
     DateTime? lower,
     DateTime? upper, {
@@ -832,7 +847,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       updatedAtEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -842,7 +857,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       updatedAtGreaterThan(
     DateTime value, {
     bool include = false,
@@ -856,7 +871,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       updatedAtLessThan(
     DateTime value, {
     bool include = false,
@@ -870,7 +885,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       updatedAtBetween(
     DateTime lower,
     DateTime upper, {
@@ -888,8 +903,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> versionEqualTo(
-      int value) {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      versionEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'version',
@@ -898,7 +913,7 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition>
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
       versionGreaterThan(
     int value, {
     bool include = false,
@@ -912,7 +927,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> versionLessThan(
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      versionLessThan(
     int value, {
     bool include = false,
   }) {
@@ -925,7 +941,8 @@ extension SunyaRecordQueryFilter
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterFilterCondition> versionBetween(
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterFilterCondition>
+      versionBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -943,327 +960,366 @@ extension SunyaRecordQueryFilter
   }
 }
 
-extension SunyaRecordQueryObject
-    on QueryBuilder<SunyaRecord, SunyaRecord, QFilterCondition> {}
+extension SunyaRecordNativeQueryObject
+    on QueryBuilder<SunyaRecordNative, SunyaRecordNative, QFilterCondition> {}
 
-extension SunyaRecordQueryLinks
-    on QueryBuilder<SunyaRecord, SunyaRecord, QFilterCondition> {}
+extension SunyaRecordNativeQueryLinks
+    on QueryBuilder<SunyaRecordNative, SunyaRecordNative, QFilterCondition> {}
 
-extension SunyaRecordQuerySortBy
-    on QueryBuilder<SunyaRecord, SunyaRecord, QSortBy> {
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> sortByCreatedAt() {
+extension SunyaRecordNativeQuerySortBy
+    on QueryBuilder<SunyaRecordNative, SunyaRecordNative, QSortBy> {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      sortByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.asc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> sortByCreatedAtDesc() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      sortByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> sortByDeleted() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      sortByDeleted() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'deleted', Sort.asc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> sortByDeletedDesc() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      sortByDeletedDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'deleted', Sort.desc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> sortByDomain() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      sortByDomain() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'domain', Sort.asc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> sortByDomainDesc() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      sortByDomainDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'domain', Sort.desc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> sortByKey() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy> sortByKey() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'key', Sort.asc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> sortByKeyDesc() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      sortByKeyDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'key', Sort.desc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> sortByPayload() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      sortByPayload() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'payload', Sort.asc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> sortByPayloadDesc() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      sortByPayloadDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'payload', Sort.desc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> sortByRecordDate() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      sortByRecordDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'recordDate', Sort.asc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> sortByRecordDateDesc() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      sortByRecordDateDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'recordDate', Sort.desc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> sortByUpdatedAt() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      sortByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.asc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> sortByUpdatedAtDesc() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      sortByUpdatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.desc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> sortByVersion() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      sortByVersion() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'version', Sort.asc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> sortByVersionDesc() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      sortByVersionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'version', Sort.desc);
     });
   }
 }
 
-extension SunyaRecordQuerySortThenBy
-    on QueryBuilder<SunyaRecord, SunyaRecord, QSortThenBy> {
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> thenByCreatedAt() {
+extension SunyaRecordNativeQuerySortThenBy
+    on QueryBuilder<SunyaRecordNative, SunyaRecordNative, QSortThenBy> {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      thenByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.asc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> thenByCreatedAtDesc() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      thenByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> thenByDeleted() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      thenByDeleted() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'deleted', Sort.asc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> thenByDeletedDesc() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      thenByDeletedDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'deleted', Sort.desc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> thenByDomain() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      thenByDomain() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'domain', Sort.asc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> thenByDomainDesc() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      thenByDomainDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'domain', Sort.desc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> thenById() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> thenByIdDesc() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> thenByKey() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy> thenByKey() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'key', Sort.asc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> thenByKeyDesc() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      thenByKeyDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'key', Sort.desc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> thenByPayload() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      thenByPayload() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'payload', Sort.asc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> thenByPayloadDesc() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      thenByPayloadDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'payload', Sort.desc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> thenByRecordDate() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      thenByRecordDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'recordDate', Sort.asc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> thenByRecordDateDesc() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      thenByRecordDateDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'recordDate', Sort.desc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> thenByUpdatedAt() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      thenByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.asc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> thenByUpdatedAtDesc() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      thenByUpdatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.desc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> thenByVersion() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      thenByVersion() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'version', Sort.asc);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QAfterSortBy> thenByVersionDesc() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QAfterSortBy>
+      thenByVersionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'version', Sort.desc);
     });
   }
 }
 
-extension SunyaRecordQueryWhereDistinct
-    on QueryBuilder<SunyaRecord, SunyaRecord, QDistinct> {
-  QueryBuilder<SunyaRecord, SunyaRecord, QDistinct> distinctByCreatedAt() {
+extension SunyaRecordNativeQueryWhereDistinct
+    on QueryBuilder<SunyaRecordNative, SunyaRecordNative, QDistinct> {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QDistinct>
+      distinctByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'createdAt');
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QDistinct> distinctByDeleted() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QDistinct>
+      distinctByDeleted() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'deleted');
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QDistinct> distinctByDomain(
-      {bool caseSensitive = true}) {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QDistinct>
+      distinctByDomain({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'domain', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QDistinct> distinctByKey(
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QDistinct> distinctByKey(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'key', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QDistinct> distinctByPayload(
-      {bool caseSensitive = true}) {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QDistinct>
+      distinctByPayload({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'payload', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QDistinct> distinctByRecordDate() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QDistinct>
+      distinctByRecordDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'recordDate');
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QDistinct> distinctByUpdatedAt() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QDistinct>
+      distinctByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'updatedAt');
     });
   }
 
-  QueryBuilder<SunyaRecord, SunyaRecord, QDistinct> distinctByVersion() {
+  QueryBuilder<SunyaRecordNative, SunyaRecordNative, QDistinct>
+      distinctByVersion() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'version');
     });
   }
 }
 
-extension SunyaRecordQueryProperty
-    on QueryBuilder<SunyaRecord, SunyaRecord, QQueryProperty> {
-  QueryBuilder<SunyaRecord, int, QQueryOperations> idProperty() {
+extension SunyaRecordNativeQueryProperty
+    on QueryBuilder<SunyaRecordNative, SunyaRecordNative, QQueryProperty> {
+  QueryBuilder<SunyaRecordNative, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
     });
   }
 
-  QueryBuilder<SunyaRecord, DateTime, QQueryOperations> createdAtProperty() {
+  QueryBuilder<SunyaRecordNative, DateTime, QQueryOperations>
+      createdAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'createdAt');
     });
   }
 
-  QueryBuilder<SunyaRecord, bool, QQueryOperations> deletedProperty() {
+  QueryBuilder<SunyaRecordNative, bool, QQueryOperations> deletedProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'deleted');
     });
   }
 
-  QueryBuilder<SunyaRecord, String, QQueryOperations> domainProperty() {
+  QueryBuilder<SunyaRecordNative, String, QQueryOperations> domainProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'domain');
     });
   }
 
-  QueryBuilder<SunyaRecord, String, QQueryOperations> keyProperty() {
+  QueryBuilder<SunyaRecordNative, String, QQueryOperations> keyProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'key');
     });
   }
 
-  QueryBuilder<SunyaRecord, String, QQueryOperations> payloadProperty() {
+  QueryBuilder<SunyaRecordNative, String, QQueryOperations> payloadProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'payload');
     });
   }
 
-  QueryBuilder<SunyaRecord, DateTime?, QQueryOperations> recordDateProperty() {
+  QueryBuilder<SunyaRecordNative, DateTime?, QQueryOperations>
+      recordDateProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'recordDate');
     });
   }
 
-  QueryBuilder<SunyaRecord, DateTime, QQueryOperations> updatedAtProperty() {
+  QueryBuilder<SunyaRecordNative, DateTime, QQueryOperations>
+      updatedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'updatedAt');
     });
   }
 
-  QueryBuilder<SunyaRecord, int, QQueryOperations> versionProperty() {
+  QueryBuilder<SunyaRecordNative, int, QQueryOperations> versionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'version');
     });
