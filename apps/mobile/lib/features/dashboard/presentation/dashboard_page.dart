@@ -40,7 +40,7 @@ class DashboardPage extends ConsumerWidget {
                 const SizedBox(height: 18),
                 _HeroCard(hydration: hydration, body: body, hasBody: hasBody),
                 const SizedBox(height: 18),
-                _SectionTitle(title: 'Today', action: 'View analytics', onTap: () {}),
+                _SectionTitle(title: 'Today', action: 'View analytics', onTap: () => context.push('/analytics')),
                 const SizedBox(height: 10),
                 _MetricGrid(hydration: hydration, body: body, hasBody: hasBody),
                 const SizedBox(height: 22),
