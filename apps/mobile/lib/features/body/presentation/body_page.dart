@@ -9,7 +9,6 @@ class BodyPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final body = ref.watch(bodyProvider);
-    final controller = ref.read(bodyProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Body')),
@@ -30,7 +29,11 @@ class BodyPage extends ConsumerWidget {
           _Metric(label: 'Body fat', value: body.bodyFatPercent == null ? '—' : '${body.bodyFatPercent!.toStringAsFixed(1)}%', icon: Icons.pie_chart_outline),
           _Metric(label: 'BMI', value: body.bmi == null ? '—' : body.bmi!.toStringAsFixed(1), icon: Icons.calculate_outlined),
           const SizedBox(height: 12),
-          OutlinedButton.icon(onPressed: controller.state.weightKg == null ? () => _edit(context, ref) : null, icon: const Icon(Icons.add), label: const Text('Add your first measurement')),
+          OutlinedButton.icon(
+            onPressed: body.weightKg == null ? () => _edit(context, ref) : null,
+            icon: const Icon(Icons.add),
+            label: const Text('Add your first measurement'),
+          ),
         ],
       ),
     );

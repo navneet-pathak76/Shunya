@@ -1,5 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/providers/storage_provider.dart';
+import 'package:uuid/uuid.dart';
+
+import '../../../core/providers/database_provider.dart';
+import '../data/body_repository.dart';
+import '../domain/entities/body_measurement.dart';
 
 class BodyState {
   const BodyState({this.weightKg, this.heightCm, this.bodyFatPercent});
@@ -22,34 +26,51 @@ class BodyState {
       );
 }
 
+final bodyRepositoryProvider = FutureProvider<BodyRepository>((ref) async {
+  final repo = await ref.watch(localRecordRepositoryProvider.future);
+  return BodyRepository(repo);
+});
+
 final bodyProvider = StateNotifierProvider<BodyController, BodyState>((ref) => BodyController(ref));
 
 class BodyController extends StateNotifier<BodyState> {
-  BodyController(this.ref) : super(const BodyState()) { _load(); }
+  BodyController(this.ref) : super(const BodyState()) {
+    _load();
+  }
+
   final Ref ref;
 
   Future<void> _load() async {
-    final storage = await ref.read(storageProvider.future);
-    final weight = storage.getDouble('body.weight_kg');
-    final height = storage.getDouble('body.height_cm');
-    final fat = storage.getDouble('body.fat_percent');
+    final repository = await ref.read(bodyRepositoryProvider.future);
+    final latest = await repository.latest();
+    if (latest == null) {
+      state = const BodyState();
+      return;
+    }
+
     state = BodyState(
-      weightKg: weight == 0 ? null : weight,
-      heightCm: height == 0 ? null : height,
-      bodyFatPercent: fat == 0 ? null : fat,
+      weightKg: latest.weightKg,
+      heightCm: latest.heightCm,
+      bodyFatPercent: latest.bodyFatPercent,
     );
   }
 
   Future<void> save({double? weightKg, double? heightCm, double? bodyFatPercent}) async {
-    final next = BodyState(
-      weightKg: weightKg ?? state.weightKg,
-      heightCm: heightCm ?? state.heightCm,
-      bodyFatPercent: bodyFatPercent ?? state.bodyFatPercent,
+    final repository = await ref.read(bodyRepositoryProvider.future);
+    final current = state;
+    final next = BodyMeasurement(
+      id: const Uuid().v4(),
+      date: DateTime.now().toUtc(),
+      weightKg: weightKg ?? current.weightKg ?? 0,
+      heightCm: heightCm ?? current.heightCm ?? 0,
+      bodyFatPercent: bodyFatPercent ?? current.bodyFatPercent ?? 0,
     );
-    state = next;
-    final storage = await ref.read(storageProvider.future);
-    if (next.weightKg != null) await storage.setDouble('body.weight_kg', next.weightKg!);
-    if (next.heightCm != null) await storage.setDouble('body.height_cm', next.heightCm!);
-    if (next.bodyFatPercent != null) await storage.setDouble('body.fat_percent', next.bodyFatPercent!);
+
+    await repository.save(next);
+    state = BodyState(
+      weightKg: next.weightKg == 0 ? current.weightKg : next.weightKg,
+      heightCm: next.heightCm == 0 ? current.heightCm : next.heightCm,
+      bodyFatPercent: next.bodyFatPercent == 0 ? current.bodyFatPercent : next.bodyFatPercent,
+    );
   }
 }

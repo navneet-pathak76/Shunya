@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:isar/isar.dart';
+
 import 'database.dart';
 import 'sunya_record.dart';
 
