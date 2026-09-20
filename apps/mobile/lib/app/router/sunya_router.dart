@@ -7,6 +7,7 @@ import '../../features/dashboard/presentation/dashboard_page.dart';
 import '../../features/habits/presentation/habits_page.dart';
 import '../../features/profile/presentation/profile_page.dart';
 import '../../features/ai/presentation/ai_page.dart';
+import '../../features/analytics/presentation/analytics_page.dart';
 import '../../features/hydration/presentation/hydration_page.dart';
 import '../../features/nutrition/presentation/nutrition_page.dart';
 import '../../features/sleep/presentation/sleep_page.dart';
@@ -29,6 +30,7 @@ final sunyaRouter = GoRouter(
     ),
     GoRoute(path: '/profile', name: 'profile', builder: (_, __) => const ProfilePage()),
     GoRoute(path: '/ai', name: 'ai', builder: (_, __) => const AiPage()),
+    GoRoute(path: '/analytics', name: 'analytics', builder: (_, __) => const AnalyticsPage()),
   ],
 );
 
