@@ -6,7 +6,7 @@ class SleepPage extends StatelessWidget {
   const SleepPage({super.key});
 
   @override
-  Widget build(BuildContext context) => SunyaModulePage(
+  Widget build(BuildContext context) => const SunyaModulePage(
         title: 'Sleep',
         description: 'Sleep duration, consistency and recovery signals.',
         metrics: const [
