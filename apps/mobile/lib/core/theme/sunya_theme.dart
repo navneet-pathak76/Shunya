@@ -63,7 +63,7 @@ class SunyaTheme {
           scrolledUnderElevation: 0,
           centerTitle: false,
         ),
-        cardTheme: CardThemeData(
+        cardTheme: CardTheme(
           color: glassStrong,
           elevation: 0,
           margin: EdgeInsets.zero,
