@@ -160,8 +160,8 @@ class _HeroCard extends StatelessWidget {
                 child: SizedBox(
                   width: 280,
                   height: 280,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
+                  child: const DecoratedBox(
+                    decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
                         colors: [SunyaTheme.orange, Colors.transparent],
