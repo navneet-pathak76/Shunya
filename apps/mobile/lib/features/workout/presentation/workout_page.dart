@@ -53,7 +53,7 @@ class WorkoutPage extends ConsumerWidget {
               padding: const EdgeInsets.all(22),
               child: Column(
                 children: [
-                  const Icon(Icons.fitness_center_rounded, size: 36, color: SunyaTheme.orange),
+                  const Icon(Icons.fitness_center_rounded, size: 36, color: SunyaTheme.blueBright),
                   const SizedBox(height: 12),
                   Text('No training logged', style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 4),
@@ -73,10 +73,10 @@ class WorkoutPage extends ConsumerWidget {
                         width: 42,
                         height: 42,
                         decoration: BoxDecoration(
-                          color: SunyaTheme.orangeSoft,
+                          color: SunyaTheme.blueSoft,
                           borderRadius: BorderRadius.circular(14),
                         ),
-                        child: const Icon(Icons.fitness_center_outlined, color: SunyaTheme.orange),
+                        child: const Icon(Icons.fitness_center_outlined, color: SunyaTheme.blueBright),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -156,7 +156,7 @@ class _Stat extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: SunyaTheme.orange, size: 20),
+            Icon(icon, color: SunyaTheme.blueBright, size: 20),
             const SizedBox(height: 14),
             Text(label, style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: 3),
