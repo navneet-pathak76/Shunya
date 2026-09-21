@@ -2,6 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/widgets/sunya_glass.dart';
 import 'habits_controller.dart';
-class HabitsPage extends ConsumerWidget{const HabitsPage({super.key});
-@override Widget build(BuildContext context,WidgetRef ref){final s=ref.watch(habitsProvider);return Scaffold(appBar:AppBar(title:const Text('Habits')),floatingActionButton:FloatingActionButton.extended(onPressed:()=>_add(context,ref),icon:const Icon(Icons.add),label:const Text('Habit')),body:ListView(padding:const EdgeInsets.all(20),children:[Text('Small actions compound.',style:Theme.of(context).textTheme.displaySmall),const SizedBox(height:6),Text(s.completedToday.toString()+' of '+s.items.length.toString()+' completed today',style:Theme.of(context).textTheme.bodyLarge),const SizedBox(height:20),if(s.items.isEmpty)const SunyaGlassCard(padding:EdgeInsets.all(20),child:Text('Create your first habit.')) else ...s.items.map((h)=>Padding(padding:const EdgeInsets.only(bottom:10),child:SunyaGlassCard(padding:const EdgeInsets.symmetric(horizontal:8),child:CheckboxListTile(value:h.completedOn(DateTime.now()),onChanged:(_)=>ref.read(habitsProvider.notifier).toggle(h),title:Text(h.name),subtitle:Text(h.completedDates.length.toString()+' completions'))))) ]));}
-static Future<void> _add(BuildContext context,WidgetRef ref)async{final c=TextEditingController();await showDialog(context:context,builder:(d)=>AlertDialog(title:const Text('New habit'),content:TextField(controller:c,autofocus:true,decoration:const InputDecoration(labelText:'Habit name')),actions:[TextButton(onPressed:()=>Navigator.pop(d),child:const Text('Cancel')),FilledButton(onPressed:(){if(c.text.trim().isNotEmpty)ref.read(habitsProvider.notifier).add(c.text);Navigator.pop(d);},child:const Text('Create'))]));c.dispose();}}
+
+class HabitsPage extends ConsumerWidget {
+  const HabitsPage({super.key});
+  @override Widget build(BuildContext context, WidgetRef ref) {
+    final s = ref.watch(habitsProvider);
+    return Scaffold(
+      appBar: AppBar(title: const Text('Habits')),
+      floatingActionButton: FloatingActionButton.extended(onPressed: () => _add(context,ref), icon: const Icon(Icons.add), label: const Text('Habit')),
+      body: ListView(padding: const EdgeInsets.all(20), children: [
+        Text('Small actions compound.', style: Theme.of(context).textTheme.displaySmall),
+        const SizedBox(height: 6), Text('\${s.completedToday} of \${s.items.length} completed today', style: Theme.of(context).textTheme.bodyLarge),
+        const SizedBox(height: 20),
+        if (s.items.isEmpty) const SunyaGlassCard(padding: EdgeInsets.all(20), child: Text('Create your first habit.'))
+        else ...s.items.map((h) => Padding(padding: const EdgeInsets.only(bottom:10), child: SunyaGlassCard(padding: const EdgeInsets.symmetric(horizontal:8), child: CheckboxListTile(
+          value: h.completedOn(DateTime.now()), onChanged: (_) => ref.read(habitsProvider.notifier).toggle(h),
+          title: Text(h.name), subtitle: Text('\${h.completedDates.length} completions • \${h.currentStreak} day streak'),
+          secondary: PopupMenuButton<String>(onSelected: (v) { if (v == 'delete') ref.read(habitsProvider.notifier).remove(h); }, itemBuilder: (_) => const [PopupMenuItem(value:'delete', child:Text('Delete'))]),
+        )))),
+      ]),
+    );
+  }
+  static Future<void> _add(BuildContext context, WidgetRef ref) async {
+    final c = TextEditingController();
+    await showDialog(context:context,builder:(d)=>AlertDialog(title:const Text('New habit'),content:TextField(controller:c,autofocus:true,decoration:const InputDecoration(labelText:'Habit name')),actions:[
+      TextButton(onPressed:()=>Navigator.pop(d),child:const Text('Cancel')),
+      FilledButton(onPressed:(){if(c.text.trim().isNotEmpty)ref.read(habitsProvider.notifier).add(c.text);Navigator.pop(d);},child:const Text('Create')),
+    ]));
+    c.dispose();
+  }
+}
