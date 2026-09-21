@@ -12,6 +12,15 @@ class SunyaTheme {
   static const blueSoft = Color(0x332563EB);
   static const blueGlow = Color(0xFF60A5FA);
 
+  // Legacy semantic aliases intentionally map to the blue SUNYA system.
+  // Keeping these aliases prevents older feature widgets from reintroducing orange.
+  static const orange = blueBright;
+  static const orangeSoft = blueSoft;
+  static const background = Color(0x00000000);
+  static const border = Color(0x332563EB);
+  static const textPrimary = darkText;
+  static const textSecondary = darkTextSecondary;
+
   static const darkBackground = Color(0xFF020617);
   static const darkSurface = Color(0xFF0B1220);
   static const darkText = Color(0xFFF8FAFC);
