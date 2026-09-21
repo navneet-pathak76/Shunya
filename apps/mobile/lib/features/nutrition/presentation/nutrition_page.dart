@@ -33,7 +33,7 @@ class NutritionPage extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _ProgressLine(label: 'Calories', current: state.calories.toString(), target: '${state.calorieGoal} kcal', value: calorieProgress, color: SunyaTheme.orange),
+                _ProgressLine(label: 'Calories', current: state.calories.toString(), target: '${state.calorieGoal} kcal', value: calorieProgress, color: SunyaTheme.blueBright),
                 const SizedBox(height: 20),
                 _ProgressLine(label: 'Protein', current: state.protein.toStringAsFixed(0), target: '${state.proteinGoal.toStringAsFixed(0)} g', value: proteinProgress, color: SunyaTheme.nutrition),
               ],
@@ -69,8 +69,8 @@ class NutritionPage extends ConsumerWidget {
                   child: ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: const CircleAvatar(
-                      backgroundColor: SunyaTheme.orangeSoft,
-                      child: Icon(Icons.restaurant_outlined, color: SunyaTheme.orange),
+                      backgroundColor: SunyaTheme.blueSoft,
+                      child: Icon(Icons.restaurant_outlined, color: SunyaTheme.blueBright),
                     ),
                     title: Text(meal.name),
                     subtitle: Text('${meal.type} · ${meal.calories} kcal · ${meal.protein.toStringAsFixed(1)} g protein'),
