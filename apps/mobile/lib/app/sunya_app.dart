@@ -11,9 +11,18 @@ class SunyaApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'SUNYA',
       debugShowCheckedModeBanner: false,
-      theme: SunyaTheme.dark,
+      theme: SunyaTheme.light,
       darkTheme: SunyaTheme.dark,
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.system,
+      builder: (context, child) {
+        final brightness = Theme.of(context).brightness;
+        return DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: SunyaTheme.backgroundGradient(brightness),
+          ),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
       routerConfig: sunyaRouter,
     );
   }
