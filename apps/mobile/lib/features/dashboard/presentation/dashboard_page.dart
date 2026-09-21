@@ -12,10 +12,10 @@ class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});
 
   static const modules = <_DashboardModule>[
-    _DashboardModule('Body', '/body', Icons.accessibility_new_outlined, SunyaTheme.orange),
+    _DashboardModule('Body', '/body', Icons.accessibility_new_outlined, SunyaTheme.blueBright),
     _DashboardModule('Nutrition', '/nutrition', Icons.restaurant_outlined, SunyaTheme.nutrition),
     _DashboardModule('Hydration', '/hydration', Icons.water_drop_outlined, SunyaTheme.hydration),
-    _DashboardModule('Workout', '/workout', Icons.fitness_center_outlined, SunyaTheme.orange),
+    _DashboardModule('Workout', '/workout', Icons.fitness_center_outlined, SunyaTheme.blueBright),
     _DashboardModule('Sleep', '/sleep', Icons.bedtime_outlined, SunyaTheme.sleep),
     _DashboardModule('Habits', '/habits', Icons.repeat_outlined, SunyaTheme.success),
   ];
@@ -56,10 +56,10 @@ class DashboardPage extends ConsumerWidget {
                         width: 42,
                         height: 42,
                         decoration: BoxDecoration(
-                          color: SunyaTheme.orangeSoft,
+                          color: SunyaTheme.blueBrightSoft,
                           borderRadius: BorderRadius.circular(14),
                         ),
-                        child: const Icon(Icons.auto_awesome_rounded, color: SunyaTheme.orange),
+                        child: const Icon(Icons.auto_awesome_rounded, color: SunyaTheme.blueBright),
                       ),
                       const SizedBox(width: 14),
                       Expanded(
@@ -149,7 +149,7 @@ class _HeroCard extends StatelessWidget {
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF171B20), Color(0xFF0B0E11)],
+              colors: [Color(0xFF0B1220), Color(0xFF020617)],
             ),
           ),
           child: Stack(
@@ -164,7 +164,7 @@ class _HeroCard extends StatelessWidget {
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
-                        colors: const [SunyaTheme.orange, Colors.transparent],
+                        colors: const [SunyaTheme.blueBright, Colors.transparent],
                       ),
                     ),
                   ),
@@ -213,7 +213,7 @@ class _HeroCard extends StatelessWidget {
                               value: progress,
                               strokeWidth: 9,
                               backgroundColor: Colors.white.withOpacity(0.07),
-                              valueColor: const AlwaysStoppedAnimation<Color>(SunyaTheme.orange),
+                              valueColor: const AlwaysStoppedAnimation<Color>(SunyaTheme.blueBright),
                             ),
                           ),
                           Column(
@@ -258,7 +258,7 @@ class _HeroChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 16, color: SunyaTheme.textSecondary),
+            Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
             const SizedBox(width: 7),
             Text('$label  ', style: Theme.of(context).textTheme.bodySmall),
             Text(value, style: Theme.of(context).textTheme.labelLarge),
@@ -277,7 +277,7 @@ class _MetricGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       ('Water', '${hydration.consumedMl}', 'ml', Icons.water_drop_outlined, SunyaTheme.hydration),
-      ('Weight', hasBody ? body.weightKg!.toStringAsFixed(1) : '—', 'kg', Icons.monitor_weight_outlined, SunyaTheme.orange),
+      ('Weight', hasBody ? body.weightKg!.toStringAsFixed(1) : '—', 'kg', Icons.monitor_weight_outlined, SunyaTheme.blueBright),
       ('Sleep', '—', 'hours', Icons.bedtime_outlined, SunyaTheme.sleep),
       ('Recovery', '—', 'score', Icons.bolt_outlined, SunyaTheme.success),
     ];
@@ -401,7 +401,7 @@ class _DesktopRail extends StatelessWidget {
               const _RailItem(label: 'Nutrition', icon: Icons.restaurant_outlined, route: '/nutrition'),
               const _RailItem(label: 'Workout', icon: Icons.fitness_center_outlined, route: '/workout'),
               const Spacer(),
-              Text('0 + ∞', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: SunyaTheme.orange)),
+              Text('0 + ∞', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: SunyaTheme.blueBright)),
               const SizedBox(height: 4),
               Text('Sun · Earth · Moon · You', style: Theme.of(context).textTheme.bodySmall),
             ],
@@ -423,9 +423,9 @@ class _RailItem extends StatelessWidget {
         child: ListTile(
           dense: true,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          tileColor: selected ? SunyaTheme.orangeSoft : Colors.transparent,
-          leading: Icon(icon, color: selected ? SunyaTheme.orange : SunyaTheme.textSecondary),
-          title: Text(label, style: TextStyle(color: selected ? SunyaTheme.textPrimary : SunyaTheme.textSecondary)),
+          tileColor: selected ? SunyaTheme.blueBrightSoft : Colors.transparent,
+          leading: Icon(icon, color: selected ? SunyaTheme.blueBright : Theme.of(context).colorScheme.onSurfaceVariant),
+          title: Text(label, style: TextStyle(color: selected ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant)),
           onTap: () => context.go(route),
         ),
       );
@@ -449,7 +449,7 @@ class _DesktopInsights extends StatelessWidget {
                   Text('Today', style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height: 16),
                   _InsightRow('Water', '${hydration.consumedMl} ml', SunyaTheme.hydration),
-                  _InsightRow('Body', hasBody ? 'Tracked' : 'Not logged', SunyaTheme.orange),
+                  _InsightRow('Body', hasBody ? 'Tracked' : 'Not logged', SunyaTheme.blueBright),
                   const _InsightRow('Sleep', 'Not logged', SunyaTheme.sleep),
                 ],
               ),
@@ -460,7 +460,7 @@ class _DesktopInsights extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.auto_awesome_rounded, color: SunyaTheme.orange),
+                  const Icon(Icons.auto_awesome_rounded, color: SunyaTheme.blueBright),
                   const SizedBox(height: 12),
                   Text('AI layer', style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height: 6),
