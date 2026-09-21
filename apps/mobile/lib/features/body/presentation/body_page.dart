@@ -301,10 +301,10 @@ class _HumanSilhouettePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final fill = Paint()
-      ..color = SunyaTheme.orange.withValues(alpha: .18)
+      ..color = SunyaTheme.blueBright.withValues(alpha: .18)
       ..style = PaintingStyle.fill;
     final outline = Paint()
-      ..color = SunyaTheme.orange.withValues(alpha: .55)
+      ..color = SunyaTheme.blueBright.withValues(alpha: .55)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.4;
 
@@ -322,7 +322,7 @@ class _HumanSilhouettePainter extends CustomPainter {
     canvas.drawRRect(torso, outline);
 
     final limb = Paint()
-      ..color = SunyaTheme.orange.withValues(alpha: .14)
+      ..color = SunyaTheme.blueBright.withValues(alpha: .14)
       ..style = PaintingStyle.fill;
 
     canvas.drawRRect(
@@ -402,7 +402,7 @@ class _SectionCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, color: SunyaTheme.orange),
+              Icon(icon, color: SunyaTheme.blueBright),
               const SizedBox(width: 10),
               Text(title, style: Theme.of(context).textTheme.titleLarge),
             ],
