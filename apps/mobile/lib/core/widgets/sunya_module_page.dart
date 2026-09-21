@@ -10,7 +10,7 @@ class SunyaModuleMetric {
     required this.value,
     required this.unit,
     required this.icon,
-    this.accent = SunyaTheme.orange,
+    this.accent = SunyaTheme.blueBright,
   });
 
   final String label;
