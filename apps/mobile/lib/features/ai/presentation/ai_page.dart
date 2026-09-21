@@ -21,7 +21,7 @@ class AiPage extends ConsumerWidget{
   ];
   return Scaffold(appBar:AppBar(title:const Text('SUNYA AI')),body:ListView(padding:const EdgeInsets.all(20),children:[
    Text('Personal intelligence',style:Theme.of(context).textTheme.displaySmall),const SizedBox(height:6),Text('Contextual insights generated from your local SUNYA dataset.',style:Theme.of(context).textTheme.bodyLarge),const SizedBox(height:20),
-   ...insights.map((x)=>Padding(padding:const EdgeInsets.only(bottom:10),child:SunyaGlassCard(padding:const EdgeInsets.all(16),child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[const Icon(Icons.auto_awesome,color:Colors.orange),const SizedBox(width:12),Expanded(child:Text(x))])))),
+   ...insights.map((x)=>Padding(padding:const EdgeInsets.only(bottom:10),child:SunyaGlassCard(padding:const EdgeInsets.all(16),child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[Icon(Icons.auto_awesome,color:Theme.of(context).colorScheme.primary),const SizedBox(width:12),Expanded(child:Text(x))])))),
    const SizedBox(height:8),Text('AI provider connection',style:Theme.of(context).textTheme.titleLarge),const SizedBox(height:8),const Text('The mobile layer is provider-agnostic. Remote model calls should go through the FastAPI backend so secrets never ship in the app.')
  ]));}
 }
