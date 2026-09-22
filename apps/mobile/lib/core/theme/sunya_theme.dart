@@ -10,6 +10,7 @@ class SunyaTheme {
   static const blue = Color(0xFF2563EB);
   static const blueBright = Color(0xFF3B82F6);
   static const blueSoft = Color(0x332563EB);
+  static const blueBrightSoft = Color(0x333B82F6);
   static const blueGlow = Color(0xFF60A5FA);
 
   // Legacy semantic aliases intentionally map to the blue SUNYA system.
@@ -73,7 +74,7 @@ class SunyaTheme {
           scrolledUnderElevation: 0,
           centerTitle: false,
         ),
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           color: lightSurface.withOpacity(.86),
           elevation: 0,
           margin: EdgeInsets.zero,
