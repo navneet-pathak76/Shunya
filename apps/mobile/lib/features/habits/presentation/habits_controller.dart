@@ -18,7 +18,7 @@ class Habit {
     while (completedOn(d)) { count++; d = d.subtract(const Duration(days: 1)); }
     return count;
   }
-  static String _day(DateTime d) => '\${d.year.toString().padLeft(4,'0')}-\${d.month.toString().padLeft(2,'0')}-\${d.day.toString().padLeft(2,'0')}';
+  static String _day(DateTime d) => '${d.year.toString().padLeft(4,'0')}-${d.month.toString().padLeft(2,'0')}-${d.day.toString().padLeft(2,'0')}';
 }
 class HabitsState {
   const HabitsState({this.items = const []});
@@ -47,6 +47,6 @@ class HabitsController extends StateNotifier<HabitsState> {
   }
   Future<void> remove(Habit h) async {
     final r = await ref.read(localRecordRepositoryProvider.future);
-    await r.delete(domain: domain, key: h.id); await _load();
+    await r.delete(domain, h.id); await _load();
   }
 }
