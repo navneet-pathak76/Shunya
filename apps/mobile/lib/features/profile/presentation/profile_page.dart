@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../body/presentation/body_controller.dart';
-import '../../core/widgets/sunya_glass.dart';
+import '../../body/presentation/body_controller.dart';
+import '../../../core/widgets/sunya_glass.dart';
 
 class ProfilePage extends ConsumerWidget{
  const ProfilePage({super.key});
