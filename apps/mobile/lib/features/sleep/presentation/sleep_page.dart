@@ -21,11 +21,11 @@ class SleepPage extends ConsumerWidget {
         Text('Track duration, timing and perceived sleep quality.', style: Theme.of(context).textTheme.bodyLarge),
         const SizedBox(height: 20),
         Row(children: [
-          Expanded(child: _Stat('Last night', latest == null ? '—' : '\${latest.hours.toStringAsFixed(1)} h')),
+          Expanded(child: _Stat('Last night', latest == null ? '—' : '${latest.hours.toStringAsFixed(1)} h')),
           const SizedBox(width: 10),
-          Expanded(child: _Stat('Average', state.entries.isEmpty ? '—' : '\${state.averageHours.toStringAsFixed(1)} h')),
+          Expanded(child: _Stat('Average', state.entries.isEmpty ? '—' : '${state.averageHours.toStringAsFixed(1)} h')),
           const SizedBox(width: 10),
-          Expanded(child: _Stat('Quality', latest == null ? '—' : '\${latest.quality}/10')),
+          Expanded(child: _Stat('Quality', latest == null ? '—' : '${latest.quality}/10')),
         ]),
         const SizedBox(height: 20),
         if (state.entries.isEmpty)
@@ -35,15 +35,15 @@ class SleepPage extends ConsumerWidget {
             padding: const EdgeInsets.only(bottom: 10),
             child: SunyaGlassCard(padding: const EdgeInsets.all(16), child: Row(children: [
               const Icon(Icons.bedtime_outlined), const SizedBox(width: 12),
-              Expanded(child: Text('\${e.hours.toStringAsFixed(1)} h\n\${_dateLabel(e.endedAt)}')),
-              Text('\${e.quality}/10', style: Theme.of(context).textTheme.titleMedium),
+              Expanded(child: Text('${e.hours.toStringAsFixed(1)} h\n${_dateLabel(e.endedAt)}')),
+              Text('${e.quality}/10', style: Theme.of(context).textTheme.titleMedium),
             ])),
           )),
       ]),
     );
   }
 
-  static String _dateLabel(DateTime d) => '\${d.day.toString().padLeft(2, '0')}/\${d.month.toString().padLeft(2, '0')}/\${d.year}';
+  static String _dateLabel(DateTime d) => '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
 
   static Future<void> _add(BuildContext context, WidgetRef ref) async {
     DateTime start = DateTime.now().subtract(const Duration(hours: 8));
@@ -61,7 +61,7 @@ class SleepPage extends ConsumerWidget {
             final p = await _pickDateTime(context, end); if (p != null) setState(() => end = p);
           }),
           const SizedBox(height: 12),
-          Text('Quality: \${quality.round()}/10'),
+          Text('Quality: ${quality.round()}/10'),
           Slider(value: quality, min: 1, max: 10, divisions: 9, label: quality.round().toString(), onChanged: (v) => setState(() => quality = v)),
           if (!end.isAfter(start)) const Text('Wake time must be after sleep start.'),
         ])),
