@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../body/presentation/body_controller.dart';
-import '../hydration/presentation/hydration_controller.dart';
-import '../nutrition/presentation/nutrition_controller.dart';
-import '../sleep/presentation/sleep_controller.dart';
-import '../habits/presentation/habits_controller.dart';
-import '../workout/presentation/workout_controller.dart';
-import '../../core/widgets/sunya_glass.dart';
+import '../../body/presentation/body_controller.dart';
+import '../../hydration/presentation/hydration_controller.dart';
+import '../../nutrition/presentation/nutrition_controller.dart';
+import '../../sleep/presentation/sleep_controller.dart';
+import '../../habits/presentation/habits_controller.dart';
+import '../../workout/presentation/workout_controller.dart';
+import '../../../core/widgets/sunya_glass.dart';
 
 class AnalyticsPage extends ConsumerWidget{
  const AnalyticsPage({super.key});
