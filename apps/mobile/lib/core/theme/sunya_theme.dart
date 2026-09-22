@@ -141,7 +141,7 @@ class SunyaTheme {
           scrolledUnderElevation: 0,
           centerTitle: false,
         ),
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           color: darkSurface.withOpacity(.82),
           elevation: 0,
           margin: EdgeInsets.zero,
