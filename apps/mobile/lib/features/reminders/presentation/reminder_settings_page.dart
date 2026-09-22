@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/notifications/sunya_notification_service.dart';
+import '../../../core/notifications/sunya_notification_service.dart';
 import '../../core/notifications/sunya_reminder_preferences.dart';
-import '../../core/widgets/sunya_glass.dart';
+import '../../../core/widgets/sunya_glass.dart';
 
 class ReminderSettingsPage extends ConsumerWidget {
   const ReminderSettingsPage({super.key});
@@ -31,7 +31,7 @@ class ReminderSettingsPage extends ConsumerWidget {
                     contentPadding: EdgeInsets.zero,
                     title: const Text('Daily appearance check-in'),
                     subtitle: Text(
-                      'Every day at ${_formatTime(settings.appearanceHour, settings.appearanceMinute)',
+                      'Every day at ${_formatTime(settings.appearanceHour, settings.appearanceMinute)}',
                     ),
                     value: settings.appearanceEnabled,
                     onChanged: (enabled) => _setAppearance(
@@ -45,7 +45,7 @@ class ReminderSettingsPage extends ConsumerWidget {
                     contentPadding: EdgeInsets.zero,
                     title: const Text('Reminder time'),
                     subtitle: const Text('Choose when SUNYA should prompt you.'),
-                    trailing: Text(${_formatTime(settings.appearanceHour, settings.appearanceMinute)),
+                    trailing: Text(_formatTime(settings.appearanceHour, settings.appearanceMinute)),
                     enabled: settings.appearanceEnabled,
                     onTap: settings.appearanceEnabled
                         ? () => _pickTime(context, ref, settings)
