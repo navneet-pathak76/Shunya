@@ -420,13 +420,16 @@ class _RailItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.only(bottom: 6),
-        child: ListTile(
-          dense: true,
+        child: Material(
+          type: MaterialType.transparency,
+          child: ListTile(
+            dense: true,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           tileColor: selected ? SunyaTheme.blueBrightSoft : Colors.transparent,
           leading: Icon(icon, color: selected ? SunyaTheme.blueBright : Theme.of(context).colorScheme.onSurfaceVariant),
           title: Text(label, style: TextStyle(color: selected ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant)),
-          onTap: () => context.go(route),
+            onTap: () => context.go(route),
+          ),
         ),
       );
 }
