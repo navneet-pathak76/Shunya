@@ -1,0 +1,48 @@
+name: SUNYA Flutter Web Build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-web:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: apps/mobile
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.4'
+          channel: stable
+          cache: true
+
+      - name: Flutter doctor
+        run: flutter doctor -v
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Build release web app
+        run: flutter build web --release
+
+      - name: Upload SUNYA web build
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunya-web-build
+          path: apps/mobile/build/web
+          if-no-files-found: error
+          retention-days: 14
