@@ -69,6 +69,21 @@ jobs:
           grep -n "isCoreLibraryDesugaringEnabled" android/app/build.gradle.kts
           grep -n "coreLibraryDesugaring" android/app/build.gradle.kts
 
+      - name: Configure Android API level
+        run: |
+          yes | sdkmanager "platforms;android-36" || true
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("android/app/build.gradle.kts")
+          s = p.read_text()
+          import re
+          s, n = re.subn(r'compileSdk\s*=\s*[^\n]+', 'compileSdk = 36', s, count=1)
+          if n == 0:
+              raise SystemExit("compileSdk declaration not found")
+          p.write_text(s)
+          PY
+          grep -n "compileSdk" android/app/build.gradle.kts
+
       - name: Build release APK
         run: flutter build apk --release
 
