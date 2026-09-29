@@ -20,7 +20,7 @@ class AnalyticsPage extends ConsumerWidget{
     _Metric('Calories',n.calories.toString()+' kcal',Icons.restaurant_outlined),
     _Metric('Protein',n.protein.toStringAsFixed(0)+' g',Icons.egg_alt_outlined),
     _Metric('Sleep',s.latest==null?'—':s.latest!.hours.toStringAsFixed(1)+' h',Icons.bedtime_outlined),
-    _Metric('Habits',hab.completedToday.toString()+'/'+hab.items.length,Icons.repeat_outlined),
+    _Metric('Habits','\${hab.completedToday}/\${hab.items.length}',Icons.repeat_outlined),
     _Metric('Workouts',w.length.toString(),Icons.fitness_center_outlined),
    ]),
    const SizedBox(height:20),SunyaGlassCard(padding:const EdgeInsets.all(18),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('Data maturity',style:Theme.of(context).textTheme.titleLarge),const SizedBox(height:8),Text(_message(b,h,n,s,hab,w))]))
