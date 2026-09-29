@@ -40,6 +40,35 @@ jobs:
             sed -i '/android {/a\\    namespace "dev.isar.isar_flutter_libs"' "$ISAR_GRADLE"
           fi
 
+      - name: Enable Android core library desugaring
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("android/app/build.gradle.kts")
+          s = p.read_text()
+          if "isCoreLibraryDesugaringEnabled = true" not in s:
+              marker = "compileOptions {"
+              if marker in s:
+                  s = s.replace(marker, marker + "\n        isCoreLibraryDesugaringEnabled = true", 1)
+              else:
+                  raise SystemExit("compileOptions block not found")
+          if 'coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:' not in s:
+              if "dependencies {" in s:
+                  s = s.replace(
+                      "dependencies {",
+                      'dependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")',
+                      1,
+                  )
+              else:
+                  s += '\n\ndependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")\n}\n'
+          p.write_text(s)
+          PY
+
+      - name: Verify Android Gradle configuration
+        run: |
+          grep -n "isCoreLibraryDesugaringEnabled" android/app/build.gradle.kts
+          grep -n "coreLibraryDesugaring" android/app/build.gradle.kts
+
       - name: Build release APK
         run: flutter build apk --release
 
