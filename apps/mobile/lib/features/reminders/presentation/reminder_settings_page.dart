@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/notifications/sunya_notification_service.dart';
-import '../../core/notifications/sunya_reminder_preferences.dart';
+import '../../../core/notifications/sunya_reminder_preferences.dart';
 import '../../../core/widgets/sunya_glass.dart';
 
 class ReminderSettingsPage extends ConsumerWidget {
