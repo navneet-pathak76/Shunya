@@ -285,7 +285,7 @@ class _Silhouette extends StatelessWidget {
       children: [
         Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(letterSpacing: 2)),
         const SizedBox(height: 6),
-        const SizedBox(
+        SizedBox(
           height: 240,
           child: CustomPaint(
             painter: _HumanSilhouettePainter(),
