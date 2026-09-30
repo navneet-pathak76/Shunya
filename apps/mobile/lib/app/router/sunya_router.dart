@@ -20,6 +20,7 @@ import '../../features/health_connect/presentation/health_connect_page.dart';
 import '../../features/goals/presentation/goals_page.dart';
 import '../../features/wellness/presentation/wellness_page.dart';
 import '../../features/export/presentation/data_management_page.dart';
+import '../../features/settings/presentation/settings_page.dart';
 
 final sunyaRouter = GoRouter(
   initialLocation: '/dashboard',
@@ -37,6 +38,7 @@ final sunyaRouter = GoRouter(
       ],
     ),
     GoRoute(path: '/profile', name: 'profile', builder: (_, __) => const ProfilePage()),
+    GoRoute(path: '/settings', name: 'settings', builder: (_, __) => const SettingsPage()),
     GoRoute(path: '/ai', name: 'ai', builder: (_, __) => const AiPage()),
     GoRoute(path: '/ai/plan', name: 'aiPlan', builder: (_, __) => const PersonalPlanPage()),
     GoRoute(path: '/health', name: 'health', builder: (_, __) => const HealthConnectPage()),
