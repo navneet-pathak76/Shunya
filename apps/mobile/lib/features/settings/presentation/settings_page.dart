@@ -120,7 +120,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   (v) => ref
                       .read(sunyaSettingsProvider.notifier)
                       .setVisual(opacity: v),
-                  '\${(s.glassOpacity * 100).round()}%',
+                  '${(s.glassOpacity * 100).round()}%',
                 ),
                 _slider(
                   context,
@@ -131,7 +131,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   (v) => ref
                       .read(sunyaSettingsProvider.notifier)
                       .setVisual(blur: v),
-                  '\${s.glassBlur.round()} px',
+                  '${s.glassBlur.round()} px',
                 ),
               ],
             ),
