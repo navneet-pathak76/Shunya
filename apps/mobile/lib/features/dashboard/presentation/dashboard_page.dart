@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/sunya_motion.dart';
 import '../../../core/theme/sunya_theme.dart';
+import '../../../core/settings/sunya_settings.dart';
 import '../../../core/widgets/sunya_glass.dart';
 import '../../body/presentation/body_controller.dart';
 import '../../hydration/presentation/hydration_controller.dart';
@@ -24,6 +25,7 @@ class DashboardPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final hydration = ref.watch(hydrationProvider);
     final body = ref.watch(bodyProvider);
+    final settings = ref.watch(sunyaSettingsProvider);
     final hour = DateTime.now().hour;
     final greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
     final hasBody = body.weightKg != null || body.heightCm != null || body.bodyFatPercent != null;
@@ -36,7 +38,7 @@ class DashboardPage extends ConsumerWidget {
             final content = ListView(
               padding: EdgeInsets.fromLTRB(wide ? 24 : 20, 18, wide ? 24 : 20, 32),
               children: [
-                _Header(greeting: greeting),
+                _Header(greeting: greeting, name: settings.name),
                 const SizedBox(height: 18),
                 _HeroCard(hydration: hydration, body: body, hasBody: hasBody),
                 const SizedBox(height: 18),
@@ -101,8 +103,9 @@ class DashboardPage extends ConsumerWidget {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({required this.greeting});
+  const _Header({required this.greeting, required this.name});
   final String greeting;
+  final String name;
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +115,7 @@ class _Header extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(greeting, style: Theme.of(context).textTheme.headlineMedium),
+              Text('$greeting, $name.', style: Theme.of(context).textTheme.headlineMedium),
               const SizedBox(height: 4),
               Text('Your body. Your data. Your baseline.', style: Theme.of(context).textTheme.bodyLarge),
             ],
