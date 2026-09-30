@@ -93,10 +93,7 @@ jobs:
                   "import io.flutter.embedding.android.FlutterActivity",
                   "import io.flutter.embedding.android.FlutterFragmentActivity",
               )
-              s = s.replace(
-                  "class MainActivity: FlutterActivity()",
-                  "class MainActivity: FlutterFragmentActivity()",
-              )
+              s = s.replace("FlutterActivity", "FlutterFragmentActivity")
               main.write_text(s)
           PY
 
