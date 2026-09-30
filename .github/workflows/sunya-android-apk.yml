@@ -43,12 +43,6 @@ jobs:
               "android.permission.health.READ_RESTING_HEART_RATE",
               "android.permission.health.READ_HEART_RATE_VARIABILITY",
               "android.permission.health.READ_BLOOD_OXYGEN",
-              "android.permission.health.READ_BLOOD_PRESSURE",
-              "android.permission.health.READ_BLOOD_GLUCOSE",
-              "android.permission.health.READ_RESPIRATORY_RATE",
-              "android.permission.health.READ_BODY_TEMPERATURE",
-              "android.permission.health.READ_BODY_FAT",
-              "android.permission.health.READ_LEAN_BODY_MASS",
               "android.permission.health.READ_HYDRATION",
               "android.permission.health.READ_SLEEP",
               "android.permission.health.READ_ACTIVE_CALORIES_BURNED",
@@ -56,9 +50,7 @@ jobs:
               "android.permission.health.READ_DISTANCE",
               "android.permission.health.READ_EXERCISE",
               "android.permission.health.READ_NUTRITION",
-              "android.permission.health.READ_MINDFULNESS",
           ]
-          marker = '<manifest'
           insert = ''.join(f'\n    <uses-permission android:name="{p}"/>' for p in permissions)
           if "android.permission.health.READ_STEPS" not in s:
               s = s.replace('>', '>' + insert, 1)
@@ -67,6 +59,7 @@ jobs:
               s = s.replace(insert, insert + queries, 1)
           manifest.write_text(s)
           PY
+
           MAIN=$(find android/app/src/main/kotlin -name MainActivity.kt | head -1)
           if [ -n "$MAIN" ]; then
             python3 - "$MAIN" <<'PY'
@@ -76,8 +69,6 @@ jobs:
           s = p.read_text()
           s = s.replace("import io.flutter.embedding.android.FlutterActivity", "import io.flutter.embedding.android.FlutterFragmentActivity")
           s = s.replace("class MainActivity: FlutterActivity()", "class MainActivity: FlutterFragmentActivity()")
-          if "androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" not in s:
-              print("Health Connect rationale intent is configured in manifest.")
           p.write_text(s)
           PY
           fi
@@ -89,29 +80,33 @@ jobs:
         run: |
           ISAR_GRADLE="$HOME/.pub-cache/hosted/pub.dev/isar_flutter_libs-3.1.0+1/android/build.gradle"
           if [ -f "$ISAR_GRADLE" ] && ! grep -q "namespace" "$ISAR_GRADLE"; then
-            sed -i '/android {/a\    namespace "dev.isar.isar_flutter_libs"' "$ISAR_GRADLE"
+            sed -i '/android {/a    namespace "dev.isar.isar_flutter_libs"' "$ISAR_GRADLE"
           fi
 
-      - name: Enable Android core library desugaring
+      - name: Configure Android desugaring
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p = Path("android/app/build.gradle.kts")
           s = p.read_text()
           if "isCoreLibraryDesugaringEnabled = true" not in s:
-              marker = "compileOptions {"
+              s = s.replace("compileOptions {", "compileOptions {\n        isCoreLibraryDesugaringEnabled = true", 1)
+
+          dep = 'coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")'
+          if dep not in s:
+              marker = "dependencies {"
               if marker in s:
-                  s = s.replace(marker, marker + "\n        isCoreLibraryDesugaringEnabled = true", 1)
+                  s = s.replace(marker, marker + "\n    " + dep, 1)
               else:
-                  raise SystemExit("compileOptions block not found")
-          if 'coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:' not in s:
-              s = s.replace("dependencies {", 'dependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")', 1)
+                  s += "\n\ndependencies {\n    " + dep + "\n}\n"
           p.write_text(s)
+          print("Configured core library desugaring.")
           PY
+          grep -n "isCoreLibraryDesugaringEnabled" android/app/build.gradle.kts
+          grep -n "coreLibraryDesugaring" android/app/build.gradle.kts
 
       - name: Configure Android API level
         run: |
-          yes | sdkmanager "platforms;android-36" || true
           python3 - <<'PY'
           from pathlib import Path
           import re
@@ -138,6 +133,12 @@ jobs:
 
       - name: Build release APK
         run: flutter build apk --release
+
+      - name: Verify APK output
+        run: |
+          test -f build/app/outputs/flutter-apk/app-release.apk
+          file build/app/outputs/flutter-apk/app-release.apk
+          ls -lh build/app/outputs/flutter-apk/app-release.apk
 
       - name: Upload SUNYA APK
         uses: actions/upload-artifact@v4
