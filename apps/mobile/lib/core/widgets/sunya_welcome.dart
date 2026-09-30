@@ -87,13 +87,13 @@ class _SunyaWelcomeGateState extends ConsumerState<SunyaWelcomeGate>
                         parent: _controller,
                         curve: Curves.easeOutCubic,
                       ),
-                      child: SingleChildScrollView(
-                        physics: const ClampingScrollPhysics(),
-                        child: SunyaGlassCard(
+                      child: SunyaGlassCard(
                         padding: const EdgeInsets.all(26),
                         borderRadius: 30,
                         opacity: .72,
-                        child: Column(
+                        child: SingleChildScrollView(
+                          physics: const ClampingScrollPhysics(),
+                          child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -202,8 +202,8 @@ class _SunyaWelcomeGateState extends ConsumerState<SunyaWelcomeGate>
                               ),
                             ),
                           ],
+                          ),
                         ),
-                      ),
                       ),
                     ),
                   ),
