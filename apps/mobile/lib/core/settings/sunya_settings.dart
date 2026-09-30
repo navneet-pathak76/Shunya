@@ -74,7 +74,7 @@ class SunyaSettingsController extends StateNotifier<SunyaSettings> {
       glassOpacity: p.getDouble('sunya.glassOpacity') ?? state.glassOpacity,
       glassBlur: p.getDouble('sunya.glassBlur') ?? state.glassBlur,
       glassEnabled: p.getBool('sunya.glassEnabled') ?? state.glassEnabled,
-      themeMode: _themeMode(mode),
+      themeMode: SunyaSettings._themeMode(mode),
     );
   }
 
@@ -94,15 +94,32 @@ class SunyaSettingsController extends StateNotifier<SunyaSettings> {
     ]);
   }
 
+  void previewVisual({
+    double? opacity,
+    double? blur,
+    bool? enabled,
+    ThemeMode? themeMode,
+  }) {
+    state = state.copyWith(
+      glassOpacity: opacity,
+      glassBlur: blur,
+      glassEnabled: enabled,
+      themeMode: themeMode,
+    );
+  }
+
   Future<void> setVisual({
     double? opacity,
     double? blur,
     bool? enabled,
     ThemeMode? themeMode,
-  }) => update(state.copyWith(
-        glassOpacity: opacity,
-        glassBlur: blur,
-        glassEnabled: enabled,
-        themeMode: themeMode,
-      ));
+  }) =>
+      update(
+        state.copyWith(
+          glassOpacity: opacity,
+          glassBlur: blur,
+          glassEnabled: enabled,
+          themeMode: themeMode,
+        ),
+      );
 }
