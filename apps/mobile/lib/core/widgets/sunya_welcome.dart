@@ -58,9 +58,9 @@ class _SunyaWelcomeGateState extends ConsumerState<SunyaWelcomeGate>
     final s = ref.watch(sunyaSettingsProvider);
     final quote = quotes[DateTime.now().day % quotes.length];
     final details = <String>[
-      if (s.age != null) '\${s.age} yrs',
-      if (s.heightCm != null) '\${s.heightCm!.round()} cm',
-      if (s.weightKg != null) '\${s.weightKg!.toStringAsFixed(1)} kg',
+      if (s.age != null) '${s.age} yrs',
+      if (s.heightCm != null) '${s.heightCm!.round()} cm',
+      if (s.weightKg != null) '${s.weightKg!.toStringAsFixed(1)} kg',
     ];
 
     return Stack(
@@ -139,14 +139,14 @@ class _SunyaWelcomeGateState extends ConsumerState<SunyaWelcomeGate>
                             ),
                             const SizedBox(height: 7),
                             Text(
-                              'Good \${_partOfDay()}, \${s.name}.',
+                              'Good ${_partOfDay()}, ${s.name}.',
                               style: Theme.of(context).textTheme.displaySmall,
                             ),
                             const SizedBox(height: 10),
                             Text(
                               details.isEmpty
                                   ? 'Your personal health system is ready. Start by building your baseline.'
-                                  : 'Your current profile: \${details.join('  •  ')}.',
+                                  : 'Your current profile: ${details.join('  •  ')}.',
                               style: Theme.of(context).textTheme.bodyLarge,
                             ),
                             const SizedBox(height: 20),
