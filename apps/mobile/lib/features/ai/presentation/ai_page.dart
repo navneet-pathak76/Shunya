@@ -18,7 +18,7 @@ class _AiPageState extends ConsumerState<AiPage> {
     final health = await ref.read(healthSnapshotProvider.future); final dob = body.profile?.dateOfBirth;
     final age = dob == null ? null : (DateTime.now().difference(dob).inDays / 365.25).floor();
     final plan = AdaptiveHealthEngine.build(HealthProfileInput(weightKg: body.weightKg, heightCm: body.heightCm, ageYears: age, sex: body.profile?.biologicalSex, hydrationMl: hyd.consumedMl, proteinConsumed: nut.protein, sleepHours: sleep.latest?.hours));
-    final remote = await SunyaAiGateway().chat(message: q, context: {'plan': {'recovery': plan.recoveryScore, 'priority': plan.priority, 'calories': plan.calorieTarget, 'protein': plan.proteinTarget, 'waterMl': plan.waterTargetMl, 'healthConnect': health.toAiContext()}});
+    final remote = await SunyaAiGateway().chat(message: q, context: {'plan': {'recovery': plan.recoveryScore, 'priority': plan.priority, 'calories': plan.calorieTarget, 'protein': plan.proteinTarget, 'waterMl': plan.waterTargetMl, 'healthConnect': {'steps': health.steps, 'activeCalories': health.activeCalories, 'waterMl': health.waterMl, 'sleepHours': health.sleepHours, 'weightKg': health.weightKg, 'heartRate': health.heartRate, 'restingHeartRate': health.restingHeartRate, 'hrv': health.hrv, 'spo2': health.oxygen, 'records': health.records}}});
     final answer = remote ?? ('SUNYA: ' + plan.priority + ' is the current priority. ' + plan.actions.first);
     if (mounted) setState(() { messages.add(answer); loading = false; });
   }
