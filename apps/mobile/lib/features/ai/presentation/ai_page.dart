@@ -1,27 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/services/ai/ai_gateway.dart';
+import '../../../core/services/ai/adaptive_health_engine.dart';
+import '../../../core/widgets/sunya_glass.dart';
 import '../../body/presentation/body_controller.dart';
 import '../../hydration/presentation/hydration_controller.dart';
 import '../../nutrition/presentation/nutrition_controller.dart';
 import '../../sleep/presentation/sleep_controller.dart';
-import '../../habits/presentation/habits_controller.dart';
-import '../../../core/widgets/sunya_glass.dart';
 
-class AiPage extends ConsumerWidget{
- const AiPage({super.key});
- @override Widget build(BuildContext context,WidgetRef ref){
-  final b=ref.watch(bodyProvider),h=ref.watch(hydrationProvider),n=ref.watch(nutritionProvider),s=ref.watch(sleepProvider),hab=ref.watch(habitsProvider);
-  final insights=<String>[
-   if(b.weightKg==null)'Log your body weight to establish a baseline.',
-   if(h.consumedMl==0)'Start hydration logging today so SUNYA can learn your daily pattern.',
-   if(n.meals.isEmpty)'Log meals to build your nutrition history.',
-   if(s.latest==null)'Log sleep to connect recovery with your daily behavior.',
-   if(hab.items.isEmpty)'Create a habit so SUNYA can track consistency.',
-   if(b.weightKg!=null && h.consumedMl>0)'Your body and hydration datasets have started. Keep the same logging cadence to reveal trends.',
-  ];
-  return Scaffold(appBar:AppBar(title:const Text('SUNYA AI')),body:ListView(padding:const EdgeInsets.all(20),children:[
-   Text('Personal intelligence',style:Theme.of(context).textTheme.displaySmall),const SizedBox(height:6),Text('Contextual insights generated from your local SUNYA dataset.',style:Theme.of(context).textTheme.bodyLarge),const SizedBox(height:20),
-   ...insights.map((x)=>Padding(padding:const EdgeInsets.only(bottom:10),child:SunyaGlassCard(padding:const EdgeInsets.all(16),child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[Icon(Icons.auto_awesome,color:Theme.of(context).colorScheme.primary),const SizedBox(width:12),Expanded(child:Text(x))])))),
-   const SizedBox(height:8),Text('AI provider connection',style:Theme.of(context).textTheme.titleLarge),const SizedBox(height:8),const Text('The mobile layer is provider-agnostic. Remote model calls should go through the FastAPI backend so secrets never ship in the app.')
- ]));}
+class AiPage extends ConsumerStatefulWidget { const AiPage({super.key}); @override ConsumerState<AiPage> createState() => _AiPageState(); }
+class _AiPageState extends ConsumerState<AiPage> {
+  final input = TextEditingController(); final messages = <String>[]; bool loading = false;
+  Future<void> ask() async { final q = input.text.trim(); if (q.isEmpty) return; input.clear(); setState(() { messages.add('You: ' + q); loading = true; }); final body = ref.read(bodyProvider); final hyd = ref.read(hydrationProvider); final nut = ref.read(nutritionProvider); final sleep = ref.read(sleepProvider); final plan = AdaptiveHealthEngine.build(HealthProfileInput(weightKg: body.weightKg, heightCm: body.heightCm, ageYears: body.profile?.ageYears, sex: body.profile?.sex, hydrationMl: hyd.consumedMl, proteinConsumed: nut.protein, sleepHours: sleep.latest?.hours)); final remote = await SunyaAiGateway().chat(message: q, context: {'plan': {'recovery': plan.recoveryScore, 'priority': plan.priority, 'calories': plan.calorieTarget, 'protein': plan.proteinTarget, 'waterMl': plan.waterTargetMl}}); final answer = remote ?? ('SUNYA: ' + plan.priority + ' is the current priority. ' + plan.actions.first); if (mounted) setState(() { messages.add(answer); loading = false; }); }
+  @override Widget build(BuildContext context) => Scaffold(appBar: AppBar(title: const Text('SUNYA AI')), body: Column(children: [Expanded(child: ListView(padding: const EdgeInsets.all(20), children: [Text('Personal intelligence', style: Theme.of(context).textTheme.displaySmall), const SizedBox(height: 8), const Text('SUNYA combines your tracked data with deterministic health engines. Connect a backend AI provider for conversational planning.'), const SizedBox(height: 18), if (messages.isEmpty) const SunyaGlassCard(child: Text('Ask: “What should I focus on today?”')), ...messages.map((m) => Padding(padding: const EdgeInsets.only(bottom: 8), child: SunyaGlassCard(child: Text(m))))])), Padding(padding: const EdgeInsets.fromLTRB(12, 8, 12, 12), child: Row(children: [Expanded(child: TextField(controller: input, decoration: const InputDecoration(hintText: 'Ask SUNYA…'))), IconButton(onPressed: loading ? null : ask, icon: loading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.send))]))]));
+  @override void dispose() { input.dispose(); super.dispose(); }
 }

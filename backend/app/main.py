@@ -1,18 +1,19 @@
 from __future__ import annotations
 
+import json
+import os
 from contextlib import asynccontextmanager
 from datetime import date, datetime, timezone
-from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel, Field
-from sqlalchemy import Boolean, Date, DateTime, Float, Integer, String, Text, create_engine, select
+from sqlalchemy import Boolean, Date, DateTime, Integer, String, Text, create_engine, select
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
 
-DB_URL = "sqlite:///./sunya.db"
-engine = create_engine(DB_URL, connect_args={"check_same_thread": False})
+DB_URL = os.getenv("SUNYA_DATABASE_URL", "sqlite:///./sunya.db")
+engine = create_engine(DB_URL, connect_args={"check_same_thread": False} if DB_URL.startswith("sqlite") else {})
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
 
 
@@ -51,17 +52,36 @@ class Patch(BaseModel):
     record_date: date | None = None
 
 
+class AiChatRequest(BaseModel):
+    message: str = Field(min_length=1, max_length=8000)
+    context: dict[str, Any] = Field(default_factory=dict)
+
+
+class AiPlanRequest(BaseModel):
+    context: dict[str, Any] = Field(default_factory=dict)
+
+
+class AiPlan(BaseModel):
+    summary: str
+    priority: str
+    calories: int
+    protein_g: int
+    water_ml: int
+    workout: str
+    meals: list[str]
+    actions: list[str]
+
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     Base.metadata.create_all(engine)
     yield
 
 
-app = FastAPI(title="SUNYA API", version="0.2.0", lifespan=lifespan)
+app = FastAPI(title="SUNYA API", version="0.3.0", lifespan=lifespan)
 
 
 def serialize(row: Record) -> dict[str, Any]:
-    import json
     return {
         "id": row.id,
         "kind": row.kind,
@@ -80,6 +100,18 @@ def get_row(db: Session, record_id: str) -> Record:
     return row
 
 
+def gemini_client():
+    key = os.getenv("GEMINI_API_KEY") or os.getenv("SUNYA_GEMINI_API_KEY")
+    if not key:
+        raise HTTPException(503, "Gemini is not configured on the server")
+    from google import genai
+    return genai.Client(api_key=key)
+
+
+def gemini_model() -> str:
+    return os.getenv("SUNYA_GEMINI_MODEL", "gemini-3.8-flash")
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "service": "sunya-api"}
@@ -87,7 +119,6 @@ def health() -> dict[str, str]:
 
 @app.post("/v1/entries", status_code=201)
 def create_entry(entry: Entry) -> dict[str, Any]:
-    import json
     with SessionLocal() as db:
         row = Record(kind=entry.kind, payload=json.dumps(entry.data), record_date=entry.record_date or date.today())
         db.add(row)
@@ -115,7 +146,6 @@ def read_entry(record_id: str) -> dict[str, Any]:
 
 @app.patch("/v1/entries/{record_id}")
 def update_entry(record_id: str, patch: Patch) -> dict[str, Any]:
-    import json
     with SessionLocal() as db:
         row = get_row(db, record_id)
         if patch.data is not None:
@@ -161,3 +191,41 @@ def analytics_summary(days: int = Query(default=7, ge=1, le=365)) -> dict[str, A
         "by_kind": {kind: sum(1 for r in recent if r.kind == kind) for kind in sorted({r.kind for r in recent})},
         "active_dates": len({r.record_date for r in recent}),
     }
+
+
+@app.post("/v1/ai/chat")
+def ai_chat(request: AiChatRequest) -> dict[str, str]:
+    client = gemini_client()
+    context = json.dumps(request.context, separators=(",", ":"), default=str)
+    prompt = (
+        "You are SUNYA, a personal health and lifestyle planning assistant. "
+        "Use the supplied user context. Do not diagnose, prescribe medication, or claim medical certainty. "
+        "Prefer concise actionable guidance and explicitly distinguish estimates from measured data.\n\n"
+        "USER CONTEXT:\n" + context + "\n\nUSER MESSAGE:\n" + request.message
+    )
+    response = client.models.generate_content(model=gemini_model(), contents=prompt)
+    return {"text": response.text or "I could not generate a response."}
+
+
+@app.post("/v1/ai/plan", response_model=AiPlan)
+def ai_plan(request: AiPlanRequest) -> AiPlan:
+    client = gemini_client()
+    context = json.dumps(request.context, separators=(",", ":"), default=str)
+    prompt = (
+        "Create a one-day SUNYA plan from this context. "
+        "Do not diagnose or prescribe. Keep nutrition and hydration targets as estimates. "
+        "Return practical meals, workout guidance and actions.\n\nCONTEXT:\n" + context
+    )
+    from google.genai import types
+    response = client.models.generate_content(
+        model=gemini_model(),
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            response_mime_type="application/json",
+            response_schema=AiPlan,
+        ),
+    )
+    try:
+        return AiPlan.model_validate(json.loads(response.text))
+    except Exception as exc:
+        raise HTTPException(502, "Gemini returned an invalid SUNYA plan") from exc
