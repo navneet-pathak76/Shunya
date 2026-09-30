@@ -145,6 +145,15 @@ jobs:
           if n == 0:
               raise SystemExit("compileSdk declaration not found")
 
+          if "minSdk = 26" not in s:
+              s, n = re.subn(r"minSdk\s*=\s*[^\n]+", "minSdk = 26", s, count=1)
+              if n == 0:
+                  s = s.replace(
+                      "defaultConfig {",
+                      "defaultConfig {\n        minSdk = 26",
+                      1,
+                  )
+
           p.write_text(s)
           PY
 
