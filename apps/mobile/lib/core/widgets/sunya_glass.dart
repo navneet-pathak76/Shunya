@@ -1,8 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../settings/sunya_settings.dart';
 import '../theme/sunya_theme.dart';
 
-class SunyaGlassCard extends StatelessWidget {
+class SunyaGlassCard extends ConsumerWidget {
   const SunyaGlassCard({
     super.key,
     required this.child,
@@ -17,40 +20,63 @@ class SunyaGlassCard extends StatelessWidget {
   final double opacity;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
-    final surfaceOpacity = (opacity + (isDark ? 0.0 : 0.18)).clamp(0.0, 1.0).toDouble();
+    final settings = ref.watch(sunyaSettingsProvider);
+    final effectiveOpacity =
+        ((opacity * .35) + (settings.glassOpacity * .65))
+            .clamp(.12, .92)
+            .toDouble();
+    final surfaceOpacity =
+        (effectiveOpacity + (isDark ? 0 : .18)).clamp(0.0, 1.0).toDouble();
+
+    Widget card = Container(
+      padding: padding,
+      decoration: BoxDecoration(
+        color: scheme.surface.withOpacity(surfaceOpacity),
+        borderRadius: BorderRadius.circular(borderRadius),
+        border: Border.all(
+          color: scheme.primary.withOpacity(isDark ? .18 : .11),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: scheme.primary.withOpacity(isDark ? .20 : .10),
+            blurRadius: isDark ? 22 : 18,
+            spreadRadius: isDark ? -4 : 0,
+            offset: const Offset(0, 9),
+          ),
+        ],
+      ),
+      child: child,
+    );
+
+    if (settings.glassEnabled && settings.glassBlur > 0) {
+      card = BackdropFilter(
+        filter: ImageFilter.blur(
+          sigmaX: settings.glassBlur,
+          sigmaY: settings.glassBlur,
+        ),
+        child: card,
+      );
+    }
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-        child: Container(
-          padding: padding,
-          decoration: BoxDecoration(
-            color: scheme.surface.withOpacity(surfaceOpacity),
-            borderRadius: BorderRadius.circular(borderRadius),
-            border: Border.all(color: scheme.primary.withOpacity(isDark ? .16 : .10)),
-            boxShadow: [
-              BoxShadow(
-                color: scheme.primary.withOpacity(isDark ? .22 : .12),
-                blurRadius: isDark ? 24 : 20,
-                spreadRadius: isDark ? -4 : 0,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: child,
-        ),
-      ),
+      child: card,
     );
   }
 }
 
 class SunyaPrimaryButton extends StatelessWidget {
-  const SunyaPrimaryButton({super.key, required this.label, required this.onPressed, this.icon});
+  const SunyaPrimaryButton({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.icon,
+  });
+
   final String label;
   final VoidCallback? onPressed;
   final IconData? icon;
@@ -70,7 +96,9 @@ class SunyaPrimaryButton extends StatelessWidget {
           foregroundColor: scheme.onPrimary,
           shadowColor: scheme.primary.withOpacity(.24),
           elevation: 4,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(SunyaTheme.radiusMedium)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(SunyaTheme.radiusMedium),
+          ),
         ),
       ),
     );
@@ -78,7 +106,13 @@ class SunyaPrimaryButton extends StatelessWidget {
 }
 
 class SunyaSectionHeader extends StatelessWidget {
-  const SunyaSectionHeader({super.key, required this.title, this.action, this.onAction});
+  const SunyaSectionHeader({
+    super.key,
+    required this.title,
+    this.action,
+    this.onAction,
+  });
+
   final String title;
   final String? action;
   final VoidCallback? onAction;
@@ -86,8 +120,14 @@ class SunyaSectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
         children: [
-          Expanded(child: Text(title, style: Theme.of(context).textTheme.titleLarge)),
-          if (action != null) TextButton(onPressed: onAction, child: Text(action!)),
+          Expanded(
+            child: Text(
+              title,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+          ),
+          if (action != null)
+            TextButton(onPressed: onAction, child: Text(action!)),
         ],
       );
 }
