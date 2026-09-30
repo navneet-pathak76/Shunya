@@ -78,13 +78,18 @@ class _SunyaWelcomeGateState extends ConsumerState<SunyaWelcomeGate>
                 child: Padding(
                   padding: const EdgeInsets.all(22),
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 560),
+                    constraints: BoxConstraints(
+                      maxWidth: 560,
+                      maxHeight: MediaQuery.sizeOf(context).height - 44,
+                    ),
                     child: ScaleTransition(
                       scale: CurvedAnimation(
                         parent: _controller,
                         curve: Curves.easeOutCubic,
                       ),
-                      child: SunyaGlassCard(
+                      child: SingleChildScrollView(
+                        physics: const ClampingScrollPhysics(),
+                        child: SunyaGlassCard(
                         padding: const EdgeInsets.all(26),
                         borderRadius: 30,
                         opacity: .72,
@@ -198,6 +203,7 @@ class _SunyaWelcomeGateState extends ConsumerState<SunyaWelcomeGate>
                             ),
                           ],
                         ),
+                      ),
                       ),
                     ),
                   ),
