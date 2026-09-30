@@ -244,7 +244,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             max: max,
             divisions: ((max - min) * 10).round(),
             activeColor: SunyaTheme.blueBright,
-            onChanged: onChanged,
+            onChangeEnd: onChanged,
           ),
         ],
       );
