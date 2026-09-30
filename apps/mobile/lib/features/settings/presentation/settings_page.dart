@@ -119,7 +119,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   .90,
                   (v) => ref
                       .read(sunyaSettingsProvider.notifier)
-                      .setVisual(opacity: v),
+                      .previewVisual(opacity: v),
                   '${(s.glassOpacity * 100).round()}%',
                 ),
                 _slider(
@@ -130,7 +130,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   24,
                   (v) => ref
                       .read(sunyaSettingsProvider.notifier)
-                      .setVisual(blur: v),
+                      .previewVisual(blur: v),
                   '${s.glassBlur.round()} px',
                 ),
               ],
@@ -244,6 +244,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             max: max,
             divisions: ((max - min) * 10).round(),
             activeColor: SunyaTheme.blueBright,
+            onChanged: onChanged,
             onChangeEnd: onChanged,
           ),
         ],
