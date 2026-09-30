@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/services/ai/ai_gateway.dart';
 import '../../../core/services/ai/adaptive_health_engine.dart';
 import '../../../core/widgets/sunya_glass.dart';
+import '../../health_connect/presentation/health_connect_page.dart';
 import '../../body/presentation/body_controller.dart';
 import '../../hydration/presentation/hydration_controller.dart';
 import '../../nutrition/presentation/nutrition_controller.dart';
@@ -13,10 +14,11 @@ class _AiPageState extends ConsumerState<AiPage> {
   final input = TextEditingController(); final messages = <String>[]; bool loading = false;
   Future<void> ask() async {
     final q = input.text.trim(); if (q.isEmpty) return; input.clear(); setState(() { messages.add('You: ' + q); loading = true; });
-    final body = ref.read(bodyProvider); final hyd = ref.read(hydrationProvider); final nut = ref.read(nutritionProvider); final sleep = ref.read(sleepProvider); final dob = body.profile?.dateOfBirth;
+    final body = ref.read(bodyProvider); final hyd = ref.read(hydrationProvider); final nut = ref.read(nutritionProvider); final sleep = ref.read(sleepProvider);
+    final health = await ref.read(healthSnapshotProvider.future); final dob = body.profile?.dateOfBirth;
     final age = dob == null ? null : (DateTime.now().difference(dob).inDays / 365.25).floor();
     final plan = AdaptiveHealthEngine.build(HealthProfileInput(weightKg: body.weightKg, heightCm: body.heightCm, ageYears: age, sex: body.profile?.biologicalSex, hydrationMl: hyd.consumedMl, proteinConsumed: nut.protein, sleepHours: sleep.latest?.hours));
-    final remote = await SunyaAiGateway().chat(message: q, context: {'plan': {'recovery': plan.recoveryScore, 'priority': plan.priority, 'calories': plan.calorieTarget, 'protein': plan.proteinTarget, 'waterMl': plan.waterTargetMl}});
+    final remote = await SunyaAiGateway().chat(message: q, context: {'plan': {'recovery': plan.recoveryScore, 'priority': plan.priority, 'calories': plan.calorieTarget, 'protein': plan.proteinTarget, 'waterMl': plan.waterTargetMl, 'healthConnect': health.toAiContext()}});
     final answer = remote ?? ('SUNYA: ' + plan.priority + ' is the current priority. ' + plan.actions.first);
     if (mounted) setState(() { messages.add(answer); loading = false; });
   }
