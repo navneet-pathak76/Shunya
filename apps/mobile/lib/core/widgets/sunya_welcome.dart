@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,6 +17,7 @@ class SunyaWelcomeGate extends ConsumerStatefulWidget {
 class _SunyaWelcomeGateState extends ConsumerState<SunyaWelcomeGate>
     with SingleTickerProviderStateMixin {
   bool visible = false;
+  Timer? _showTimer;
   late final AnimationController _controller;
 
   static const quotes = [
@@ -43,6 +45,7 @@ class _SunyaWelcomeGateState extends ConsumerState<SunyaWelcomeGate>
 
   @override
   void dispose() {
+    _showTimer?.cancel();
     _controller.dispose();
     super.dispose();
   }
