@@ -93,11 +93,15 @@ class _SunyaWelcomeGateState extends ConsumerState<SunyaWelcomeGate>
                         opacity: .72,
                         child: SingleChildScrollView(
                           physics: const ClampingScrollPhysics(),
-                          child: Column(
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
+                            SizedBox(
+                              width: double.infinity,
+                              child: Row(
                               children: [
                                 Container(
                                   width: 46,
@@ -129,6 +133,7 @@ class _SunyaWelcomeGateState extends ConsumerState<SunyaWelcomeGate>
                                   icon: const Icon(Icons.close_rounded),
                                 ),
                               ],
+                              ),
                             ),
                             const SizedBox(height: 24),
                             Text(
@@ -202,6 +207,7 @@ class _SunyaWelcomeGateState extends ConsumerState<SunyaWelcomeGate>
                               ),
                             ),
                           ],
+                            ),
                           ),
                         ),
                       ),
