@@ -128,7 +128,6 @@ class _SunyaWelcomeGateState extends ConsumerState<SunyaWelcomeGate>
                                 ),
                                 const Spacer(),
                                 IconButton(
-                                  tooltip: 'Close',
                                   onPressed: close,
                                   icon: const Icon(Icons.close_rounded),
                                 ),
