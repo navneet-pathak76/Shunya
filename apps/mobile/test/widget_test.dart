@@ -7,9 +7,9 @@ void main() {
   testWidgets('SUNYA app boots and shows the app shell', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: SunyaApp()));
 
-    // The welcome overlay intentionally appears after a short startup delay.
-    // Verify the underlying app shell before that presentation animation begins.
-    await tester.pump(const Duration(milliseconds: 100));
+    // Allow the welcome startup timer and presentation animation to finish.
+    // The underlying app shell remains mounted beneath the overlay.
+    await tester.pump(const Duration(milliseconds: 1100));
 
     expect(find.byType(NavigationBar), findsOneWidget);
   });
