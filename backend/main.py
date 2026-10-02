@@ -3,9 +3,17 @@ from typing import Any, Literal
 
 import httpx
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 app = FastAPI(title="SUNYA AI", version="2.0.0")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=os.getenv('SUNYA_ALLOWED_ORIGINS', '*').split(','),
+    allow_credentials=False,
+    allow_methods=['*'],
+    allow_headers=['*'],
+)
 
 Provider = Literal["chatgpt", "gemini", "claude", "sunya"]
 
@@ -103,6 +111,18 @@ async def _claude(prompt: str) -> str:
         data = response.json()
         blocks = data.get("content", [])
         return "".join(block.get("text", "") for block in blocks if block.get("type") == "text") or "No response was generated."
+
+
+@app.get('/v1/ai/providers')
+def providers():
+    return {
+        'providers': [
+            {'id': 'chatgpt', 'configured': bool(os.getenv('OPENAI_API_KEY'))},
+            {'id': 'gemini', 'configured': bool(os.getenv('GEMINI_API_KEY'))},
+            {'id': 'claude', 'configured': bool(os.getenv('ANTHROPIC_API_KEY'))},
+            {'id': 'sunya', 'configured': bool(os.getenv('GEMINI_API_KEY'))},
+        ]
+    }
 
 
 @app.post("/v1/ai/chat")
