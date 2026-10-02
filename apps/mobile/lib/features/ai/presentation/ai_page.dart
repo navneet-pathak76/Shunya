@@ -145,7 +145,7 @@ class _AiPageState extends ConsumerState<AiPage> {
       ),
     );
 
-    final context = <String, dynamic>{
+    final aiContext = <String, dynamic>{
       'profile': {
         'name': settings.name,
         'age': settings.age,
@@ -251,7 +251,7 @@ class _AiPageState extends ConsumerState<AiPage> {
       message: q,
       provider: access.provider.key,
       idToken: access.idToken,
-      context: context,
+      context: aiContext,
     );
 
     final answer = remote ??
