@@ -26,10 +26,12 @@ class SunyaAiSettings {
   const SunyaAiSettings({
     this.provider = SunyaAiProvider.sunya,
     this.trialStartedAt,
+    this.premium = false,
   });
 
   final SunyaAiProvider provider;
   final DateTime? trialStartedAt;
+  final bool premium;
 
   bool get trialAvailable => trialStartedAt == null;
   bool get trialActive =>
@@ -58,25 +60,35 @@ class SunyaAiSettingsController extends StateNotifier<SunyaAiSettings> {
     final p = await SharedPreferences.getInstance();
     final value = p.getString('sunya.aiProvider') ?? 'sunya';
     final trial = p.getString('sunya.aiTrialStartedAt');
+    const adminEmail = String.fromEnvironment('SUNYA_ADMIN_EMAIL', defaultValue: '');
+    final accountEmail = p.getString('sunya.account.email') ?? '';
+    final admin = adminEmail.isNotEmpty && accountEmail.toLowerCase() == adminEmail.toLowerCase();
     state = SunyaAiSettings(
       provider: SunyaAiProvider.values.firstWhere(
         (x) => x.name == value,
         orElse: () => SunyaAiProvider.sunya,
       ),
       trialStartedAt: trial == null ? null : DateTime.tryParse(trial),
+      premium: admin || (p.getBool('sunya.aiPremium') ?? false),
     );
   }
 
   Future<void> select(SunyaAiProvider provider) async {
-    state = SunyaAiSettings(provider: provider, trialStartedAt: state.trialStartedAt);
+    state = SunyaAiSettings(provider: provider, trialStartedAt: state.trialStartedAt, premium: state.premium);
     final p = await SharedPreferences.getInstance();
     await p.setString('sunya.aiProvider', provider.name);
+  }
+
+  Future<void> setPremium(bool value) async {
+    state = SunyaAiSettings(provider: state.provider, trialStartedAt: state.trialStartedAt, premium: value);
+    final p = await SharedPreferences.getInstance();
+    await p.setBool('sunya.aiPremium', value);
   }
 
   Future<void> startTrial() async {
     if (!state.trialAvailable) return;
     final now = DateTime.now();
-    state = SunyaAiSettings(provider: SunyaAiProvider.sunya, trialStartedAt: now);
+    state = SunyaAiSettings(provider: SunyaAiProvider.sunya, trialStartedAt: now, premium: state.premium);
     final p = await SharedPreferences.getInstance();
     await Future.wait([
       p.setString('sunya.aiProvider', SunyaAiProvider.sunya.name),
