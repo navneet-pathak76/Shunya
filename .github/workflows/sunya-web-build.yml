@@ -1,5 +1,9 @@
 name: SUNYA Flutter Web Build
 
+concurrency:
+  group: sunya-sunya-web-build-main
+  cancel-in-progress: true
+
 on:
   push:
     branches: [main]
