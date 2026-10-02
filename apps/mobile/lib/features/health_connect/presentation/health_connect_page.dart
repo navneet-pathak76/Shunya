@@ -19,7 +19,9 @@ class _HealthConnectPageState extends ConsumerState<HealthConnectPage> {
   Future<void> connect() async {
     setState(() { loading = true; status = 'Checking supported health data…'; });
     try {
-      final ok = await ref.read(healthConnectServiceProvider).requestReadAccess();
+      final service = ref.read(healthConnectServiceProvider);
+      final ok = await service.requestReadAccess();
+      if (ok) await service.requestHistoryAccess();
       if (!mounted) return;
       setState(() {
         loading = false;
