@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../../../core/services/ai/ai_gateway.dart';
 import '../../../core/services/ai/adaptive_health_engine.dart';
-import '../../../core/services/ai/sunya_ai_settings.dart';
-import '../../../core/services/ai/personal_baseline_engine.dart';
+import '../../../core/services/ai/health_context_builder.dart';
+import '../../../core/services/ai/sunya_ai_provider.dart';
+import '../../../core/settings/sunya_settings.dart';
 import '../../../core/widgets/sunya_glass.dart';
 import '../../health_connect/presentation/health_connect_page.dart';
 import '../../body/presentation/body_controller.dart';
@@ -14,7 +14,8 @@ import '../../sleep/presentation/sleep_controller.dart';
 
 class AiPage extends ConsumerStatefulWidget {
   const AiPage({super.key});
-  @override ConsumerState<AiPage> createState() => _AiPageState();
+  @override
+  ConsumerState<AiPage> createState() => _AiPageState();
 }
 
 class _AiPageState extends ConsumerState<AiPage> {
@@ -24,109 +25,92 @@ class _AiPageState extends ConsumerState<AiPage> {
 
   Future<void> ask() async {
     final q = input.text.trim();
-    if (q.isEmpty) return;
+    if (q.isEmpty || loading) return;
     input.clear();
-    setState(() { messages.add('You: ' + q); loading = true; });
+    setState(() { messages.add('You: $q'); loading = true; });
 
     try {
+      final provider = ref.read(sunyaAiProviderControllerProvider);
+      final access = ref.read(sunyaAiAccessProvider);
+      if (provider == SunyaAiProvider.sunya && !access.premium && !access.trialActive) {
+        if (mounted) {
+          setState(() {
+            messages.add('SUNYA AI includes a 7-day free trial. Start the trial from the SUNYA AI plan screen to use the full personal intelligence layer.');
+            loading = false;
+          });
+        }
+        return;
+      }
+
       final body = ref.read(bodyProvider);
       final hyd = ref.read(hydrationProvider);
       final nut = ref.read(nutritionProvider);
       final sleep = ref.read(sleepProvider);
       final health = await ref.read(healthSnapshotProvider.future);
-      final ai = ref.read(sunyaAiSettingsProvider);
+      final settings = ref.read(sunyaSettingsProvider);
       final dob = body.profile?.dateOfBirth;
       final age = dob == null ? null : (DateTime.now().difference(dob).inDays / 365.25).floor();
 
-      final previousWeight = body.measurements.length > 1 ? body.measurements[body.measurements.length - 2].weightKg : null;
-      final previousBodyFat = body.measurements.length > 1 ? body.measurements[body.measurements.length - 2].bodyFatPercent : null;
-      final previousSleep = sleep.entries.length > 1 ? sleep.entries[1].hours : null;
       final plan = AdaptiveHealthEngine.build(
         HealthProfileInput(
-          weightKg: body.weightKg ?? health.weightKg,
-          heightCm: body.heightCm ?? health.heightCm,
+          weightKg: body.weightKg,
+          heightCm: body.heightCm,
           ageYears: age,
           sex: body.profile?.biologicalSex,
-          hydrationMl: hyd.consumedMl + health.waterMl.round(),
+          hydrationMl: hyd.consumedMl,
           proteinConsumed: nut.protein,
-          sleepHours: sleep.latest?.hours ?? (health.sleepHours == 0 ? null : health.sleepHours),
+          sleepHours: sleep.latest?.hours,
           dailySteps: health.steps,
-          goal: 'maintain',
+          goal: settings.goal,
         ),
       );
 
-      final baseline = PersonalBaselineEngine.build(
-        currentWeight: body.weightKg ?? health.weightKg,
-        previousWeight: previousWeight,
-        bodyFat: body.bodyFatPercent ?? health.bodyFatPercent,
-        previousBodyFat: previousBodyFat,
-        sleepHours: sleep.latest?.hours ?? (health.sleepHours == 0 ? null : health.sleepHours),
-        previousSleepHours: previousSleep,
-        steps: health.steps,
-        waterMl: hyd.consumedMl + health.waterMl,
-        waterTargetMl: plan.waterTargetMl.toDouble(),
-        restingHeartRate: health.restingHeartRate,
-        previousRestingHeartRate: health.restingHeartRate,
+      final context = SunyaHealthContextBuilder.build(
+        body: body,
+        hydration: hyd,
+        nutrition: nut,
+        sleep: sleep,
+        health: health,
+        name: settings.name,
+        goal: settings.goal,
       );
-
-      final context = {
-        'personalBaseline': baseline.toJson(),
-        'userProfile': {
-          'ageYears': age,
-          'weightKg': body.weightKg ?? health.weightKg,
-          'heightCm': body.heightCm ?? health.heightCm,
-          'bodyFatPercent': body.bodyFatPercent ?? health.bodyFatPercent,
-          'bmi': body.bmi ?? health.bmi,
-        },
-        'tracked': {
-          'hydrationMl': hyd.consumedMl,
-          'nutritionCalories': nut.calories,
-          'nutritionProtein': nut.protein,
-          'sleepHours': sleep.latest?.hours ?? health.sleepHours,
-        },
-        'healthConnect': health.toContext(),
-        'adaptivePlan': {
-          'recovery': plan.recoveryScore,
-          'priority': plan.priority,
-          'calories': plan.calorieTarget,
-          'protein': plan.proteinTarget,
-          'waterMl': plan.waterTargetMl,
-          'trainingMode': plan.trainingMode,
-          'actions': plan.actions,
-        },
-        'ai': {
-          'provider': ai.provider.name,
-          'sunyaTrialActive': ai.trialActive,
-        },
+      context['derivedPlan'] = {
+        'bmi': plan.bmi,
+        'bmr': plan.bmr,
+        'calorieTarget': plan.calorieTarget,
+        'proteinTarget': plan.proteinTarget,
+        'waterTargetMl': plan.waterTargetMl,
+        'recoveryScore': plan.recoveryScore,
+        'trainingMode': plan.trainingMode,
+        'priority': plan.priority,
+        'actions': plan.actions,
       };
 
       final remote = await SunyaAiGateway().chat(
         message: q,
-        provider: ai.provider,
+        provider: provider,
         context: context,
       );
       final answer = remote ??
-          'SUNYA: ' + plan.priority + ' is the current priority. ' + plan.actions.first;
+          'AI provider is not configured or temporarily unavailable. Current local analysis: ${plan.priority} is the main priority. ${plan.actions.first}';
       if (mounted) setState(() { messages.add(answer); loading = false; });
-    } catch (e) {
-      if (mounted) setState(() {
-        messages.add('SUNYA: I could not complete the health analysis. Check your connected data and try again.');
-        loading = false;
-      });
+    } catch (_) {
+      if (mounted) setState(() { messages.add('SUNYA could not complete the analysis. Your local health data is still stored on this device.'); loading = false; });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final ai = ref.watch(sunyaAiSettingsProvider);
+    final provider = ref.watch(sunyaAiProviderControllerProvider);
+    final access = ref.watch(sunyaAiAccessProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('SUNYA AI'),
         actions: [
           IconButton(
-            tooltip: 'AI providers',
-            onPressed: () => context.push('/ai/providers'),
-            icon: const Icon(Icons.tune_rounded),
+            tooltip: 'SUNYA AI plan',
+            onPressed: () => Navigator.of(context).pushNamed('/subscription'),
+            icon: const Icon(Icons.workspace_premium_rounded),
           ),
         ],
       ),
@@ -134,16 +118,41 @@ class _AiPageState extends ConsumerState<AiPage> {
         children: [
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
               children: [
                 Text('Personal intelligence', style: Theme.of(context).textTheme.displaySmall),
                 const SizedBox(height: 8),
-                Text('Provider: ' + ai.provider.label),
-                const SizedBox(height: 12),
-                if (ai.provider == SunyaAiProvider.sunya && ai.trialActive)
-                  SunyaGlassCard(child: Text('SUNYA AI trial • ' + ai.trialDaysRemaining.toString() + ' days remaining')),
+                const Text('One context layer combines Health Connect with everything you manually record in SUNYA. The selected AI analyses that combined history.'),
+                const SizedBox(height: 16),
+                SunyaGlassCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Choose AI', style: Theme.of(context).textTheme.titleLarge),
+                      const SizedBox(height: 10),
+                      DropdownButtonFormField<SunyaAiProvider>(
+                        value: provider,
+                        decoration: const InputDecoration(labelText: 'AI provider'),
+                        items: SunyaAiProvider.values.map((p) => DropdownMenuItem(
+                          value: p,
+                          child: Text(p.label),
+                        )).toList(),
+                        onChanged: (value) {
+                          if (value != null) ref.read(sunyaAiProviderControllerProvider.notifier).select(value);
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      Text(provider.description),
+                      if (provider == SunyaAiProvider.sunya) ...[
+                        const SizedBox(height: 8),
+                        Text(access.trialActive ? 'SUNYA AI trial active' : access.premium ? 'SUNYA AI premium active' : '7-day free trial available'),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
                 if (messages.isEmpty)
-                  const SunyaGlassCard(child: Text('Ask: “What should I focus on today?”')),
+                  const SunyaGlassCard(child: Text('Ask: “What is changing in my body, recovery, nutrition and sleep, and what should I focus on today?”')),
                 ...messages.map((m) => Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: SunyaGlassCard(child: Text(m)),
@@ -153,13 +162,23 @@ class _AiPageState extends ConsumerState<AiPage> {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-            child: Row(children: [
-              Expanded(child: TextField(controller: input, decoration: const InputDecoration(hintText: 'Ask about your body, health or routine…'))),
-              IconButton(
-                onPressed: loading ? null : ask,
-                icon: loading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.send),
-              ),
-            ]),
+            child: Row(
+              children: [
+                Expanded(child: TextField(
+                  controller: input,
+                  minLines: 1,
+                  maxLines: 4,
+                  textInputAction: TextInputAction.newline,
+                  decoration: const InputDecoration(hintText: 'Ask about your health…'),
+                )),
+                IconButton(
+                  onPressed: loading ? null : ask,
+                  icon: loading
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                      : const Icon(Icons.send_rounded),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -167,5 +186,8 @@ class _AiPageState extends ConsumerState<AiPage> {
   }
 
   @override
-  void dispose() { input.dispose(); super.dispose(); }
+  void dispose() {
+    input.dispose();
+    super.dispose();
+  }
 }
