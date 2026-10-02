@@ -2,264 +2,171 @@ import os
 from typing import Any, Literal
 
 import httpx
-import sqlite3
-from datetime import datetime, timedelta, timezone
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
-app = FastAPI(title="SUNYA AI", version="2.1.0")
+app = FastAPI(title="SUNYA AI", version="2.0.0")
 
-DB_PATH = os.getenv("SUNYA_DB_PATH", "sunya_accounts.sqlite3")
-
-
-def _db():
-    conn = sqlite3.connect(DB_PATH)
-    conn.execute(
-        """CREATE TABLE IF NOT EXISTS accounts (
-            email TEXT PRIMARY KEY,
-            trial_started_at TEXT NOT NULL,
-            subscription_active INTEGER NOT NULL DEFAULT 0
-        )"""
-    )
-    conn.commit()
-    return conn
-
-
-def _verify_google_token(authorization: str | None) -> dict[str, Any]:
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Google authentication required")
-
-    token = authorization.removeprefix("Bearer ").strip()
-    audience = os.getenv("GOOGLE_WEB_CLIENT_ID", "").strip()
-    if not audience:
-        raise HTTPException(
-            status_code=503,
-            detail="Google authentication is not configured on the server",
-        )
-
-    try:
-        from google.oauth2 import id_token
-        from google.auth.transport import requests
-
-        info = id_token.verify_oauth2_token(
-            token,
-            requests.Request(),
-            audience=audience,
-        )
-        if not info.get("email"):
-            raise ValueError("Google token has no email")
-        return info
-    except Exception as exc:
-        raise HTTPException(status_code=401, detail="Invalid Google identity token") from exc
-
-
-def _entitlement(email: str) -> dict[str, Any]:
-    now = datetime.now(timezone.utc)
-    conn = _db()
-    row = conn.execute(
-        "SELECT trial_started_at, subscription_active FROM accounts WHERE email = ?",
-        (email.lower(),),
-    ).fetchone()
-    if row is None:
-        trial = now
-        conn.execute(
-            "INSERT INTO accounts(email, trial_started_at, subscription_active) VALUES (?, ?, 0)",
-            (email.lower(), trial.isoformat()),
-        )
-        conn.commit()
-        subscription = False
-    else:
-        trial = datetime.fromisoformat(row[0])
-        subscription = bool(row[1])
-    conn.close()
-
-    admins = {
-        value.strip().lower()
-        for value in os.getenv("SUNYA_ADMIN_EMAILS", "").split(",")
-        if value.strip()
-    }
-    admin = email.lower() in admins
-    trial_active = now < trial + timedelta(days=7)
-    return {
-        "email": email,
-        "admin": admin,
-        "trialActive": trial_active,
-        "trialDaysRemaining": max(
-            0,
-            (trial + timedelta(days=7) - now).days
-            + (1 if now < trial + timedelta(days=7) else 0),
-        ),
-        "subscriptionActive": subscription,
-        "sunyaUnlocked": admin or trial_active or subscription,
-    }
+Provider = Literal["chatgpt", "gemini", "claude", "sunya"]
 
 
 class ChatRequest(BaseModel):
     message: str
-    provider: Literal["chatgpt", "gemini", "claude", "sunya"] = "sunya"
+    provider: Provider = "sunya"
     context: dict[str, Any] = Field(default_factory=dict)
 
 
-def _system_prompt(provider: str) -> str:
-    base = """You are SUNYA, a personal health intelligence system.
-Analyze the complete supplied user context before answering.
-Balance the whole body rather than optimizing one metric in isolation.
-Use measured/tracked data when available and clearly label estimates.
-Never invent missing measurements.
-Compare trends and interactions across activity, body composition, sleep, hydration, nutrition, vitals and user-entered observations when present.
-Do not diagnose disease or present a medical conclusion as certainty.
-For potentially concerning measurements, explain the limitation and recommend appropriate professional care.
-Keep the response practical, structured and personalized."""
-    if provider == "sunya":
-        return base + """
-You are the SUNYA layer, so synthesize the data into a coherent personal plan:
-1. what the data says,
-2. what appears balanced or out of balance,
-3. the highest-impact actions,
-4. what to track next,
-5. any safety flags.
-Do not reduce the answer to generic wellness advice."""
-    return base
-
-
-def _context_prompt(request: ChatRequest) -> str:
-    return f"""USER HEALTH CONTEXT:
-{request.context}
-
-USER QUESTION:
-{request.message}
-"""
+class GoogleAuthRequest(BaseModel):
+    id_token: str
 
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "service": "sunya-ai"}
+    return {"status": "ok", "service": "sunya-ai", "version": "2.0.0"}
 
 
 @app.get("/v1/ai/providers")
 def providers():
     return {
-        "providers": {
-            "chatgpt": bool(os.getenv("OPENAI_API_KEY", "").strip()),
-            "gemini": bool(os.getenv("GEMINI_API_KEY", "").strip()),
-            "claude": bool(os.getenv("ANTHROPIC_API_KEY", "").strip()),
-            "sunya": bool(os.getenv("GEMINI_API_KEY", "").strip()),
-        }
+        "chatgpt": bool(os.getenv("OPENAI_API_KEY")),
+        "gemini": bool(os.getenv("GEMINI_API_KEY")),
+        "claude": bool(os.getenv("ANTHROPIC_API_KEY")),
+        "sunya": bool(os.getenv("SUNYA_AI_ENABLED", "true").lower() == "true")
+        and bool(os.getenv("GEMINI_API_KEY")),
     }
 
 
-async def _gemini(prompt: str) -> str:
-    api_key = os.getenv("GEMINI_API_KEY", "").strip()
-    if not api_key:
+@app.post("/v1/auth/google")
+def google_auth(request: GoogleAuthRequest):
+    audience = os.getenv("GOOGLE_WEB_CLIENT_ID", "").strip()
+    if not audience:
+        raise HTTPException(status_code=503, detail="Google backend client ID is not configured")
+    try:
+        from google.auth.transport import requests as google_requests
+        from google.oauth2 import id_token
+
+        info = id_token.verify_oauth2_token(
+            request.id_token,
+            google_requests.Request(),
+            audience,
+        )
+        return {
+            "id": info["sub"],
+            "email": info.get("email"),
+            "name": info.get("name"),
+            "emailVerified": bool(info.get("email_verified")),
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=401, detail="Invalid Google identity token") from exc
+
+
+def _health_system(provider: str) -> str:
+    if provider == "sunya":
+        return """You are SUNYA AI, a personal health intelligence system.
+Analyze the user's supplied longitudinal health context as a connected system.
+Prioritize trends, relationships between metrics, recovery, activity, sleep, hydration,
+nutrition, body composition and user-entered notes. Distinguish measured data from
+estimates. Never invent values. Do not diagnose disease. If data may indicate a
+concerning medical issue, explain the measurement neutrally and recommend appropriate
+professional care. Give practical next actions and state what additional data would
+improve confidence."""
+    return """You are an AI provider inside SUNYA, a personal health application.
+Use the supplied health context to personalize the answer. Never invent missing
+measurements. Distinguish tracked data from estimates. Do not diagnose disease or
+present medical conclusions as certainty. Give concise, practical guidance."""
+
+
+async def _chatgpt(message: str, context: dict[str, Any]) -> str:
+    key = os.getenv("OPENAI_API_KEY", "").strip()
+    if not key:
+        raise HTTPException(status_code=503, detail="ChatGPT provider is not configured")
+    model = os.getenv("OPENAI_MODEL", "gpt-5.6")
+    payload = {
+        "model": model,
+        "input": [
+            {"role": "system", "content": _health_system("chatgpt")},
+            {"role": "user", "content": f"HEALTH CONTEXT:\n{context}\n\nQUESTION:\n{message}"},
+        ],
+        "store": False,
+    }
+    async with httpx.AsyncClient(timeout=60) as client:
+        response = await client.post(
+            "https://api.openai.com/v1/responses",
+            headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+            json=payload,
+        )
+    if response.status_code >= 400:
+        raise HTTPException(status_code=502, detail="ChatGPT provider request failed")
+    data = response.json()
+    if data.get("output_text"):
+        return data["output_text"]
+    for item in data.get("output", []):
+        for content in item.get("content", []):
+            if content.get("type") == "output_text":
+                return content.get("text", "")
+    return "The provider returned no text."
+
+
+async def _gemini(message: str, context: dict[str, Any], sunya: bool = False) -> str:
+    key = os.getenv("GEMINI_API_KEY", "").strip()
+    if not key:
         raise HTTPException(status_code=503, detail="Gemini provider is not configured")
     try:
         from google import genai
-
-        client = genai.Client(api_key=api_key)
-        response = await client.aio.models.generate_content(
-            model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
-            contents=prompt,
+        client = genai.Client(api_key=key)
+        model = os.getenv(
+            "SUNYA_GEMINI_MODEL" if sunya else "GEMINI_MODEL",
+            "gemini-2.5-flash",
         )
-        return response.text or "I could not generate an answer right now."
+        response = await client.aio.models.generate_content(
+            model=model,
+            contents=f"{_health_system('sunya' if sunya else 'gemini')}\n\nHEALTH CONTEXT:\n{context}\n\nQUESTION:\n{message}",
+        )
+        return response.text or "The provider returned no text."
     except HTTPException:
         raise
     except Exception as exc:
         raise HTTPException(status_code=502, detail="Gemini provider request failed") from exc
 
 
-async def _openai(prompt: str) -> str:
-    api_key = os.getenv("OPENAI_API_KEY", "").strip()
-    if not api_key:
-        raise HTTPException(status_code=503, detail="ChatGPT provider is not configured")
-    payload = {
-        "model": os.getenv("OPENAI_MODEL", "gpt-5.5"),
-        "input": prompt,
-    }
-    try:
-        async with httpx.AsyncClient(timeout=90) as client:
-            response = await client.post(
-                "https://api.openai.com/v1/responses",
-                headers={
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json",
-                },
-                json=payload,
-            )
-        response.raise_for_status()
-        data = response.json()
-        output = data.get("output_text")
-        if output:
-            return output
-        for item in data.get("output", []):
-            for content in item.get("content", []):
-                if content.get("type") == "output_text" and content.get("text"):
-                    return content["text"]
-        return "I could not generate an answer right now."
-    except HTTPException:
-        raise
-    except Exception as exc:
-        raise HTTPException(status_code=502, detail="ChatGPT provider request failed") from exc
-
-
-async def _claude(prompt: str) -> str:
-    api_key = os.getenv("ANTHROPIC_API_KEY", "").strip()
-    if not api_key:
+async def _claude(message: str, context: dict[str, Any]) -> str:
+    key = os.getenv("ANTHROPIC_API_KEY", "").strip()
+    if not key:
         raise HTTPException(status_code=503, detail="Claude provider is not configured")
+    model = os.getenv("CLAUDE_MODEL", "claude-sonnet-4-5")
     payload = {
-        "model": os.getenv("ANTHROPIC_MODEL", "claude-sonnet-5-5"),
-        "max_tokens": int(os.getenv("ANTHROPIC_MAX_TOKENS", "1800")),
-        "system": _system_prompt("claude"),
-        "messages": [{"role": "user", "content": prompt}],
+        "model": model,
+        "max_tokens": 1200,
+        "system": _health_system("claude"),
+        "messages": [
+            {"role": "user", "content": f"HEALTH CONTEXT:\n{context}\n\nQUESTION:\n{message}"}
+        ],
     }
-    try:
-        async with httpx.AsyncClient(timeout=90) as client:
-            response = await client.post(
-                "https://api.anthropic.com/v1/messages",
-                headers={
-                    "x-api-key": api_key,
-                    "anthropic-version": "2023-06-01",
-                    "content-type": "application/json",
-                },
-                json=payload,
-            )
-        response.raise_for_status()
-        data = response.json()
-        for block in data.get("content", []):
-            if block.get("type") == "text" and block.get("text"):
-                return block["text"]
-        return "I could not generate an answer right now."
-    except HTTPException:
-        raise
-    except Exception as exc:
-        raise HTTPException(status_code=502, detail="Claude provider request failed") from exc
+    async with httpx.AsyncClient(timeout=60) as client:
+        response = await client.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={
+                "x-api-key": key,
+                "anthropic-version": "2023-06-01",
+                "content-type": "application/json",
+            },
+            json=payload,
+        )
+    if response.status_code >= 400:
+        raise HTTPException(status_code=502, detail="Claude provider request failed")
+    data = response.json()
+    parts = data.get("content", [])
+    return "".join(part.get("text", "") for part in parts if part.get("type") == "text") or "The provider returned no text."
 
 
 @app.post("/v1/ai/chat")
-async def chat(request: ChatRequest, authorization: str | None = Header(default=None)):
-    identity = _verify_google_token(authorization)
-    access = _entitlement(str(identity["email"]))
-    if request.provider == "sunya" and not access["sunyaUnlocked"]:
-        raise HTTPException(status_code=402, detail="SUNYA AI subscription required")
-    prompt = _system_prompt(request.provider) + "\n\n" + _context_prompt(request)
-
-    if request.provider in {"gemini", "sunya"}:
-        text = await _gemini(prompt)
-    elif request.provider == "chatgpt":
-        text = await _openai(prompt)
+async def chat(request: ChatRequest):
+    if request.provider == "chatgpt":
+        text = await _chatgpt(request.message, request.context)
+    elif request.provider == "gemini":
+        text = await _gemini(request.message, request.context)
     elif request.provider == "claude":
-        text = await _claude(prompt)
+        text = await _claude(request.message, request.context)
     else:
-        raise HTTPException(status_code=400, detail="Unsupported AI provider")
-
-    return {
-        "text": text,
-        "provider": request.provider,
-        "analysis": "whole_body_context",
-        "entitlement": access,
-    }
-
-
-@app.get("/v1/account/session")
-async def account_session(authorization: str | None = Header(default=None)):
-    identity = _verify_google_token(authorization)
-    return _entitlement(str(identity["email"]))
+        text = await _gemini(request.message, request.context, sunya=True)
+    return {"text": text, "provider": request.provider}
