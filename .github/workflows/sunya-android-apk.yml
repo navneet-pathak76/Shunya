@@ -1,8 +1,7 @@
 name: SUNYA Android APK Build
-# Production Android release pipeline
 
 concurrency:
-  group: sunya-sunya-android-apk-main
+  group: sunya-android-main
   cancel-in-progress: true
 
 on:
@@ -46,7 +45,7 @@ jobs:
       - name: Generate Isar sources
         run: dart run build_runner build --delete-conflicting-outputs
 
-      - name: Configure Health Connect native project
+      - name: Configure Health Connect
         shell: bash
         run: |
           set -euo pipefail
@@ -61,132 +60,57 @@ jobs:
               "android.permission.health.READ_STEPS",
               "android.permission.health.READ_WEIGHT",
               "android.permission.health.READ_HEIGHT",
+              "android.permission.health.READ_BODY_FAT",
+              "android.permission.health.READ_BODY_MASS_INDEX",
               "android.permission.health.READ_HEART_RATE",
               "android.permission.health.READ_RESTING_HEART_RATE",
               "android.permission.health.READ_HEART_RATE_VARIABILITY",
-              "android.permission.health.READ_BLOOD_OXYGEN",
-              "android.permission.health.READ_HYDRATION",
-              "android.permission.health.READ_SLEEP",
-              "android.permission.health.READ_ACTIVE_CALORIES_BURNED",
-              "android.permission.health.READ_TOTAL_CALORIES_BURNED",
-              "android.permission.health.READ_DISTANCE",
-              "android.permission.health.READ_EXERCISE",
-              "android.permission.health.READ_NUTRITION",
-              "android.permission.health.READ_HEALTH_DATA_HISTORY",
-              "android.permission.health.READ_BODY_FAT",
-              "android.permission.health.READ_BODY_MASS_INDEX",
+              "android.permission.health.READ_OXYGEN_SATURATION",
               "android.permission.health.READ_BLOOD_PRESSURE",
               "android.permission.health.READ_BLOOD_GLUCOSE",
               "android.permission.health.READ_BODY_TEMPERATURE",
               "android.permission.health.READ_RESPIRATORY_RATE",
-              "android.permission.health.READ_BODY_WATER_MASS",
-              "android.permission.health.READ_BASAL_METABOLIC_RATE",
-              "android.permission.health.READ_BASAL_BODY_TEMPERATURE",
-          ] Android APK Build
-
-concurrency:
-  group: sunya-sunya-android-apk-main
-  cancel-in-progress: true
-
-on:
-  workflow_dispatch:
-  push:
-    branches: [main]
-
-permissions:
-  contents: read
-
-jobs:
-  build-apk:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/mobile
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.47.4"
-          channel: stable
-          cache: true
-
-      - name: Generate Android platform
-        run: flutter create --platforms=android .
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Generate Isar sources
-        run: dart run build_runner build --delete-conflicting-outputs
-
-      - name: Configure Health Connect native project
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-
-          manifest = Path("android/app/src/main/AndroidManifest.xml")
-          s = manifest.read_text()
-
-          permissions = [
-              "android.permission.ACTIVITY_RECOGNITION",
-              "android.permission.health.READ_STEPS",
-              "android.permission.health.READ_WEIGHT",
-              "android.permission.health.READ_HEIGHT",
-              "android.permission.health.READ_HEART_RATE",
-              "android.permission.health.READ_RESTING_HEART_RATE",
-              "android.permission.health.READ_HEART_RATE_VARIABILITY",
-              "android.permission.health.READ_BLOOD_OXYGEN",
               "android.permission.health.READ_HYDRATION",
               "android.permission.health.READ_SLEEP",
               "android.permission.health.READ_ACTIVE_CALORIES_BURNED",
+              "android.permission.health.READ_BASAL_ENERGY_BURNED",
               "android.permission.health.READ_TOTAL_CALORIES_BURNED",
-              "android.permission.health.READ_DISTANCE",
               "android.permission.health.READ_EXERCISE",
               "android.permission.health.READ_NUTRITION",
-              "android.permission.health.READ_HEALTH_DATA_HISTORY",\n              "android.permission.health.READ_HEIGHT",\n              "android.permission.health.READ_BODY_FAT",
-              "android.permission.health.READ_BODY_MASS_INDEX",\n              "android.permission.health.READ_BLOOD_PRESSURE",\n              "android.permission.health.READ_BLOOD_GLUCOSE",\n              "android.permission.health.READ_BODY_TEMPERATURE",\n              "android.permission.health.READ_RESPIRATORY_RATE",\n              "android.permission.health.READ_BODY_WATER_MASS",\n              "android.permission.health.READ_BASAL_METABOLIC_RATE",\n              "android.permission.health.READ_BASAL_BODY_TEMPERATURE",\n              "android.permission.health.READ_BLOOD_PRESSURE",\n          ]
+              "android.permission.health.READ_BODY_WATER_MASS",
+              "android.permission.health.READ_BASAL_METABOLIC_RATE",
+              "android.permission.health.READ_HEALTH_DATA_HISTORY",
+          ]
 
           for permission in permissions:
-              tag = f'<uses-permission android:name="{permission}"/>'
+              tag = f'<uses-permission android:name="{permission}" />'
               if tag not in s:
                   s = s.replace("</manifest>", f"    {tag}\n</manifest>", 1)
 
-          queries = '''    <queries>
-              <package android:name="com.google.android.apps.healthdata" />
-              <intent>
-                  <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
-              </intent>
-          </queries>
-          '''
           if "<queries>" not in s:
+              queries = """    <queries>
+                <package android:name="com.google.android.apps.healthdata" />
+                <intent>
+                    <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+                </intent>
+            </queries>
+            """
               s = s.replace("</manifest>", queries + "</manifest>", 1)
 
           manifest.write_text(s)
 
           main = next(Path("android/app/src/main/kotlin").rglob("MainActivity.kt"), None)
           if main:
-              s = main.read_text()
-              s = s.replace(
+              text = main.read_text()
+              text = text.replace(
                   "import io.flutter.embedding.android.FlutterActivity",
                   "import io.flutter.embedding.android.FlutterFragmentActivity",
               )
-              s = s.replace("FlutterActivity", "FlutterFragmentActivity")
-              main.write_text(s)
+              text = text.replace("FlutterActivity", "FlutterFragmentActivity")
+              main.write_text(text)
           PY
 
-      - name: Patch legacy Isar Android namespace
+      - name: Patch legacy Isar namespace
         shell: bash
         run: |
           set -euo pipefail
@@ -207,39 +131,19 @@ jobs:
           s = p.read_text()
 
           if "isCoreLibraryDesugaringEnabled = true" not in s:
-              if "compileOptions {" in s:
-                  s = s.replace(
-                      "compileOptions {",
-                      "compileOptions {\n        isCoreLibraryDesugaringEnabled = true",
-                      1,
-                  )
-              else:
-                  s = s.replace(
-                      "android {",
-                      "android {\n    compileOptions {\n        isCoreLibraryDesugaringEnabled = true\n    }",
-                      1,
-                  )
+              s = s.replace(
+                  "android {",
+                  "android {\n    compileOptions {\n        isCoreLibraryDesugaringEnabled = true\n    }",
+                  1,
+              )
 
           dep = 'coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")'
           if dep not in s:
-              if "dependencies {" in s:
-                  s = s.replace("dependencies {", "dependencies {\n    " + dep, 1)
-              else:
-                  s += "\n\ndependencies {\n    " + dep + "\n}\n"
+              s = s.replace("dependencies {", "dependencies {\n    " + dep, 1)
 
-          s, n = re.subn(r"compileSdk\s*=\s*[^\n]+", "compileSdk = 36", s, count=1)
-          if n == 0:
-              raise SystemExit("compileSdk declaration not found")
-
+          s = re.sub(r"compileSdk\s*=\s*[^\n]+", "compileSdk = 36", s, count=1)
           if "minSdk = 26" not in s:
-              s, n = re.subn(r"minSdk\s*=\s*[^\n]+", "minSdk = 26", s, count=1)
-              if n == 0:
-                  s = s.replace(
-                      "defaultConfig {",
-                      "defaultConfig {\n        minSdk = 26",
-                      1,
-                  )
-
+              s = re.sub(r"minSdk\s*=\s*[^\n]+", "minSdk = 26", s, count=1)
           p.write_text(s)
           PY
 
@@ -258,16 +162,29 @@ jobs:
               s = re.sub(r"compileSdk\s+\d+", "compileSdk 36", s)
               p.write_text(s)
 
-      - name: Build release APK
-        run: flutter build apk --release
+      - name: Analyze Flutter project
+        run: flutter analyze
 
-      - name: Verify APK output
+      - name: Run Flutter tests
+        run: flutter test
+
+      - name: Build release APK
+        run: |
+          flutter build apk --release \
+            --dart-define=GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID:-}" \
+            --dart-define=GOOGLE_SERVER_CLIENT_ID="${GOOGLE_SERVER_CLIENT_ID:-}" 
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_SERVER_CLIENT_ID: ${{ secrets.GOOGLE_SERVER_CLIENT_ID }}
+
+      - name: Verify APK
         shell: bash
         run: |
           set -euo pipefail
           APK="build/app/outputs/flutter-apk/app-release.apk"
           test -s "$APK"
           file "$APK"
+          sha256sum "$APK"
           ls -lh "$APK"
 
       - name: Upload SUNYA APK
