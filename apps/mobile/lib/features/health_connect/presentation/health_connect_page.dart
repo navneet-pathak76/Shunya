@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-
 import '../data/health_connect_service.dart';
 import '../../../core/widgets/sunya_glass.dart';
 
 final healthConnectServiceProvider = Provider((ref) => SunyaHealthConnectService());
-final healthSnapshotProvider =
-    FutureProvider<SunyaHealthSnapshot>((ref) => ref.watch(healthConnectServiceProvider).sync());
+final healthSnapshotProvider = FutureProvider<SunyaHealthSnapshot>((ref) => ref.watch(healthConnectServiceProvider).sync());
 
 class HealthConnectPage extends ConsumerStatefulWidget {
   const HealthConnectPage({super.key});
-
   @override
   ConsumerState<HealthConnectPage> createState() => _HealthConnectPageState();
 }
@@ -19,38 +15,25 @@ class HealthConnectPage extends ConsumerStatefulWidget {
 class _HealthConnectPageState extends ConsumerState<HealthConnectPage> {
   bool loading = false;
   String status = 'Connect Google Health Connect to import permitted data.';
-  bool historyAuthorized = false;
 
   Future<void> connect() async {
-    setState(() => loading = true);
+    setState(() { loading = true; status = 'Checking supported health data…'; });
     try {
-      final available = await ref.read(healthConnectServiceProvider).available;
-      if (!available) {
-        if (mounted) {
-          setState(() {
-            loading = false;
-            status = 'Health Connect is not available on this device.';
-          });
-        }
-        return;
-      }
-
       final ok = await ref.read(healthConnectServiceProvider).requestReadAccess();
       if (!mounted) return;
       setState(() {
         loading = false;
         status = ok
-            ? 'Health Connect connected. SUNYA will use only the permissions you grant.'
-            : 'Permission was not granted. You can retry or manage access in Health Connect.';
+            ? 'Connected. SUNYA can now analyse the data you approved.'
+            : 'No supported permissions were granted. Retry or manage access in Health Connect.';
       });
       if (ok) ref.invalidate(healthSnapshotProvider);
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          loading = false;
-          status = 'Health Connect connection failed: ' + e.toString();
-        });
-      }
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        loading = false;
+        status = 'Health Connect could not complete the connection. Try again after opening Health Connect.';
+      });
     }
   }
 
@@ -61,126 +44,69 @@ class _HealthConnectPageState extends ConsumerState<HealthConnectPage> {
       appBar: AppBar(
         title: const Text('Health Hub'),
         actions: [
-          IconButton(
-            tooltip: 'Sync',
-            onPressed: () => ref.invalidate(healthSnapshotProvider),
-            icon: const Icon(Icons.sync_rounded),
-          ),
+          IconButton(onPressed: () => ref.invalidate(healthSnapshotProvider), icon: const Icon(Icons.sync_rounded)),
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, 32),
         children: [
-          Text('Health data', style: Theme.of(context).textTheme.displaySmall),
+          Text('Google Health data', style: Theme.of(context).textTheme.displaySmall),
           const SizedBox(height: 8),
-          const Text(
-            'Option 1: import data from Google Health Connect. Option 2: enter data directly in SUNYA. '
-            'Both sources become part of the same personal health context for analysis.',
+          Text(
+            'SUNYA reads supported data from Android Health Connect. You choose the permissions; unavailable data types are skipped instead of blocking the connection.',
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 18),
-          FilledButton.icon(
+          SunyaPrimaryButton(
+            label: loading ? 'Connecting…' : 'Connect Google Health',
             onPressed: loading ? null : connect,
-            icon: const Icon(Icons.health_and_safety_outlined),
-            label: Text(loading ? 'Connecting…' : 'Connect Google Health Connect'),
-          ),
-          OutlinedButton.icon(
-            onPressed: () => context.push('/body'),
-            icon: const Icon(Icons.edit_note_rounded),
-            label: const Text('Enter health data manually'),
-          ),
-          const SizedBox(height: 8),
-          FutureBuilder<bool>(
-            future: ref.read(healthConnectServiceProvider).historyAuthorized,
-            builder: (context, history) {
-              final enabled = history.data ?? false;
-              return OutlinedButton.icon(
-                onPressed: enabled
-                    ? null
-                    : () async {
-                        final ok = await ref.read(healthConnectServiceProvider).requestHistoryAccess();
-                        if (!context.mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(ok ? 'Historical health access enabled.' : 'Historical access was not granted.')),
-                        );
-                        if (ok) ref.invalidate(healthSnapshotProvider);
-                      },
-                icon: const Icon(Icons.history_rounded),
-                label: Text(enabled ? 'Historical data enabled' : 'Enable historical data'),
-              );
-            },
+            icon: Icons.favorite_rounded,
           ),
           const SizedBox(height: 10),
           Text(status),
-          const SizedBox(height: 16),
+          const SizedBox(height: 18),
           snapshot.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => SunyaGlassCard(
-              child: Text('Health data unavailable: ' + e.toString()),
-            ),
+            loading: () => const Center(child: Padding(padding: EdgeInsets.all(30), child: CircularProgressIndicator())),
+            error: (e, _) => SunyaGlassCard(child: Text('Health data unavailable: $e')),
             data: (s) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _group(
-                  context,
-                  'Movement',
-                  [
-                    _Metric('Steps', s.steps.toString()),
-                    _Metric('Distance', _distance(s.distanceMeters)),
-                    _Metric('Exercise', s.exerciseMinutes.toStringAsFixed(0) + ' min'),
-                    _Metric('Active kcal', s.activeCalories.round().toString()),
-                    _Metric('Total kcal', s.totalCalories.round().toString()),
-                  ],
-                ),
-                _group(
-                  context,
-                  'Body',
-                  [
-                    _Metric('Weight', _number(s.weightKg, 'kg')),
-                    _Metric('Height', _number(s.heightCm, 'cm')),
-                    _Metric('Body fat', _number(s.bodyFatPercent, '%')),
-                    _Metric('BMI', _number(s.bmi, '')),
-                    _Metric('Waist', _number(s.waistCm, 'cm')),
-                    _Metric('Body water', _number(s.bodyWaterKg, 'kg')),
-                  ],
-                ),
-                _group(
-                  context,
-                  'Vitals',
-                  [
-                    _Metric('Heart rate', _number(s.heartRate, 'bpm')),
-                    _Metric('Resting HR', _number(s.restingHeartRate, 'bpm')),
-                    _Metric('HRV', _number(s.hrv, 'ms')),
-                    _Metric('SpO₂', _number(s.oxygen, '%')),
-                    _Metric('Blood pressure', _bp(s)),
-                    _Metric('Glucose', _number(s.bloodGlucose, 'mg/dL')),
-                    _Metric('Temperature', _number(s.bodyTemperature, '°C')),
-                    _Metric('Respiratory', _number(s.respiratoryRate, '/min')),
-                  ],
-                ),
-                _group(
-                  context,
-                  'Recovery & nutrition',
-                  [
-                    _Metric('Sleep', s.sleepHours.toStringAsFixed(1) + ' h'),
-                    _Metric('Water', s.waterMl.round().toString() + ' ml'),
-                    _Metric('Basal kcal', s.basalCalories.round().toString()),
-                    _Metric('Records', s.records.toString()),
-                  ],
-                ),
-                if (s.sourceNames.isNotEmpty)
-                  SunyaGlassCard(
-                    child: Text(
-                      'Data sources: ' + s.sourceNames.join(', '),
-                    ),
+                _group(context, 'Activity', [
+                  _Metric('Steps', '${s.steps}'),
+                  _Metric('Distance', '${(s.distanceMeters / 1000).toStringAsFixed(1)} km'),
+                  _Metric('Exercise', '${s.exerciseMinutes.round()} min'),
+                  _Metric('Active kcal', '${s.activeCalories.round()}'),
+                  _Metric('Total kcal', '${s.totalCalories.round()}'),
+                ]),
+                _group(context, 'Body', [
+                  _Metric('Weight', s.weightKg == null ? '—' : '${s.weightKg!.toStringAsFixed(1)} kg'),
+                  _Metric('Height', s.heightCm == null ? '—' : '${s.heightCm!.toStringAsFixed(0)} cm'),
+                  _Metric('BMI', s.bmi == null ? '—' : s.bmi!.toStringAsFixed(1)),
+                  _Metric('Body fat', s.bodyFatPercent == null ? '—' : '${s.bodyFatPercent!.toStringAsFixed(1)}%'),
+                  _Metric('Body water', s.bodyWaterKg == null ? '—' : '${s.bodyWaterKg!.toStringAsFixed(1)} kg'),
+                ]),
+                _group(context, 'Vitals', [
+                  _Metric('Heart rate', s.heartRate == null ? '—' : '${s.heartRate!.round()} bpm'),
+                  _Metric('Resting HR', s.restingHeartRate == null ? '—' : '${s.restingHeartRate!.round()} bpm'),
+                  _Metric('HRV', s.hrv == null ? '—' : '${s.hrv!.round()} ms'),
+                  _Metric('SpO₂', s.oxygen == null ? '—' : '${s.oxygen!.round()}%'),
+                  _Metric('Blood pressure', s.bloodPressureSystolic == null ? '—' : '${s.bloodPressureSystolic!.round()}/${s.bloodPressureDiastolic?.round() ?? '—'}'),
+                  _Metric('Glucose', s.bloodGlucose == null ? '—' : '${s.bloodGlucose!.toStringAsFixed(1)} mg/dL'),
+                  _Metric('Temperature', s.bodyTemperature == null ? '—' : '${s.bodyTemperature!.toStringAsFixed(1)} °C'),
+                  _Metric('Respiratory', s.respiratoryRate == null ? '—' : '${s.respiratoryRate!.toStringAsFixed(1)}/min'),
+                ]),
+                _group(context, 'Sleep & nutrition', [
+                  _Metric('Sleep', '${s.sleepHours.toStringAsFixed(1)} h'),
+                  _Metric('Water', '${s.waterMl.round()} ml'),
+                  _Metric('Food kcal', '${s.nutritionCalories.round()}'),
+                  _Metric('Protein', '${s.nutritionProteinGrams.round()} g'),
+                ]),
+                SunyaGlassCard(
+                  child: Text(
+                    '${s.records} records imported from ${s.sourceNames.isEmpty ? s.source : s.sourceNames.join(', ')}. SUNYA analyses imported and user-entered data together; it does not diagnose conditions.',
                   ),
+                ),
               ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          const SunyaGlassCard(
-            child: Text(
-              'SUNYA does not require every permission to work. If a data type is unavailable or denied, '
-              'it is excluded instead of blocking the rest of the sync. Imported health data is used for '
-              'tracking, personalization and planning; it does not diagnose conditions.',
             ),
           ),
         ],
@@ -188,57 +114,38 @@ class _HealthConnectPageState extends ConsumerState<HealthConnectPage> {
     );
   }
 
-  Widget _group(BuildContext context, String title, List<Widget> metrics) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: SunyaGlassCard(
+  Widget _group(BuildContext context, String title, List<Widget> children) => Padding(
+        padding: const EdgeInsets.only(bottom: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(title, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 12),
-            Wrap(spacing: 10, runSpacing: 10, children: metrics),
+            const SizedBox(height: 10),
+            Wrap(spacing: 10, runSpacing: 10, children: children),
           ],
         ),
-      ),
-    );
-  }
-
-  String _number(double? value, String unit) =>
-      value == null ? '—' : value.toStringAsFixed(1) + unit;
-
-  String _distance(double meters) =>
-      meters <= 0 ? '—' : (meters / 1000).toStringAsFixed(1) + ' km';
-
-  String _bp(SunyaHealthSnapshot s) {
-    if (s.bloodPressureSystolic == null || s.bloodPressureDiastolic == null) return '—';
-    return s.bloodPressureSystolic!.round().toString() +
-        '/' +
-        s.bloodPressureDiastolic!.round().toString();
-  }
+      );
 }
 
 class _Metric extends StatelessWidget {
   const _Metric(this.label, this.value);
-
   final String label;
   final String value;
 
   @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 142,
-      height: 88,
-      child: SunyaGlassCard(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label),
-            const Spacer(),
-            Text(value, style: Theme.of(context).textTheme.titleLarge),
-          ],
+  Widget build(BuildContext context) => SizedBox(
+        width: 158,
+        height: 92,
+        child: SunyaGlassCard(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+              const Spacer(),
+              Text(value, style: Theme.of(context).textTheme.titleMedium),
+            ],
+          ),
         ),
-      ),
-    );
-  }
+      );
 }
