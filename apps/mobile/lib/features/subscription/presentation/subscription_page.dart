@@ -18,7 +18,10 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => ref.read(sunyaSubscriptionServiceProvider).initialize());
+    Future.microtask(() async {
+      await ref.read(sunyaSubscriptionServiceProvider).initialize();
+      if (mounted) setState(() {});
+    });
   }
 
   Future<void> trial() async {
