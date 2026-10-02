@@ -230,51 +230,6 @@ class BodyPage extends ConsumerWidget {
       );
 }
 
-class _BodyAtlasCard extends StatelessWidget {
-  const _BodyAtlasCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return SunyaGlassCard(
-      padding: const EdgeInsets.all(18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Body atlas', style: Theme.of(context).textTheme.headlineSmall),
-          const SizedBox(height: 4),
-          Text(
-            'A visual map for region-specific measurements, goals and progress.',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: const [
-              Expanded(child: _Silhouette(label: 'FRONT')),
-              SizedBox(width: 10),
-              Expanded(child: _Silhouette(label: 'BACK')),
-            ],
-          ),
-          const SizedBox(height: 12),
-          const Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              Chip(label: Text('Neck')),
-              Chip(label: Text('Shoulders')),
-              Chip(label: Text('Chest')),
-              Chip(label: Text('Arms')),
-              Chip(label: Text('Waist')),
-              Chip(label: Text('Hips')),
-              Chip(label: Text('Thighs')),
-              Chip(label: Text('Calves')),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _Silhouette extends StatelessWidget {
   const _Silhouette({required this.label});
   final String label;
