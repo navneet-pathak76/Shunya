@@ -2,10 +2,96 @@ import os
 from typing import Any, Literal
 
 import httpx
-from fastapi import FastAPI, HTTPException
+import sqlite3
+from datetime import datetime, timedelta, timezone
+from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field
 
-app = FastAPI(title="SUNYA AI", version="2.0.0")
+app = FastAPI(title="SUNYA AI", version="2.1.0")
+
+DB_PATH = os.getenv("SUNYA_DB_PATH", "sunya_accounts.sqlite3")
+
+
+def _db():
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute(
+        """CREATE TABLE IF NOT EXISTS accounts (
+            email TEXT PRIMARY KEY,
+            trial_started_at TEXT NOT NULL,
+            subscription_active INTEGER NOT NULL DEFAULT 0
+        )"""
+    )
+    conn.commit()
+    return conn
+
+
+def _verify_google_token(authorization: str | None) -> dict[str, Any]:
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Google authentication required")
+
+    token = authorization.removeprefix("Bearer ").strip()
+    audience = os.getenv("GOOGLE_WEB_CLIENT_ID", "").strip()
+    if not audience:
+        raise HTTPException(
+            status_code=503,
+            detail="Google authentication is not configured on the server",
+        )
+
+    try:
+        from google.oauth2 import id_token
+        from google.auth.transport import requests
+
+        info = id_token.verify_oauth2_token(
+            token,
+            requests.Request(),
+            audience=audience,
+        )
+        if not info.get("email"):
+            raise ValueError("Google token has no email")
+        return info
+    except Exception as exc:
+        raise HTTPException(status_code=401, detail="Invalid Google identity token") from exc
+
+
+def _entitlement(email: str) -> dict[str, Any]:
+    now = datetime.now(timezone.utc)
+    conn = _db()
+    row = conn.execute(
+        "SELECT trial_started_at, subscription_active FROM accounts WHERE email = ?",
+        (email.lower(),),
+    ).fetchone()
+    if row is None:
+        trial = now
+        conn.execute(
+            "INSERT INTO accounts(email, trial_started_at, subscription_active) VALUES (?, ?, 0)",
+            (email.lower(), trial.isoformat()),
+        )
+        conn.commit()
+        subscription = False
+    else:
+        trial = datetime.fromisoformat(row[0])
+        subscription = bool(row[1])
+    conn.close()
+
+    admins = {
+        value.strip().lower()
+        for value in os.getenv("SUNYA_ADMIN_EMAILS", "").split(",")
+        if value.strip()
+    }
+    admin = email.lower() in admins
+    trial_active = now < trial + timedelta(days=7)
+    return {
+        "email": email,
+        "admin": admin,
+        "trialActive": trial_active,
+        "trialDaysRemaining": max(
+            0,
+            (trial + timedelta(days=7) - now).days
+            + (1 if now < trial + timedelta(days=7) else 0),
+        ),
+        "subscriptionActive": subscription,
+        "sunyaUnlocked": admin or trial_active or subscription,
+    }
 
 
 class ChatRequest(BaseModel):
@@ -149,7 +235,11 @@ async def _claude(prompt: str) -> str:
 
 
 @app.post("/v1/ai/chat")
-async def chat(request: ChatRequest):
+async def chat(request: ChatRequest, authorization: str | None = Header(default=None)):
+    identity = _verify_google_token(authorization)
+    access = _entitlement(str(identity["email"]))
+    if request.provider == "sunya" and not access["sunyaUnlocked"]:
+        raise HTTPException(status_code=402, detail="SUNYA AI subscription required")
     prompt = _system_prompt(request.provider) + "\n\n" + _context_prompt(request)
 
     if request.provider in {"gemini", "sunya"}:
@@ -165,4 +255,11 @@ async def chat(request: ChatRequest):
         "text": text,
         "provider": request.provider,
         "analysis": "whole_body_context",
+        "entitlement": access,
     }
+
+
+@app.get("/v1/account/session")
+async def account_session(authorization: str | None = Header(default=None)):
+    identity = _verify_google_token(authorization)
+    return _entitlement(str(identity["email"]))
