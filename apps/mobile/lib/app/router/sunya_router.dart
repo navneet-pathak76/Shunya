@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/widgets/sunya_app_shell.dart';
@@ -23,7 +22,6 @@ import '../../features/goals/presentation/goals_page.dart';
 import '../../features/wellness/presentation/wellness_page.dart';
 import '../../features/export/presentation/data_management_page.dart';
 import '../../features/settings/presentation/settings_page.dart';
-import '../../features/subscription/presentation/subscription_page.dart';
 
 final sunyaRouter = GoRouter(
   initialLocation: '/dashboard',
@@ -43,7 +41,6 @@ final sunyaRouter = GoRouter(
     GoRoute(path: '/profile', name: 'profile', builder: (_, __) => const ProfilePage()),
     GoRoute(path: '/settings', name: 'settings', builder: (_, __) => const SettingsPage()),
     GoRoute(path: '/ai', name: 'ai', builder: (_, __) => const AiPage()),
-    GoRoute(path: '/subscription', name: 'subscription', builder: (_, __) => const SubscriptionPage()),
     GoRoute(path: '/ai/providers', name: 'aiProviders', builder: (_, __) => const AiProvidersPage()),
     GoRoute(path: '/subscription', name: 'subscription', builder: (_, __) => const SunyaSubscriptionPage()),
     GoRoute(path: '/ai/plan', name: 'aiPlan', builder: (_, __) => const PersonalPlanPage()),
