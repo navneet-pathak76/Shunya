@@ -136,10 +136,15 @@ class SunyaHealthConnectService {
 
   Future<List<HealthDataType>> availableTypes() async {
     await _health.configure();
+    try {
+      if (!await _health.isHealthConnectAvailable()) return const [];
+    } catch (_) {
+      return const [];
+    }
     final available = <HealthDataType>[];
     for (final type in candidateTypes) {
       try {
-        if (await _health.isDataTypeAvailable(type)) {
+        if (_health.isDataTypeAvailable(type)) {
           available.add(type);
         }
       } catch (_) {}
@@ -158,8 +163,21 @@ class SunyaHealthConnectService {
 
   Future<bool> get available async => (await availableTypes()).isNotEmpty;
 
-  Future<bool> get historyAuthorized async => false;
-  Future<bool> requestHistoryAccess() async => false;
+  Future<bool> get historyAuthorized async {
+    try {
+      return await _health.isHealthDataHistoryAuthorized();
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> requestHistoryAccess() async {
+    try {
+      return await _health.requestHealthDataHistoryAuthorization();
+    } catch (_) {
+      return false;
+    }
+  }
 
   Future<SunyaHealthSnapshot> sync({int days = 30}) async {
     final types = await availableTypes();
