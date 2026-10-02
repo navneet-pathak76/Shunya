@@ -11,6 +11,6 @@ void main() {
     // The underlying app shell remains mounted beneath the overlay.
     await tester.pump(const Duration(milliseconds: 1100));
 
-    expect(find.byType(NavigationBar), findsOneWidget);
+    expect(find.text('Continue with Google'), findsOneWidget);
   });
 }
