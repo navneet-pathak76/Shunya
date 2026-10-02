@@ -66,8 +66,8 @@ jobs:
               "android.permission.health.READ_TOTAL_CALORIES_BURNED",
               "android.permission.health.READ_DISTANCE",
               "android.permission.health.READ_EXERCISE",
-              "android.permission.health.READ_NUTRITION",\n              "android.permission.health.READ_HEIGHT",\n              "android.permission.health.READ_BODY_FAT",\n              "android.permission.health.READ_BLOOD_PRESSURE",\n              "android.permission.health.READ_BLOOD_GLUCOSE",\n              "android.permission.health.READ_BODY_TEMPERATURE",\n              "android.permission.health.READ_RESPIRATORY_RATE",\n              "android.permission.health.READ_BODY_WATER_MASS",\n              "android.permission.health.READ_BASAL_METABOLIC_RATE",\n              "android.permission.health.READ_BASAL_BODY_TEMPERATURE",\n              "android.permission.health.READ_BLOOD_PRESSURE",\n              "android.permission.health.READ_WAIST_CIRCUMFERENCE",
-          ]
+              "android.permission.health.READ_NUTRITION",\n              "android.permission.health.READ_HEIGHT",\n              "android.permission.health.READ_BODY_FAT",
+              "android.permission.health.READ_BODY_MASS_INDEX",\n              "android.permission.health.READ_BLOOD_PRESSURE",\n              "android.permission.health.READ_BLOOD_GLUCOSE",\n              "android.permission.health.READ_BODY_TEMPERATURE",\n              "android.permission.health.READ_RESPIRATORY_RATE",\n              "android.permission.health.READ_BODY_WATER_MASS",\n              "android.permission.health.READ_BASAL_METABOLIC_RATE",\n              "android.permission.health.READ_BASAL_BODY_TEMPERATURE",\n              "android.permission.health.READ_BLOOD_PRESSURE",\n          ]
 
           for permission in permissions:
               tag = f'<uses-permission android:name="{permission}"/>'
