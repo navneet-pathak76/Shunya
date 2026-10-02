@@ -77,6 +77,11 @@ class SunyaAiProviderController extends StateNotifier<SunyaAiProvider> {
     final trial = p.getString('sunya.ai.trialEndsAt');
     trialEndsAt = trial == null ? null : DateTime.tryParse(trial);
     premium = p.getBool('sunya.ai.premium') ?? false;
+    const adminEmail = String.fromEnvironment('SUNYA_ADMIN_EMAIL', defaultValue: '');
+    final accountEmail = p.getString('sunya.account.email') ?? '';
+    if (adminEmail.isNotEmpty && accountEmail.toLowerCase() == adminEmail.toLowerCase()) {
+      premium = true;
+    }
     state = state;
   }
 
