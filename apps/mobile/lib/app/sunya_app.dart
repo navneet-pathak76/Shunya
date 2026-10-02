@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'router/sunya_router.dart';
 import '../core/settings/sunya_settings.dart';
 import '../core/theme/sunya_theme.dart';
-import '../core/widgets/sunya_welcome.dart';
+import '../core/widgets/sunya_auth_gate.dart';
 
 class SunyaApp extends ConsumerWidget {
   const SunyaApp({super.key});
@@ -24,7 +24,7 @@ class SunyaApp extends ConsumerWidget {
           decoration: BoxDecoration(
             gradient: SunyaTheme.backgroundGradient(brightness),
           ),
-          child: SunyaWelcomeGate(
+          child: SunyaAuthGate(
             child: child ?? const SizedBox.shrink(),
           ),
         );
