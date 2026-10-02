@@ -18,6 +18,10 @@ app.add_middleware(
 Provider = Literal["chatgpt", "gemini", "claude", "sunya"]
 
 
+class GoogleAuthRequest(BaseModel):
+    id_token: str
+
+
 class ChatRequest(BaseModel):
     message: str
     provider: Provider = "sunya"
@@ -116,13 +120,34 @@ async def _claude(prompt: str) -> str:
 @app.get('/v1/ai/providers')
 def providers():
     return {
-        'providers': [
-            {'id': 'chatgpt', 'configured': bool(os.getenv('OPENAI_API_KEY'))},
-            {'id': 'gemini', 'configured': bool(os.getenv('GEMINI_API_KEY'))},
-            {'id': 'claude', 'configured': bool(os.getenv('ANTHROPIC_API_KEY'))},
-            {'id': 'sunya', 'configured': bool(os.getenv('GEMINI_API_KEY'))},
-        ]
+        'chatgpt': bool(os.getenv('OPENAI_API_KEY')),
+        'gemini': bool(os.getenv('GEMINI_API_KEY')),
+        'claude': bool(os.getenv('ANTHROPIC_API_KEY')),
+        'sunya': bool(os.getenv('GEMINI_API_KEY')),
     }
+
+
+@app.post('/v1/auth/google')
+async def google_auth(request: GoogleAuthRequest):
+    client_id = os.getenv('GOOGLE_WEB_CLIENT_ID', '').strip()
+    if not client_id:
+        raise HTTPException(status_code=503, detail='Google authentication is not configured')
+    try:
+        from google.oauth2 import id_token
+        from google.auth.transport import requests as google_requests
+        claims = id_token.verify_oauth2_token(
+            request.id_token,
+            google_requests.Request(),
+            client_id,
+        )
+        return {
+            'id': claims.get('sub'),
+            'email': claims.get('email'),
+            'name': claims.get('name'),
+            'picture': claims.get('picture'),
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=401, detail='Invalid Google identity token') from exc
 
 
 @app.post("/v1/ai/chat")
