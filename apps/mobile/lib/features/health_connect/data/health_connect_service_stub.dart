@@ -14,20 +14,15 @@ class SunyaHealthSnapshot {
     this.oxygen,
     this.bloodPressureSystolic,
     this.bloodPressureDiastolic,
-    this.bloodGlucose,
-    this.bodyTemperature,
+    this.glucoseMgDl,
+    this.temperatureC,
     this.respiratoryRate,
-    this.bodyWaterKg,
-    this.basalCalories = 0,
-    this.waistCm,
-    this.distanceMeters = 0,
-    this.exerciseMinutes = 0,
     this.sleepHours = 0,
     this.records = 0,
+    this.sources = const [],
     this.source = 'Unavailable on web',
-    this.sourceNames = const [],
-    this.metrics = const {},
   });
+
   final int steps;
   final double activeCalories;
   final double totalCalories;
@@ -42,37 +37,41 @@ class SunyaHealthSnapshot {
   final double? oxygen;
   final double? bloodPressureSystolic;
   final double? bloodPressureDiastolic;
-  final double? bloodGlucose;
-  final double? bodyTemperature;
+  final double? glucoseMgDl;
+  final double? temperatureC;
   final double? respiratoryRate;
-  final double? bodyWaterKg;
-  final double basalCalories;
-  final double? waistCm;
-  final double distanceMeters;
-  final double exerciseMinutes;
   final double sleepHours;
   final int records;
+  final List<String> sources;
   final String source;
-  final List<String> sourceNames;
-  final Map<String, double> metrics;
-  Map<String, dynamic> toAiContext() => {
-    'source': source,
-    'records': records,
-    'sources': sourceNames,
-    'metrics': metrics,
+
+  Map<String, dynamic> toContext() => {
     'steps': steps,
     'activeCalories': activeCalories,
     'totalCalories': totalCalories,
     'waterMl': waterMl,
+    'weightKg': weightKg,
+    'heightCm': heightCm,
+    'bodyFatPercent': bodyFatPercent,
+    'bmi': bmi,
+    'heartRate': heartRate,
+    'restingHeartRate': restingHeartRate,
+    'hrv': hrv,
+    'spo2': oxygen,
+    'bloodPressure': {'systolic': bloodPressureSystolic, 'diastolic': bloodPressureDiastolic},
+    'glucoseMgDl': glucoseMgDl,
+    'temperatureC': temperatureC,
+    'respiratoryRate': respiratoryRate,
     'sleepHours': sleepHours,
+    'records': records,
+    'sources': sources,
+    'source': source,
   };
 }
+
 class SunyaHealthConnectService {
   Future<void> configure() async {}
   Future<bool> requestReadAccess() async => false;
-  Future<SunyaHealthSnapshot> sync({int days = 7}) async => const SunyaHealthSnapshot();
-  Future<bool> get historyAvailable async => false;
-  Future<bool> requestHistoryAccess() async => false;
-  Future<bool> get historyAuthorized async => false;
+  Future<SunyaHealthSnapshot> sync({int days = 30}) async => const SunyaHealthSnapshot();
   Future<bool> get available async => false;
 }
