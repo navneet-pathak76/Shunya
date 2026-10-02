@@ -7,6 +7,7 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import '../../../core/services/ai/ai_gateway.dart';
 import '../../../core/services/ai/adaptive_health_engine.dart';
 import '../../../core/services/ai/sunya_ai_access.dart';
+import '../../../core/settings/sunya_settings.dart';
 import '../../../core/services/auth/sunya_google_auth.dart';
 import '../../../core/widgets/sunya_glass.dart';
 import '../../../core/providers/database_provider.dart';
@@ -123,6 +124,7 @@ class _AiPageState extends ConsumerState<AiPage> {
     final moods = await repository.listDomain('mood');
     final journal = await repository.listDomain('journal');
     final medications = await repository.listDomain('medication');
+    final settings = ref.read(sunyaSettingsProvider);
     final health = await ref.read(healthSnapshotProvider.future);
 
     final dob = body.profile?.dateOfBirth;
@@ -144,6 +146,13 @@ class _AiPageState extends ConsumerState<AiPage> {
     );
 
     final context = <String, dynamic>{
+      'profile': {
+        'name': settings.name,
+        'age': settings.age,
+        'heightCm': settings.heightCm,
+        'weightKg': settings.weightKg,
+        'goal': settings.goal,
+      },
       'analysisPolicy': {
         'goal': 'Create balanced whole-body guidance from every available user signal.',
         'doNotInventMissingData': true,
