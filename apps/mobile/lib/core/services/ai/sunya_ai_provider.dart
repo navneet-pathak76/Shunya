@@ -77,6 +77,7 @@ class SunyaAiProviderController extends StateNotifier<SunyaAiProvider> {
     final trial = p.getString('sunya.ai.trialEndsAt');
     trialEndsAt = trial == null ? null : DateTime.tryParse(trial);
     premium = p.getBool('sunya.ai.premium') ?? false;
+    state = state;
   }
 
   bool get trialActive =>
@@ -106,5 +107,6 @@ class SunyaAiProviderController extends StateNotifier<SunyaAiProvider> {
     premium = value;
     final p = await SharedPreferences.getInstance();
     await p.setBool('sunya.ai.premium', value);
+    state = state;
   }
 }
