@@ -7,3 +7,5 @@ psycopg[binary]
 alembic
 httpx
 google-genai==2.23.0
+
+google-auth
