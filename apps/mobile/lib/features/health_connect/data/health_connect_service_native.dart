@@ -143,6 +143,34 @@ class SunyaHealthConnectService {
     );
   }
 
+  Future<bool> get historyAvailable async {
+    try {
+      await _health.configure();
+      return await _health.isHealthDataHistoryAvailable();
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> requestHistoryAccess() async {
+    try {
+      await _health.configure();
+      if (!await _health.isHealthDataHistoryAvailable()) return false;
+      return await _health.requestHealthDataHistoryAuthorization();
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> get historyAuthorized async {
+    try {
+      await _health.configure();
+      return await _health.isHealthDataHistoryAuthorized();
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future<bool> get available async {
     try {
       await _health.configure();
@@ -152,7 +180,7 @@ class SunyaHealthConnectService {
     }
   }
 
-  Future<SunyaHealthSnapshot> sync({int days = 7}) async {
+  Future<SunyaHealthSnapshot> sync({int days = 30}) async {
     await _health.configure();
     final types = availableTypes;
     if (types.isEmpty) {
