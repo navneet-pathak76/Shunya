@@ -10,7 +10,10 @@ const sunyaSubscriptionProductId = 'sunya_ai_monthly';
 final sunyaBillingProvider = ChangeNotifierProvider<SunyaBillingController>((ref) => SunyaBillingController(() => ref.read(sunyaAiSettingsProvider.notifier).setPremium(true)));
 
 class SunyaBillingController extends ChangeNotifier {
-  SunyaBillingController(this.onPremium);
+  SunyaBillingController(this.onPremium) {
+    _subscription = _iap.purchaseStream.listen(_handlePurchases);
+    load();
+  }
 
   final Future<void> Function() onPremium;
   final InAppPurchase _iap = InAppPurchase.instance;
@@ -19,11 +22,6 @@ class SunyaBillingController extends ChangeNotifier {
   bool available = false;
   bool busy = false;
   String? error;
-
-  SunyaBillingController() {
-    _subscription = _iap.purchaseStream.listen(_handlePurchases);
-    load();
-  }
 
   Future<void> load() async {
     available = await _iap.isAvailable();
