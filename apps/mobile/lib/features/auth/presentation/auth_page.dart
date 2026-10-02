@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/services/auth/sunya_auth_service.dart';
+import '../../../core/settings/sunya_settings.dart';
 import '../../../core/widgets/sunya_glass.dart';
 
 final sunyaAuthServiceProvider = Provider((ref) => SunyaAuthService());
@@ -24,6 +25,10 @@ class _SunyaAuthPageState extends ConsumerState<SunyaAuthPage> {
         setState(() { loading = false; error = 'Google Sign-In is not configured for this build.'; });
         return;
       }
+      final current = ref.read(sunyaSettingsProvider);
+      await ref.read(sunyaSettingsProvider.notifier).update(
+        current.copyWith(name: (account.name ?? account.email.split('@').first).trim()),
+      );
       setState(() => loading = false);
       widget.onSignedIn();
     } catch (e) {
