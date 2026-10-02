@@ -19,6 +19,7 @@ class HealthConnectPage extends ConsumerStatefulWidget {
 class _HealthConnectPageState extends ConsumerState<HealthConnectPage> {
   bool loading = false;
   String status = 'Connect Google Health Connect to import permitted data.';
+  bool historyAuthorized = false;
 
   Future<void> connect() async {
     setState(() => loading = true);
@@ -86,6 +87,27 @@ class _HealthConnectPageState extends ConsumerState<HealthConnectPage> {
             onPressed: () => context.push('/body'),
             icon: const Icon(Icons.edit_note_rounded),
             label: const Text('Enter health data manually'),
+          ),
+          const SizedBox(height: 8),
+          FutureBuilder<bool>(
+            future: ref.read(healthConnectServiceProvider).historyAuthorized,
+            builder: (context, history) {
+              final enabled = history.data ?? false;
+              return OutlinedButton.icon(
+                onPressed: enabled
+                    ? null
+                    : () async {
+                        final ok = await ref.read(healthConnectServiceProvider).requestHistoryAccess();
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(ok ? 'Historical health access enabled.' : 'Historical access was not granted.')),
+                        );
+                        if (ok) ref.invalidate(healthSnapshotProvider);
+                      },
+                icon: const Icon(Icons.history_rounded),
+                label: Text(enabled ? 'Historical data enabled' : 'Enable historical data'),
+              );
+            },
           ),
           const SizedBox(height: 10),
           Text(status),
