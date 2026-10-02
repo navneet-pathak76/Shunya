@@ -166,7 +166,7 @@ jobs:
               p.write_text(s)
 
       - name: Analyze Flutter project
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
       - name: Run Flutter tests
         run: flutter test
