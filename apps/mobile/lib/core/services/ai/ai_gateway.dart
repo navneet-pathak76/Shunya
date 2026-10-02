@@ -1,11 +1,16 @@
 import 'package:dio/dio.dart';
-import 'sunya_ai_settings.dart';
+import 'sunya_ai_provider.dart';
 
 class SunyaAiGateway {
-  SunyaAiGateway({Dio? dio, String? baseUrl})
-      : _dio = dio ?? Dio(),
+  SunyaAiGateway({
+    Dio? dio,
+    String? baseUrl,
+  })  : _dio = dio ?? Dio(),
         _baseUrl = baseUrl ??
-            const String.fromEnvironment('SUNYA_API_URL', defaultValue: '');
+            const String.fromEnvironment(
+              'SUNYA_API_URL',
+              defaultValue: '',
+            );
 
   final Dio _dio;
   final String _baseUrl;
@@ -23,7 +28,7 @@ class SunyaAiGateway {
         '$_baseUrl/v1/ai/chat',
         data: {
           'message': message,
-          'provider': provider.name,
+          'provider': provider.key,
           'context': context,
         },
       );
