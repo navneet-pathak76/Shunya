@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/services/ai/ai_gateway.dart';
 import '../../../core/services/ai/adaptive_health_engine.dart';
 import '../../../core/services/ai/sunya_ai_settings.dart';
@@ -106,7 +107,7 @@ class _AiPageState extends ConsumerState<AiPage> {
         actions: [
           IconButton(
             tooltip: 'AI providers',
-            onPressed: () => Navigator.of(context).pushNamed('/ai/providers'),
+            onPressed: () => context.push('/ai/providers'),
             icon: const Icon(Icons.tune_rounded),
           ),
         ],
