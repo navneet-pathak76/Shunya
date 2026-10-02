@@ -16,19 +16,13 @@ class SunyaHealthSnapshot {
     this.oxygen,
     this.bloodPressureSystolic,
     this.bloodPressureDiastolic,
-    this.bloodGlucose,
-    this.bodyTemperature,
+    this.glucoseMgDl,
+    this.temperatureC,
     this.respiratoryRate,
-    this.bodyWaterKg,
-    this.basalCalories = 0,
-    this.waistCm,
-    this.distanceMeters = 0,
-    this.exerciseMinutes = 0,
     this.sleepHours = 0,
     this.records = 0,
+    this.sources = const [],
     this.source = 'Health Connect',
-    this.sourceNames = const [],
-    this.metrics = const {},
   });
 
   final int steps;
@@ -45,55 +39,45 @@ class SunyaHealthSnapshot {
   final double? oxygen;
   final double? bloodPressureSystolic;
   final double? bloodPressureDiastolic;
-  final double? bloodGlucose;
-  final double? bodyTemperature;
+  final double? glucoseMgDl;
+  final double? temperatureC;
   final double? respiratoryRate;
-  final double? bodyWaterKg;
-  final double basalCalories;
-  final double? waistCm;
-  final double distanceMeters;
-  final double exerciseMinutes;
   final double sleepHours;
   final int records;
+  final List<String> sources;
   final String source;
-  final List<String> sourceNames;
-  final Map<String, double> metrics;
 
-  Map<String, dynamic> toAiContext() => {
-        'source': source,
-        'records': records,
-        'sources': sourceNames,
-        'metrics': metrics,
-        'steps': steps,
-        'activeCalories': activeCalories,
-        'totalCalories': totalCalories,
-        'waterMl': waterMl,
-        'weightKg': weightKg,
-        'heightCm': heightCm,
-        'bodyFatPercent': bodyFatPercent,
-        'bmi': bmi,
-        'heartRate': heartRate,
-        'restingHeartRate': restingHeartRate,
-        'hrv': hrv,
-        'spo2': oxygen,
-        'bloodPressureSystolic': bloodPressureSystolic,
-        'bloodPressureDiastolic': bloodPressureDiastolic,
-        'bloodGlucose': bloodGlucose,
-        'bodyTemperature': bodyTemperature,
-        'respiratoryRate': respiratoryRate,
-        'bodyWaterKg': bodyWaterKg,
-        'basalCalories': basalCalories,
-        'waistCm': waistCm,
-        'distanceMeters': distanceMeters,
-        'exerciseMinutes': exerciseMinutes,
-        'sleepHours': sleepHours,
-      };
+  Map<String, dynamic> toContext() => {
+    'steps': steps,
+    'activeCalories': activeCalories,
+    'totalCalories': totalCalories,
+    'waterMl': waterMl,
+    'weightKg': weightKg,
+    'heightCm': heightCm,
+    'bodyFatPercent': bodyFatPercent,
+    'bmi': bmi,
+    'heartRate': heartRate,
+    'restingHeartRate': restingHeartRate,
+    'hrv': hrv,
+    'spo2': oxygen,
+    'bloodPressure': {
+      'systolic': bloodPressureSystolic,
+      'diastolic': bloodPressureDiastolic,
+    },
+    'glucoseMgDl': glucoseMgDl,
+    'temperatureC': temperatureC,
+    'respiratoryRate': respiratoryRate,
+    'sleepHours': sleepHours,
+    'records': records,
+    'sources': sources,
+    'source': source,
+  };
 }
 
 class SunyaHealthConnectService {
   final Health _health = Health();
 
-  static const candidateTypes = <HealthDataType>[
+  static const requestedTypes = <HealthDataType>[
     HealthDataType.STEPS,
     HealthDataType.WEIGHT,
     HealthDataType.HEIGHT,
@@ -108,14 +92,11 @@ class SunyaHealthConnectService {
     HealthDataType.BLOOD_GLUCOSE,
     HealthDataType.BODY_TEMPERATURE,
     HealthDataType.RESPIRATORY_RATE,
-    HealthDataType.BODY_WATER_MASS,
-    HealthDataType.BASAL_ENERGY_BURNED,
-    HealthDataType.WAIST_CIRCUMFERENCE,
     HealthDataType.WATER,
     HealthDataType.SLEEP_SESSION,
     HealthDataType.ACTIVE_ENERGY_BURNED,
+    HealthDataType.BASAL_ENERGY_BURNED,
     HealthDataType.TOTAL_CALORIES_BURNED,
-    HealthDataType.DISTANCE_WALKING_RUNNING,
     HealthDataType.EXERCISE_TIME,
     HealthDataType.WORKOUT,
     HealthDataType.NUTRITION,
@@ -123,52 +104,18 @@ class SunyaHealthConnectService {
 
   Future<void> configure() => _health.configure();
 
-  List<HealthDataType> get availableTypes {
-    return candidateTypes.where((type) {
-      try {
-        return _health.isDataTypeAvailable(type);
-      } catch (_) {
-        return false;
-      }
-    }).toList();
+  Future<List<HealthDataType>> _availableTypes() async {
+    await _health.configure();
+    return requestedTypes.where(_health.isDataTypeAvailable).toList();
   }
 
   Future<bool> requestReadAccess() async {
-    await _health.configure();
-    final types = availableTypes;
+    final types = await _availableTypes();
     if (types.isEmpty) return false;
     return _health.requestAuthorization(
       types,
       permissions: List.filled(types.length, HealthDataAccess.READ),
     );
-  }
-
-  Future<bool> get historyAvailable async {
-    try {
-      await _health.configure();
-      return await _health.isHealthDataHistoryAvailable();
-    } catch (_) {
-      return false;
-    }
-  }
-
-  Future<bool> requestHistoryAccess() async {
-    try {
-      await _health.configure();
-      if (!await _health.isHealthDataHistoryAvailable()) return false;
-      return await _health.requestHealthDataHistoryAuthorization();
-    } catch (_) {
-      return false;
-    }
-  }
-
-  Future<bool> get historyAuthorized async {
-    try {
-      await _health.configure();
-      return await _health.isHealthDataHistoryAuthorized();
-    } catch (_) {
-      return false;
-    }
   }
 
   Future<bool> get available async {
@@ -181,12 +128,8 @@ class SunyaHealthConnectService {
   }
 
   Future<SunyaHealthSnapshot> sync({int days = 30}) async {
-    await _health.configure();
-    final types = availableTypes;
-    if (types.isEmpty) {
-      return const SunyaHealthSnapshot(source: 'Health Connect unavailable');
-    }
-
+    final types = await _availableTypes();
+    if (types.isEmpty) return const SunyaHealthSnapshot();
     final end = DateTime.now();
     final start = end.subtract(Duration(days: days));
     final points = await _health.getHealthDataFromTypes(
@@ -194,17 +137,16 @@ class SunyaHealthConnectService {
       startTime: start,
       endTime: end,
     );
+    final unique = _health.removeDuplicates(points);
 
-    double sum(HealthDataType type) {
-      return points
-          .where((p) => p.type == type)
-          .map((p) => p.value)
-          .whereType<NumericHealthValue>()
-          .fold(0, (a, b) => a + b.numericValue.toDouble());
-    }
+    double sum(HealthDataType type) => unique
+        .where((p) => p.type == type)
+        .map((p) => p.value)
+        .whereType<NumericHealthValue>()
+        .fold(0, (a, b) => a + b.numericValue.toDouble());
 
     double? average(HealthDataType type) {
-      final values = points
+      final values = unique
           .where((p) => p.type == type)
           .map((p) => p.value)
           .whereType<NumericHealthValue>()
@@ -214,57 +156,49 @@ class SunyaHealthConnectService {
       return values.reduce((a, b) => a + b) / values.length;
     }
 
-    double? latestNumeric(HealthDataType type) {
-      final values = points.where((p) => p.type == type).toList();
+    double? latest(HealthDataType type) {
+      final values = unique.where((p) => p.type == type).toList();
       if (values.isEmpty) return null;
       values.sort((a, b) => b.dateTo.compareTo(a.dateTo));
       final value = values.first.value;
       return value is NumericHealthValue ? value.numericValue.toDouble() : null;
     }
 
-    final sleep = points
+    final sleep = unique
         .where((p) => p.type == HealthDataType.SLEEP_SESSION)
         .fold<double>(
           0,
           (a, p) => a + p.dateTo.difference(p.dateFrom).inMinutes / 60,
         );
 
-    final metrics = <String, double>{};
-    for (final type in types) {
-      final value = sum(type);
-      if (value != 0) metrics[type.name] = value;
-    }
-
-    final sourceNames = points.map((p) => p.sourceName).where((s) => s.trim().isNotEmpty).toSet().toList();
+    final sourceNames = unique
+        .map((p) => p.sourceName)
+        .where((name) => name.trim().isNotEmpty)
+        .toSet()
+        .toList();
 
     return SunyaHealthSnapshot(
       steps: sum(HealthDataType.STEPS).round(),
       activeCalories: sum(HealthDataType.ACTIVE_ENERGY_BURNED),
       totalCalories: sum(HealthDataType.TOTAL_CALORIES_BURNED),
       waterMl: sum(HealthDataType.WATER),
-      weightKg: latestNumeric(HealthDataType.WEIGHT),
-      heightCm: latestNumeric(HealthDataType.HEIGHT) == null ? null : latestNumeric(HealthDataType.HEIGHT)! * 100,
-      bodyFatPercent: latestNumeric(HealthDataType.BODY_FAT_PERCENTAGE),
-      bmi: latestNumeric(HealthDataType.BODY_MASS_INDEX),
+      weightKg: latest(HealthDataType.WEIGHT),
+      heightCm: latest(HealthDataType.HEIGHT),
+      bodyFatPercent: latest(HealthDataType.BODY_FAT_PERCENTAGE),
+      bmi: latest(HealthDataType.BODY_MASS_INDEX),
       heartRate: average(HealthDataType.HEART_RATE),
       restingHeartRate: average(HealthDataType.RESTING_HEART_RATE),
       hrv: average(HealthDataType.HEART_RATE_VARIABILITY_RMSSD),
       oxygen: average(HealthDataType.BLOOD_OXYGEN),
       bloodPressureSystolic: average(HealthDataType.BLOOD_PRESSURE_SYSTOLIC),
       bloodPressureDiastolic: average(HealthDataType.BLOOD_PRESSURE_DIASTOLIC),
-      bloodGlucose: average(HealthDataType.BLOOD_GLUCOSE),
-      bodyTemperature: average(HealthDataType.BODY_TEMPERATURE),
+      glucoseMgDl: average(HealthDataType.BLOOD_GLUCOSE),
+      temperatureC: average(HealthDataType.BODY_TEMPERATURE),
       respiratoryRate: average(HealthDataType.RESPIRATORY_RATE),
-      bodyWaterKg: latestNumeric(HealthDataType.BODY_WATER_MASS),
-      basalCalories: sum(HealthDataType.BASAL_ENERGY_BURNED),
-      waistCm: latestNumeric(HealthDataType.WAIST_CIRCUMFERENCE),
-      distanceMeters: sum(HealthDataType.DISTANCE_WALKING_RUNNING),
-      exerciseMinutes: sum(HealthDataType.EXERCISE_TIME) / 60,
       sleepHours: sleep,
-      records: points.length,
+      records: unique.length,
+      sources: sourceNames,
       source: _health.platformType.name,
-      sourceNames: sourceNames,
-      metrics: metrics,
     );
   }
 }
