@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import '../../../core/providers/database_provider.dart';
-import '../../../database/local_record_repository.dart';
 import '../domain/entities/body_goal.dart';
 class BodyGoalsPage extends ConsumerStatefulWidget{const BodyGoalsPage({super.key});@override ConsumerState<BodyGoalsPage> createState()=>_BodyGoalsPageState();}
 class _BodyGoalsPageState extends ConsumerState<BodyGoalsPage>{List<BodyGoal> goals=[];static const domain='body_goal';
