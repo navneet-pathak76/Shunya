@@ -1,5 +1,9 @@
 name: SUNYA Android APK Build
 
+concurrency:
+  group: sunya-sunya-android-apk-main
+  cancel-in-progress: true
+
 on:
   workflow_dispatch:
   push:
