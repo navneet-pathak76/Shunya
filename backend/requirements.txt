@@ -1,11 +1,2 @@
-fastapi
-uvicorn[standard]
-pydantic
-pydantic-settings
-sqlalchemy
-psycopg[binary]
-alembic
-httpx
-google-genai==2.23.0
-
+[object Object]
 google-auth
