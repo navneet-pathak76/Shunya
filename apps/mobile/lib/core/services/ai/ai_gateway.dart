@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'sunya_ai_provider.dart';
+import 'sunya_ai_settings.dart';
 
 class SunyaAiGateway {
   SunyaAiGateway({
@@ -28,7 +28,7 @@ class SunyaAiGateway {
         '$_baseUrl/v1/ai/chat',
         data: {
           'message': message,
-          'provider': provider.key,
+          'provider': provider.name,
           'context': context,
         },
       );
