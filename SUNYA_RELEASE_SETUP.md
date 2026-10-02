@@ -10,6 +10,7 @@ Set these GitHub Actions secrets when using Dart defines:
 
 - `GOOGLE_CLIENT_ID`
 - `GOOGLE_SERVER_CLIENT_ID`
+- `SUNYA_ADMIN_EMAIL` (optional; this account receives SUNYA AI premium access without a subscription)
 
 Without OAuth configuration, the login screen remains visible but sign-in will report that the build is not configured.
 
