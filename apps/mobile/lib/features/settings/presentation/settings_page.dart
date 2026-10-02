@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/settings/sunya_settings.dart';
-import '../../../core/services/ai/sunya_ai_provider.dart';
+import '../../../core/services/ai/sunya_ai_settings.dart';
 import '../../../core/theme/sunya_theme.dart';
 import '../../../core/widgets/sunya_glass.dart';
 
@@ -173,14 +173,14 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 const Text('Choose the model that analyses your SUNYA health context.'),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<SunyaAiProvider>(
-                  value: ref.watch(sunyaAiProviderControllerProvider),
+                  value: ref.watch(sunyaAiSettingsProvider).provider,
                   decoration: const InputDecoration(labelText: 'AI provider'),
                   items: SunyaAiProvider.values
                       .map((p) => DropdownMenuItem(value: p, child: Text(p.label)))
                       .toList(),
                   onChanged: (value) {
                     if (value != null) {
-                      ref.read(sunyaAiProviderControllerProvider.notifier).select(value);
+                      ref.read(sunyaAiSettingsProvider.notifier).select(value);
                     }
                   },
                 ),
