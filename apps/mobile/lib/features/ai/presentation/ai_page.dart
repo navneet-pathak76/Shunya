@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/services/ai/ai_gateway.dart';
 import '../../../core/services/ai/adaptive_health_engine.dart';
 import '../../../core/services/ai/health_context_builder.dart';
-import '../../../core/services/ai/sunya_ai_provider.dart';
+import '../../../core/services/ai/sunya_ai_settings.dart';
 import '../../../core/settings/sunya_settings.dart';
 import '../../../core/widgets/sunya_glass.dart';
 import '../../health_connect/presentation/health_connect_page.dart';
@@ -31,9 +31,9 @@ class _AiPageState extends ConsumerState<AiPage> {
     setState(() { messages.add('You: $q'); loading = true; });
 
     try {
-      final provider = ref.read(sunyaAiProviderControllerProvider);
-      final access = ref.read(sunyaAiAccessProvider);
-      if (provider == SunyaAiProvider.sunya && !access.premium && !access.trialActive) {
+      final provider = ref.read(sunyaAiSettingsProvider).provider;
+      final aiSettings = ref.read(sunyaAiSettingsProvider);
+      if (provider == SunyaAiProvider.sunya && !aiSettings.premium && !aiSettings.trialActive) {
         if (mounted) {
           setState(() {
             messages.add('SUNYA AI includes a 7-day free trial. Start the trial from the SUNYA AI plan screen to use the full personal intelligence layer.');
@@ -102,8 +102,8 @@ class _AiPageState extends ConsumerState<AiPage> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = ref.watch(sunyaAiProviderControllerProvider);
-    final access = ref.watch(sunyaAiAccessProvider);
+    final aiSettings = ref.watch(sunyaAiSettingsProvider);
+    final provider = aiSettings.provider;
     return Scaffold(
       appBar: AppBar(
         title: const Text('SUNYA AI'),
@@ -139,14 +139,14 @@ class _AiPageState extends ConsumerState<AiPage> {
                           child: Text(p.label),
                         )).toList(),
                         onChanged: (value) {
-                          if (value != null) ref.read(sunyaAiProviderControllerProvider.notifier).select(value);
+                          if (value != null) ref.read(sunyaAiSettingsProvider.notifier).select(value);
                         },
                       ),
                       const SizedBox(height: 8),
                       Text(provider.description),
                       if (provider == SunyaAiProvider.sunya) ...[
                         const SizedBox(height: 8),
-                        Text(access.trialActive ? 'SUNYA AI trial active' : access.premium ? 'SUNYA AI premium active' : '7-day free trial available'),
+                        Text(aiSettings.trialActive ? 'SUNYA AI trial active' : aiSettings.premium ? 'SUNYA AI premium active' : '7-day free trial available'),
                       ],
                     ],
                   ),
