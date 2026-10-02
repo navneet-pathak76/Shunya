@@ -59,6 +59,7 @@ class _AiPageState extends ConsumerState<AiPage> {
       await ref.read(sunyaAiAccessProvider.notifier).setAccount(
             email: account.email,
             displayName: account.displayName,
+            idToken: account.idToken,
           );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -240,6 +241,7 @@ class _AiPageState extends ConsumerState<AiPage> {
     final remote = await SunyaAiGateway().chat(
       message: q,
       provider: access.provider.key,
+      idToken: access.idToken,
       context: context,
     );
 
