@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/settings/sunya_settings.dart';
+import '../../../core/services/ai/sunya_ai_provider.dart';
 import '../../../core/theme/sunya_theme.dart';
 import '../../../core/widgets/sunya_glass.dart';
 
@@ -158,6 +160,36 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   subtitle: const Text('7-day trial • launch plan ₹99/month'),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => context.push('/subscription'),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          _section(
+            context,
+            'AI intelligence',
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Choose the model that analyses your SUNYA health context.'),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<SunyaAiProvider>(
+                  value: ref.watch(sunyaAiProviderControllerProvider),
+                  decoration: const InputDecoration(labelText: 'AI provider'),
+                  items: SunyaAiProvider.values
+                      .map((p) => DropdownMenuItem(value: p, child: Text(p.label)))
+                      .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      ref.read(sunyaAiProviderControllerProvider.notifier).select(value);
+                    }
+                  },
+                ),
+                const SizedBox(height: 10),
+                OutlinedButton.icon(
+                  onPressed: () => context.push('/subscription'),
+                  icon: const Icon(Icons.workspace_premium_rounded),
+                  label: const Text('SUNYA AI plan & 7-day trial'),
                 ),
               ],
             ),
