@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../core/settings/sunya_settings.dart';
 import '../../../core/services/ai/sunya_ai_provider.dart';
