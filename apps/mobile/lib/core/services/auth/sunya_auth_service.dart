@@ -16,9 +16,11 @@ class SunyaAuthService {
 
   Future<void> initialize() async {
     if (_initialized) return;
+    const clientId = String.fromEnvironment('GOOGLE_CLIENT_ID', defaultValue: '');
+    const serverClientId = String.fromEnvironment('GOOGLE_SERVER_CLIENT_ID', defaultValue: '');
     await _google.initialize(
-      clientId: const String.fromEnvironment('GOOGLE_CLIENT_ID', defaultValue: ''),
-      serverClientId: const String.fromEnvironment('GOOGLE_SERVER_CLIENT_ID', defaultValue: ''),
+      clientId: clientId.isEmpty ? null : clientId,
+      serverClientId: serverClientId.isEmpty ? null : serverClientId,
     );
     _initialized = true;
   }
