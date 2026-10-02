@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/services/ai/ai_gateway.dart';
 import '../../../core/services/ai/adaptive_health_engine.dart';
 import '../../../core/services/ai/health_context_builder.dart';
@@ -109,7 +110,7 @@ class _AiPageState extends ConsumerState<AiPage> {
         actions: [
           IconButton(
             tooltip: 'SUNYA AI plan',
-            onPressed: () => Navigator.of(context).pushNamed('/subscription'),
+            onPressed: () => context.push('/subscription'),
             icon: const Icon(Icons.workspace_premium_rounded),
           ),
         ],
