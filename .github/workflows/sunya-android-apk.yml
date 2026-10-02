@@ -58,6 +58,7 @@ jobs:
           permissions = [
               "android.permission.ACTIVITY_RECOGNITION",
               "android.permission.health.READ_STEPS",
+              "android.permission.health.READ_DISTANCE",
               "android.permission.health.READ_WEIGHT",
               "android.permission.health.READ_HEIGHT",
               "android.permission.health.READ_BODY_FAT",
