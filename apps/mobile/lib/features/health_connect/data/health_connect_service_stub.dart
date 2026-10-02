@@ -71,5 +71,8 @@ class SunyaHealthConnectService {
   Future<void> configure() async {}
   Future<bool> requestReadAccess() async => false;
   Future<SunyaHealthSnapshot> sync({int days = 7}) async => const SunyaHealthSnapshot();
+  Future<bool> get historyAvailable async => false;
+  Future<bool> requestHistoryAccess() async => false;
+  Future<bool> get historyAuthorized async => false;
   Future<bool> get available async => false;
 }
