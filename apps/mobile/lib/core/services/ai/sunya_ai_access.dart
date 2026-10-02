@@ -27,6 +27,7 @@ class SunyaAiAccess {
     this.provider = SunyaAiProvider.sunya,
     this.email,
     this.displayName,
+    this.idToken,
     this.trialStartedAt,
     this.subscriptionActive = false,
     this.admin = false,
@@ -35,6 +36,7 @@ class SunyaAiAccess {
   final SunyaAiProvider provider;
   final String? email;
   final String? displayName;
+  final String? idToken;
   final DateTime? trialStartedAt;
   final bool subscriptionActive;
   final bool admin;
@@ -57,6 +59,7 @@ class SunyaAiAccess {
     SunyaAiProvider? provider,
     String? email,
     String? displayName,
+    String? idToken,
     DateTime? trialStartedAt,
     bool? subscriptionActive,
     bool? admin,
@@ -65,6 +68,7 @@ class SunyaAiAccess {
         provider: provider ?? this.provider,
         email: email ?? this.email,
         displayName: displayName ?? this.displayName,
+        idToken: idToken ?? this.idToken,
         trialStartedAt: trialStartedAt ?? this.trialStartedAt,
         subscriptionActive: subscriptionActive ?? this.subscriptionActive,
         admin: admin ?? this.admin,
@@ -111,6 +115,7 @@ class SunyaAiAccessController extends StateNotifier<SunyaAiAccess> {
   Future<void> setAccount({
     required String email,
     String? displayName,
+    String? idToken,
   }) async {
     final p = await SharedPreferences.getInstance();
     final existingTrial = p.getString('sunya.ai.trialStartedAt');
@@ -127,6 +132,7 @@ class SunyaAiAccessController extends StateNotifier<SunyaAiAccess> {
     state = state.copyWith(
       email: email,
       displayName: displayName,
+      idToken: idToken,
       trialStartedAt: trial,
       admin: adminEmail.isNotEmpty &&
           email.toLowerCase() == adminEmail.toLowerCase(),
