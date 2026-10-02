@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../data/health_connect_service.dart';
 import '../../../core/widgets/sunya_glass.dart';
@@ -80,6 +81,11 @@ class _HealthConnectPageState extends ConsumerState<HealthConnectPage> {
             onPressed: loading ? null : connect,
             icon: const Icon(Icons.health_and_safety_outlined),
             label: Text(loading ? 'Connecting…' : 'Connect Google Health Connect'),
+          ),
+          OutlinedButton.icon(
+            onPressed: () => context.push('/body'),
+            icon: const Icon(Icons.edit_note_rounded),
+            label: const Text('Enter health data manually'),
           ),
           const SizedBox(height: 10),
           Text(status),
