@@ -3,12 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import '../../../core/widgets/sunya_glass.dart';
+import '../../../core/services/ai/sunya_ai_settings.dart';
 
 const sunyaSubscriptionProductId = 'sunya_ai_monthly';
 
-final sunyaBillingProvider = ChangeNotifierProvider<SunyaBillingController>((ref) => SunyaBillingController());
+final sunyaBillingProvider = ChangeNotifierProvider<SunyaBillingController>((ref) => SunyaBillingController(() => ref.read(sunyaAiSettingsProvider.notifier).setPremium(true)));
 
 class SunyaBillingController extends ChangeNotifier {
+  SunyaBillingController(this.onPremium);
+
+  final Future<void> Function() onPremium;
   final InAppPurchase _iap = InAppPurchase.instance;
   StreamSubscription<List<PurchaseDetails>>? _subscription;
   List<ProductDetails> products = [];
@@ -40,6 +44,9 @@ class SunyaBillingController extends ChangeNotifier {
 
   Future<void> _handlePurchases(List<PurchaseDetails> purchases) async {
     for (final purchase in purchases) {
+      if (purchase.status == PurchaseStatus.purchased || purchase.status == PurchaseStatus.restored) {
+        await onPremium();
+      }
       if (purchase.status == PurchaseStatus.error) {
         error = purchase.error?.message ?? 'Purchase failed';
       }
