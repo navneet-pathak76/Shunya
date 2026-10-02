@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/services/ai/ai_gateway.dart';
 import '../../../core/services/ai/adaptive_health_engine.dart';
 import '../../../core/services/ai/sunya_ai_settings.dart';
+import '../../../core/services/ai/personal_baseline_engine.dart';
 import '../../../core/widgets/sunya_glass.dart';
 import '../../health_connect/presentation/health_connect_page.dart';
 import '../../body/presentation/body_controller.dart';
@@ -37,6 +38,9 @@ class _AiPageState extends ConsumerState<AiPage> {
       final dob = body.profile?.dateOfBirth;
       final age = dob == null ? null : (DateTime.now().difference(dob).inDays / 365.25).floor();
 
+      final previousWeight = body.measurements.length > 1 ? body.measurements[body.measurements.length - 2].weightKg : null;
+      final previousBodyFat = body.measurements.length > 1 ? body.measurements[body.measurements.length - 2].bodyFatPercent : null;
+      final previousSleep = sleep.entries.length > 1 ? sleep.entries[1].hours : null;
       final plan = AdaptiveHealthEngine.build(
         HealthProfileInput(
           weightKg: body.weightKg ?? health.weightKg,
@@ -51,7 +55,22 @@ class _AiPageState extends ConsumerState<AiPage> {
         ),
       );
 
+      final baseline = PersonalBaselineEngine.build(
+        currentWeight: body.weightKg ?? health.weightKg,
+        previousWeight: previousWeight,
+        bodyFat: body.bodyFatPercent ?? health.bodyFatPercent,
+        previousBodyFat: previousBodyFat,
+        sleepHours: sleep.latest?.hours ?? (health.sleepHours == 0 ? null : health.sleepHours),
+        previousSleepHours: previousSleep,
+        steps: health.steps,
+        waterMl: hyd.consumedMl + health.waterMl,
+        waterTargetMl: plan.waterTargetMl.toDouble(),
+        restingHeartRate: health.restingHeartRate,
+        previousRestingHeartRate: health.restingHeartRate,
+      );
+
       final context = {
+        'personalBaseline': baseline.toJson(),
         'userProfile': {
           'name': body.profile?.name,
           'ageYears': age,
