@@ -186,6 +186,8 @@ class SunyaHealthConnectService {
   }
 
   Future<SunyaHealthSnapshot> sync({int days = 30}) async {
+    final historical = await historyAuthorized;
+    if (historical) days = days < 3650 ? 3650 : days;
     final types = await availableTypes();
     if (types.isEmpty) {
       return const SunyaHealthSnapshot(source: 'Health Connect unavailable');
