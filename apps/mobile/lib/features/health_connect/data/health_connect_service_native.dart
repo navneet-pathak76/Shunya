@@ -1,4 +1,5 @@
 import 'package:health/health.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class SunyaHealthSnapshot {
   const SunyaHealthSnapshot({
@@ -153,6 +154,11 @@ class SunyaHealthConnectService {
   }
 
   Future<bool> requestReadAccess() async {
+    await Permission.activityRecognition.request();
+    if (candidateTypes.contains(HealthDataType.DISTANCE_WALKING_RUNNING) ||
+        candidateTypes.contains(HealthDataType.WORKOUT)) {
+      await Permission.locationWhenInUse.request();
+    }
     final types = await availableTypes();
     if (types.isEmpty) return false;
     return _health.requestAuthorization(
