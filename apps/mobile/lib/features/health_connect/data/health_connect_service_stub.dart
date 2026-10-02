@@ -4,11 +4,11 @@ class SunyaHealthSnapshot {
     this.waterMl = 0, this.weightKg, this.heightCm, this.bodyFatPercent, this.bmi, this.waistCm,
     this.bodyWaterKg, this.heartRate, this.restingHeartRate, this.hrv, this.oxygen,
     this.bloodPressureSystolic, this.bloodPressureDiastolic, this.bloodGlucose,
-    this.bodyTemperature, this.respiratoryRate, this.sleepHours = 0, this.distanceMeters = 0,
+    this.bodyTemperature, this.respiratoryRate, this.sleepHours = 0, this.distanceMeters = 0, this.nutritionCalories = 0, this.nutritionProteinGrams = 0,
     this.exerciseMinutes = 0, this.records = 0, this.sourceNames = const [], this.source = 'Unavailable on web',
   });
   final int steps;
-  final double activeCalories, totalCalories, basalCalories, waterMl, sleepHours, distanceMeters, exerciseMinutes;
+  final double activeCalories, totalCalories, basalCalories, waterMl, sleepHours, distanceMeters, exerciseMinutes, nutritionCalories, nutritionProteinGrams;
   final double? weightKg, heightCm, bodyFatPercent, bmi, waistCm, bodyWaterKg, heartRate, restingHeartRate, hrv, oxygen, bloodPressureSystolic, bloodPressureDiastolic, bloodGlucose, bodyTemperature, respiratoryRate;
   final int records;
   final List<String> sourceNames;
@@ -19,7 +19,7 @@ class SunyaHealthSnapshot {
     'waistCm': waistCm, 'bodyWaterKg': bodyWaterKg, 'heartRate': heartRate, 'restingHeartRate': restingHeartRate,
     'hrv': hrv, 'spo2': oxygen, 'bloodPressure': {'systolic': bloodPressureSystolic, 'diastolic': bloodPressureDiastolic},
     'bloodGlucose': bloodGlucose, 'bodyTemperature': bodyTemperature, 'respiratoryRate': respiratoryRate,
-    'sleepHours': sleepHours, 'distanceMeters': distanceMeters, 'exerciseMinutes': exerciseMinutes,
+    'sleepHours': sleepHours, 'distanceMeters': distanceMeters, 'nutritionCalories': nutritionCalories, 'nutritionProteinGrams': nutritionProteinGrams, 'exerciseMinutes': exerciseMinutes,
     'records': records, 'sources': sourceNames, 'source': source,
   };
 }
