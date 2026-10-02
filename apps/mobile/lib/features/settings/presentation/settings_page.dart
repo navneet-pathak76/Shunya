@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/settings/sunya_settings.dart';
 import '../../../core/theme/sunya_theme.dart';
@@ -132,6 +133,31 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       .read(sunyaSettingsProvider.notifier)
                       .previewVisual(blur: v),
                   '${s.glassBlur.round()} px',
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          _section(
+            context,
+            'AI & subscriptions',
+            Column(
+              children: [
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.auto_awesome),
+                  title: const Text('AI Providers'),
+                  subtitle: const Text('ChatGPT, Gemini, Claude and SUNYA AI'),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => context.push('/ai/providers'),
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.bolt_rounded),
+                  title: const Text('SUNYA AI subscription'),
+                  subtitle: const Text('7-day trial • launch plan ₹99/month'),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => context.push('/subscription'),
                 ),
               ],
             ),
