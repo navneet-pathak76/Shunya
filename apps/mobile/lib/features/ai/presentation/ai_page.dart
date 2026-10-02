@@ -9,7 +9,11 @@ import '../../../core/services/ai/adaptive_health_engine.dart';
 import '../../../core/services/ai/sunya_ai_access.dart';
 import '../../../core/services/auth/sunya_google_auth.dart';
 import '../../../core/widgets/sunya_glass.dart';
+import '../../../core/providers/database_provider.dart';
 import '../../body/presentation/body_controller.dart';
+import '../../habits/presentation/habits_controller.dart';
+import '../../workout/presentation/workout_controller.dart';
+import '../../appearance/presentation/appearance_controller.dart';
 import '../../health_connect/presentation/health_connect_page.dart';
 import '../../hydration/presentation/hydration_controller.dart';
 import '../../nutrition/presentation/nutrition_controller.dart';
@@ -110,6 +114,14 @@ class _AiPageState extends ConsumerState<AiPage> {
     final hyd = ref.read(hydrationProvider);
     final nut = ref.read(nutritionProvider);
     final sleep = ref.read(sleepProvider);
+    final habits = ref.read(habitsProvider);
+    final workouts = ref.read(workoutControllerProvider);
+    final appearance = ref.read(appearanceProvider);
+    final repository = await ref.read(localRecordRepositoryProvider.future);
+    final goals = await repository.listDomain('goal');
+    final moods = await repository.listDomain('mood');
+    final journal = await repository.listDomain('journal');
+    final medications = await repository.listDomain('medication');
     final health = await ref.read(healthSnapshotProvider.future);
 
     final dob = body.profile?.dateOfBirth;
@@ -177,6 +189,43 @@ class _AiPageState extends ConsumerState<AiPage> {
         },
       },
       'healthConnect': health.toAiContext(),
+      'habits': habits.items.map((h) => {
+            'name': h.name,
+            'completedToday': h.completedOn(DateTime.now()),
+            'currentStreak': h.currentStreak,
+            'completionCount': h.completedDates.length,
+          }).toList(),
+      'workouts': workouts.map((session) => {
+            'startedAt': session.startedAt.toIso8601String(),
+            'endedAt': session.endedAt?.toIso8601String(),
+            'notes': session.notes,
+            'sets': session.sets.map((set) => {
+                  'exercise': set.exerciseName,
+                  'repetitions': set.repetitions,
+                  'weightKg': set.weightKg,
+                  'completedAt': set.completedAt.toIso8601String(),
+                }).toList(),
+          }).toList(),
+      'appearance': appearance.map((item) => {
+            'capturedAt': item.capturedAt.toIso8601String(),
+            'area': item.area.name,
+            'notes': item.notes,
+            'userScore': item.userScore,
+            'hairDensityScore': item.hairDensityScore,
+            'beardCoverageScore': item.beardCoverageScore,
+            'underEyeScore': item.underEyeScore,
+            'skinClarityScore': item.skinClarityScore,
+            'hairShedding': item.hairShedding,
+            'scalpItch': item.scalpItch,
+            'scalpFlaking': item.scalpFlaking,
+            'sleepHours': item.sleepHours,
+          }).toList(),
+      'goals': goals.map((r) => r.payload).toList(),
+      'wellness': {
+        'mood': moods.map((r) => r.payload).toList(),
+        'journal': journal.map((r) => r.payload).toList(),
+        'medications': medications.map((r) => r.payload).toList(),
+      },
       'deterministicPlan': {
         'recovery': plan.recoveryScore,
         'priority': plan.priority,
