@@ -72,7 +72,6 @@ class _AiPageState extends ConsumerState<AiPage> {
       final context = {
         'personalBaseline': baseline.toJson(),
         'userProfile': {
-          'name': body.profile?.name,
           'ageYears': age,
           'weightKg': body.weightKg ?? health.weightKg,
           'heightCm': body.heightCm ?? health.heightCm,
