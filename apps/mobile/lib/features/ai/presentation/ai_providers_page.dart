@@ -13,9 +13,9 @@ class AiProvidersPage extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
         children: [
-          Text('Choose your intelligence layer', style: Theme.of(context).textTheme.displaySmall),
+          Text('Choose your AI', style: Theme.of(context).textTheme.displaySmall),
           const SizedBox(height: 8),
-          const Text('SUNYA keeps one normalized health context so you can switch providers without rebuilding your profile.'),
+          const Text('Your health data is normalized once, then routed to the AI provider you select. ChatGPT, Gemini and Claude are the free provider options; SUNYA AI adds its own premium intelligence layer.'),
           const SizedBox(height: 18),
           for (final provider in SunyaAiProvider.values)
             Padding(
