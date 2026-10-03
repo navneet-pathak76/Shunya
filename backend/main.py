@@ -1,5 +1,5 @@
 import os
-from typing import Any, Literal
+from typing import Any
 
 import httpx
 from fastapi import FastAPI, HTTPException
@@ -9,20 +9,21 @@ app = FastAPI(title="SUNYA AI", version="2.0.0")
 
 
 class ChatRequest(BaseModel):
+    provider: str = "sunya"
     message: str
-    provider: Literal["sunya", "chatgpt", "gemini", "claude"] = "sunya"
     context: dict[str, Any] = Field(default_factory=dict)
 
 
-def build_prompt(request: ChatRequest) -> str:
-    return f"""You are the {request.provider.upper()} intelligence layer inside SUNYA, a personal health operating system.
-Analyze the supplied tracked information as a whole rather than answering from one metric.
-Separate measured data, derived estimates and recommendations.
-Never invent missing measurements. Do not diagnose disease or present medical conclusions as certainty.
-If values may be concerning, explain that they require appropriate professional evaluation.
-Prefer practical, personalized next actions and explain the relevant evidence from the user's own data.
+def _prompt(request: ChatRequest) -> str:
+    return f"""You are SUNYA, a personal health and wellness intelligence assistant.
+Analyze the supplied tracked and user-entered context thoroughly, but never invent missing measurements.
+Distinguish measured data, user-entered data, calculations and recommendations.
+Do not diagnose disease or present a medical conclusion as certainty.
+For potentially concerning measurements, explain that a qualified clinician should evaluate them.
+Look for relationships across sleep, activity, body composition, hydration, nutrition, recovery and trends when the data supports them.
+Return practical, personalized guidance.
 
-USER HEALTH CONTEXT:
+HEALTH CONTEXT:
 {request.context}
 
 USER QUESTION:
@@ -30,43 +31,35 @@ USER QUESTION:
 """
 
 
-@app.get("/health")
-def health():
-    return {"status": "ok", "service": "sunya-ai", "version": "2.0.0"}
+async def _gemini(prompt: str, model: str) -> str:
+    from google import genai
 
-
-async def gemini(prompt: str) -> str:
     key = os.getenv("GEMINI_API_KEY", "").strip()
     if not key:
-        raise RuntimeError("GEMINI_API_KEY is not configured")
-    from google import genai
+        raise RuntimeError("Gemini provider is not configured")
     client = genai.Client(api_key=key)
-    response = await client.aio.models.generate_content(
-        model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
-        contents=prompt,
-    )
+    response = await client.aio.models.generate_content(model=model, contents=prompt)
     return response.text or "I could not generate an answer right now."
 
 
-async def openai(prompt: str) -> str:
+async def _openai(prompt: str, model: str) -> str:
     key = os.getenv("OPENAI_API_KEY", "").strip()
     if not key:
-        raise RuntimeError("OPENAI_API_KEY is not configured")
+        raise RuntimeError("ChatGPT provider is not configured")
     async with httpx.AsyncClient(timeout=45) as client:
         response = await client.post(
-            "https://api.openai.com/v1/responses",
-            headers={"Authorization": f"Bearer {key}"},
-            json={"model": os.getenv("OPENAI_MODEL", "gpt-5-mini"), "input": prompt},
+            "https://api.openai.com/v1/chat/completions",
+            headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+            json={"model": model, "messages": [{"role": "system", "content": prompt}]},
         )
         response.raise_for_status()
-        data = response.json()
-        return data.get("output_text") or "I could not generate an answer right now."
+        return response.json()["choices"][0]["message"]["content"]
 
 
-async def claude(prompt: str) -> str:
+async def _claude(prompt: str, model: str) -> str:
     key = os.getenv("ANTHROPIC_API_KEY", "").strip()
     if not key:
-        raise RuntimeError("ANTHROPIC_API_KEY is not configured")
+        raise RuntimeError("Claude provider is not configured")
     async with httpx.AsyncClient(timeout=45) as client:
         response = await client.post(
             "https://api.anthropic.com/v1/messages",
@@ -75,69 +68,36 @@ async def claude(prompt: str) -> str:
                 "anthropic-version": "2023-06-01",
                 "content-type": "application/json",
             },
-            json={
-                "model": os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-5"),
-                "max_tokens": 1200,
-                "messages": [{"role": "user", "content": prompt}],
-            },
+            json={"model": model, "max_tokens": 1200, "messages": [{"role": "user", "content": prompt}]},
         )
         response.raise_for_status()
         data = response.json()
-        blocks = data.get("content", [])
-        return "".join(block.get("text", "") for block in blocks if block.get("type") == "text") or "I could not generate an answer right now."
+        return "".join(part.get("text", "") for part in data.get("content", []))
 
 
-
-@app.get("/v1/ai/providers")
-def providers():
-    return {
-        "chatgpt": {"available": bool(os.getenv("OPENAI_API_KEY", "").strip()), "tier": "free"},
-        "gemini": {"available": bool(os.getenv("GEMINI_API_KEY", "").strip()), "tier": "free"},
-        "claude": {"available": bool(os.getenv("ANTHROPIC_API_KEY", "").strip()), "tier": "free"},
-        "sunya": {"available": bool(os.getenv("GEMINI_API_KEY", "").strip()), "tier": "premium"},
-    }
-
-
-class GoogleAuthRequest(BaseModel):
-    id_token: str
-
-
-@app.post("/v1/auth/google")
-async def google_auth(request: GoogleAuthRequest):
-    client_id = os.getenv("GOOGLE_WEB_CLIENT_ID", "").strip()
-    if not client_id:
-        raise HTTPException(status_code=503, detail="Google authentication is not configured")
-    try:
-        from google.auth.transport import requests as google_requests
-        from google.oauth2 import id_token as google_id_token
-
-        claims = google_id_token.verify_oauth2_token(
-            request.id_token,
-            google_requests.Request(),
-            client_id,
-        )
-        return {
-            "id": claims.get("sub"),
-            "email": claims.get("email"),
-            "name": claims.get("name"),
-            "picture": claims.get("picture"),
-        }
-    except Exception as exc:
-        raise HTTPException(status_code=401, detail="Invalid Google identity token") from exc
+@app.get("/health")
+def health():
+    return {"status": "ok", "service": "sunya-ai"}
 
 
 @app.post("/v1/ai/chat")
 async def chat(request: ChatRequest):
+    provider = request.provider.lower().strip()
+    prompt = _prompt(request)
     try:
-        prompt = build_prompt(request)
-        if request.provider in ("sunya", "gemini"):
-            text = await gemini(prompt)
-        elif request.provider == "chatgpt":
-            text = await openai(prompt)
+        if provider == "chatgpt":
+            text = await _openai(prompt, os.getenv("OPENAI_MODEL", "gpt-5-mini"))
+        elif provider == "claude":
+            text = await _claude(prompt, os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-5"))
+        elif provider in {"gemini", "sunya"}:
+            text = await _gemini(
+                prompt,
+                os.getenv("SUNYA_GEMINI_MODEL" if provider == "sunya" else "GEMINI_MODEL", "gemini-2.5-flash"),
+            )
         else:
-            text = await claude(prompt)
-        return {"text": text, "provider": request.provider}
-    except httpx.HTTPStatusError as exc:
-        raise HTTPException(status_code=502, detail=f"{request.provider} provider request failed") from exc
+            raise HTTPException(status_code=400, detail="Unsupported AI provider")
+        return {"provider": provider, "text": text}
+    except HTTPException:
+        raise
     except Exception as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
+        raise HTTPException(status_code=502, detail="AI provider request failed") from exc
