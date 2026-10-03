@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/services/ai/ai_gateway.dart';
+import '../../../core/services/ai/sunya_ai_settings.dart';
 import '../../../core/services/ai/adaptive_health_engine.dart';
 import '../../../core/settings/sunya_settings.dart';
 import '../../../core/theme/sunya_theme.dart';
@@ -44,6 +45,11 @@ class _AiPageState extends ConsumerState<AiPage> {
       return;
     }
 
+    final aiSettings = ref.read(sunyaAiSettingsProvider);
+    if (aiSettings.provider == SunyaAiProvider.sunya && !aiSettings.premium && !aiSettings.trialActive) {
+      if (mounted) setState(() { messages.add('SUNYA AI is available with a 7-day free trial or subscription. Choose another provider for free access.'); loading = false; });
+      return;
+    }
     final body = ref.read(bodyProvider);
     final hyd = ref.read(hydrationProvider);
     final nut = ref.read(nutritionProvider);
