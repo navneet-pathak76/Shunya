@@ -178,12 +178,22 @@ class _AiPageState extends ConsumerState<AiPage> {
         children: [
           const SunyaLogo(size: 90, showWordmark: true),
           const SizedBox(height: 24),
-          Text('Choose your intelligence layer', style: Theme.of(context).textTheme.displaySmall),
+          Text('Your personal intelligence layer', style: Theme.of(context).textTheme.displaySmall),
           const SizedBox(height: 8),
-          const Text('Every provider receives the same structured SUNYA health context. SUNYA analyzes tracked history first, then the selected model turns it into personalized guidance.'),
+          const Text('SUNYA combines imported health signals and every data point you enter. It builds your baseline and sends the same structured context to the AI provider you choose.'),
           const SizedBox(height: 18),
           _providerSelector(settings, provider),
           const SizedBox(height: 14),
+          const SunyaGlassCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('How SUNYA analyzes you', style: TextStyle(fontWeight: FontWeight.w700)),
+                SizedBox(height: 8),
+                Text('1. Import or enter data.  2. Normalize units and sources.  3. Compare history with your own baseline.  4. Identify supported relationships.  5. Generate personalized actions and explain the evidence.'),
+              ],
+            ),
+          ),
           if (!settings.sunyaAccess)
             SunyaGlassCard(
               child: Column(
