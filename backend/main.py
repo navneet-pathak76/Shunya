@@ -80,6 +80,38 @@ def health():
     return {"status": "ok", "service": "sunya-ai"}
 
 
+@app.get("/v1/ai/providers")
+def providers():
+    return {
+        "chatgpt": {"free": True, "configured": bool(os.getenv("OPENAI_API_KEY", "").strip())},
+        "gemini": {"free": True, "configured": bool(os.getenv("GEMINI_API_KEY", "").strip())},
+        "claude": {"free": True, "configured": bool(os.getenv("ANTHROPIC_API_KEY", "").strip())},
+        "sunya": {"premium": True, "trialDays": 7, "configured": bool(os.getenv("GEMINI_API_KEY", "").strip())},
+    }
+
+
+@app.post("/v1/auth/google")
+async def google_auth(payload: dict[str, Any]):
+    client_id = os.getenv("GOOGLE_WEB_CLIENT_ID", "").strip()
+    if not client_id:
+        raise HTTPException(status_code=503, detail="Google authentication is not configured")
+    token = str(payload.get("id_token", "")).strip()
+    if not token:
+        raise HTTPException(status_code=400, detail="id_token is required")
+    try:
+        from google.oauth2 import id_token as google_id_token
+        from google.auth.transport import requests
+        info = google_id_token.verify_oauth2_token(token, requests.Request(), client_id)
+        return {
+            "id": info.get("sub"),
+            "email": info.get("email"),
+            "name": info.get("name"),
+            "picture": info.get("picture"),
+        }
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid Google ID token")
+
+
 @app.post("/v1/ai/chat")
 async def chat(request: ChatRequest):
     provider = request.provider.lower().strip()
