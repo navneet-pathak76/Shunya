@@ -16,7 +16,7 @@ import '../../nutrition/presentation/nutrition_controller.dart';
 import '../../sleep/presentation/sleep_controller.dart';
 
 class AiPage extends ConsumerStatefulWidget {
-  const AiPage({super.name});
+  const AiPage({super.key});
   @override ConsumerState<AiPage> createState() => _AiPageState();
 }
 
