@@ -25,7 +25,12 @@ class AiProvidersPage extends ConsumerWidget {
                   value: provider,
                   groupValue: settings.provider,
                   onChanged: (value) {
-                    if (value != null) ref.read(sunyaAiSettingsProvider.notifier).select(value);
+                    if (value == null) return;
+                    if (value == SunyaAiProvider.sunya && !settings.premium && !settings.trialActive) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Start the 7-day SUNYA AI trial or subscribe to unlock SUNYA AI.')));
+                      return;
+                    }
+                    ref.read(sunyaAiSettingsProvider.notifier).select(value);
                   },
                   contentPadding: EdgeInsets.zero,
                   title: Row(children: [
