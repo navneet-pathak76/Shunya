@@ -3,6 +3,7 @@ import '../../../features/health_connect/data/health_connect_service.dart';
 import '../../../features/hydration/presentation/hydration_controller.dart';
 import '../../../features/nutrition/presentation/nutrition_controller.dart';
 import '../../../features/sleep/presentation/sleep_controller.dart';
+import 'personal_baseline_engine.dart';
 
 class SunyaHealthContextBuilder {
   static Map<String, dynamic> build({
@@ -31,12 +32,34 @@ class SunyaHealthContextBuilder {
         }).toList();
 
     final meals = nutrition.meals.map((m) => m.toJson()).toList();
-    final sleepHistory = sleep.entries.take(14).map((e) => {
+    final sleepHistory = sleep.entries.take(30).map((e) => {
           'startedAt': e.startedAt.toIso8601String(),
           'endedAt': e.endedAt.toIso8601String(),
           'hours': e.hours,
           'quality': e.quality,
         }).toList();
+
+    final previousWeight = body.measurements.length > 1
+        ? body.measurements[body.measurements.length - 2].weightKg
+        : null;
+    final previousBodyFat = body.measurements.length > 1
+        ? body.measurements[body.measurements.length - 2].bodyFatPercent
+        : null;
+    final latestSleep = sleep.entries.isEmpty ? null : sleep.entries.first.hours;
+    final previousSleep = sleep.entries.length > 1 ? sleep.entries[1].hours : null;
+    final baseline = PersonalBaselineEngine.build(
+      currentWeight: body.weightKg,
+      previousWeight: previousWeight,
+      bodyFat: body.bodyFatPercent,
+      previousBodyFat: previousBodyFat,
+      sleepHours: latestSleep,
+      previousSleepHours: previousSleep,
+      steps: health.steps,
+      waterMl: hydration.consumedMl + health.waterMl,
+      waterTargetMl: hydration.goalMl,
+      restingHeartRate: health.restingHeartRate,
+      previousRestingHeartRate: null,
+    );
 
     return {
       'user': {
@@ -67,6 +90,7 @@ class SunyaHealthContextBuilder {
         'goalMl': hydration.goalMl,
       },
       'sleepHistory': sleepHistory,
+      'personalBaseline': baseline.toJson(),
       'healthConnect': health.toContext(),
     };
   }
