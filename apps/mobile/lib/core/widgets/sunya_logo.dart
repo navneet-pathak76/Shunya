@@ -22,10 +22,6 @@ class SunyaLogo extends StatelessWidget {
       width: size,
       height: size,
       fit: BoxFit.contain,
-      colorFilter: ColorFilter.mode(
-        isDark ? SunyaTheme.ivory : SunyaTheme.ink,
-        BlendMode.srcIn,
-      ),
     );
 
     if (!showWordmark) return mark;
