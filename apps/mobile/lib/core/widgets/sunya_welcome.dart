@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../settings/sunya_settings.dart';
 import '../theme/sunya_theme.dart';
 import 'sunya_glass.dart';
+import 'sunya_logo.dart';
 
 class SunyaWelcomeGate extends ConsumerStatefulWidget {
   const SunyaWelcomeGate({super.key, required this.child});
@@ -106,29 +107,7 @@ class _SunyaWelcomeGateState extends ConsumerState<SunyaWelcomeGate>
                               width: double.infinity,
                               child: Row(
                               children: [
-                                Container(
-                                  width: 46,
-                                  height: 46,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(16),
-                                    gradient: const LinearGradient(
-                                      colors: [
-                                        SunyaTheme.blueBright,
-                                        SunyaTheme.blueGlow
-                                      ],
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: SunyaTheme.blueBrightSoft,
-                                        blurRadius: 24,
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Icon(
-                                    Icons.auto_awesome_rounded,
-                                    color: Colors.white,
-                                  ),
-                                ),
+                                const SunyaLogo(size: 54),
                                 const Spacer(),
                                 IconButton(
                                   onPressed: close,
@@ -139,14 +118,14 @@ class _SunyaWelcomeGateState extends ConsumerState<SunyaWelcomeGate>
                             ),
                             const SizedBox(height: 24),
                             Text(
-                              'SUNYA AI',
+                              'SUNYA AI  •  HUMAN OPERATING SYSTEM',
                               style: Theme.of(context)
                                   .textTheme
                                   .bodySmall
                                   ?.copyWith(
                                     letterSpacing: 2.2,
                                     fontWeight: FontWeight.w700,
-                                    color: SunyaTheme.blueBright,
+                                    color: SunyaTheme.gold,
                                   ),
                             ),
                             const SizedBox(height: 7),
@@ -166,10 +145,10 @@ class _SunyaWelcomeGateState extends ConsumerState<SunyaWelcomeGate>
                               width: double.infinity,
                               padding: const EdgeInsets.all(18),
                               decoration: BoxDecoration(
-                                color: SunyaTheme.blueBright.withOpacity(.08),
+                                color: SunyaTheme.gold.withOpacity(.08),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: SunyaTheme.blueBright.withOpacity(.18),
+                                  color: SunyaTheme.gold.withOpacity(.22),
                                 ),
                               ),
                               child: Row(
@@ -177,7 +156,7 @@ class _SunyaWelcomeGateState extends ConsumerState<SunyaWelcomeGate>
                                 children: [
                                   const Icon(
                                     Icons.format_quote_rounded,
-                                    color: SunyaTheme.blueBright,
+                                    color: SunyaTheme.gold,
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
