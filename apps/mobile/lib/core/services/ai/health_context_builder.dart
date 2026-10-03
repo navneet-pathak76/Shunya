@@ -55,7 +55,7 @@ class SunyaHealthContextBuilder {
       sleepHours: latestSleep,
       previousSleepHours: previousSleep,
       steps: health.steps,
-      waterMl: hydration.consumedMl + health.waterMl,
+      waterMl: (hydration.consumedMl + health.waterMl).toDouble(),
       waterTargetMl: hydration.goalMl,
       restingHeartRate: health.restingHeartRate,
       previousRestingHeartRate: null,
