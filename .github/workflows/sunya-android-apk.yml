@@ -45,6 +45,34 @@ jobs:
       - name: Generate Isar sources
         run: dart run build_runner build --delete-conflicting-outputs
 
+      - name: Apply SUNYA launcher branding
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p android/app/src/main/res/drawable
+          cat > android/app/src/main/res/drawable/sunya_logo.xml <<'XML'
+          <?xml version="1.0" encoding="utf-8"?>
+          <vector xmlns:android="http://schemas.android.com/apk/res/android"
+              android:width="108dp"
+              android:height="108dp"
+              android:viewportWidth="512"
+              android:viewportHeight="512">
+              <path android:fillColor="#050608" android:pathData="M112,0 L400,0 Q512,0 512,112 L512,400 Q512,512 400,512 L112,512 Q0,512 0,400 L0,112 Q0,0 112,0Z"/>
+              <path android:strokeColor="#F5F5F5" android:strokeWidth="28" android:fillColor="@android:color/transparent" android:strokeLineCap="round" android:pathData="M238,256 C200,180 149,138 106,167 C52,204 66,289 118,321 C172,355 218,324 238,280"/>
+              <path android:strokeColor="#D4AF37" android:strokeWidth="28" android:fillColor="@android:color/transparent" android:strokeLineCap="round" android:pathData="M274,256 C312,332 363,374 406,345 C460,308 446,223 394,191 C340,157 294,188 274,232"/>
+              <path android:strokeColor="#D4AF37" android:strokeWidth="4" android:fillColor="@android:color/transparent" android:pathData="M256,92 L256,420"/>
+              <path android:fillColor="#D4AF37" android:pathData="M269,256 A13,13 0,1 1,243,256 A13,13 0,1 1,269,256"/>
+          </vector>
+          XML
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("android/app/src/main/AndroidManifest.xml")
+          s=p.read_text()
+          s=s.replace('android:icon="@mipmap/ic_launcher"', 'android:icon="@drawable/sunya_logo"')
+          s=s.replace('android:roundIcon="@mipmap/ic_launcher_round"', 'android:roundIcon="@drawable/sunya_logo"')
+          p.write_text(s)
+          PY
+
       - name: Configure Health Connect
         shell: bash
         run: |
