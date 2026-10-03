@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/auth/presentation/auth_page.dart';
 import '../widgets/sunya_welcome.dart';
+import '../settings/sunya_settings.dart';
 
 class SunyaAuthGate extends ConsumerStatefulWidget {
   const SunyaAuthGate({super.key, required this.child});
