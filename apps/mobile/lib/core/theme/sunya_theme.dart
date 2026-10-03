@@ -3,17 +3,25 @@ import 'package:flutter/material.dart';
 class SunyaTheme {
   SunyaTheme._();
 
+  // SUNYA visual identity from the approved brand board.
   static const gold = Color(0xFFD4AF37);
   static const goldBright = Color(0xFFF0C75E);
-  static const goldSoft = Color(0x26D4AF37);
-  static const goldGlow = Color(0xFFF8D98B);
+  static const goldLight = Color(0xFFF8D98B);
   static const ivory = Color(0xFFF5F5F5);
+  static const ink = Color(0xFF050608);
+  static const navyBlack = Color(0xFF0B111B);
+  static const midnight = Color(0xFF111827);
+  static const whiteSoft = Color(0xFFF7F7F4);
 
-  // Legacy aliases keep existing feature widgets on the SUNYA brand palette.
+  static const goldSoft = Color(0x26D4AF37);
+  static const goldBrightSoft = Color(0x33F0C75E);
+  static const goldGlow = goldLight;
+
+  // Legacy aliases keep existing feature widgets on-brand.
   static const blue = gold;
   static const blueBright = goldBright;
   static const blueSoft = goldSoft;
-  static const blueBrightSoft = Color(0x33F0C75E);
+  static const blueBrightSoft = goldBrightSoft;
   static const blueGlow = goldGlow;
   static const orange = goldBright;
   static const orangeSoft = goldSoft;
@@ -21,14 +29,14 @@ class SunyaTheme {
   static const background = Color(0x00000000);
   static const border = Color(0x26D4AF37);
 
-  static const darkBackground = Color(0xFF050608);
-  static const darkSurface = Color(0xFF0D1015);
-  static const darkSurfaceElevated = Color(0xFF151922);
-  static const darkText = Color(0xFFF5F5F5);
-  static const darkTextSecondary = Color(0xFFC5C5C5);
+  static const darkBackground = ink;
+  static const darkSurface = Color(0xFF0D1118);
+  static const darkSurfaceElevated = Color(0xFF151A22);
+  static const darkText = ivory;
+  static const darkTextSecondary = Color(0xFFC8C8C8);
   static const darkTextMuted = Color(0xFF858585);
 
-  static const lightSurface = Color(0xFFFAFAF8);
+  static const lightSurface = whiteSoft;
   static const lightText = Color(0xFF111111);
   static const lightTextSecondary = Color(0xFF555555);
   static const lightTextMuted = Color(0xFF777777);
@@ -85,7 +93,7 @@ class SunyaTheme {
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: lightSurface.withOpacity(.92),
+          fillColor: Colors.white.withOpacity(.88),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(radiusMedium),
             borderSide: BorderSide(color: gold.withOpacity(.18)),
@@ -182,15 +190,15 @@ class SunyaTheme {
       return const LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [Color(0xFFF7F5EF), Color(0xFFFFFFFF), Color(0xFFF5E8C8), Color(0xFFEFE3C6)],
+        colors: [Color(0xFFF4F1E9), Color(0xFFFFFEFA), Color(0xFFF2E4BF), Color(0xFFE7D8B2)],
         stops: [0.0, 0.42, 0.78, 1.0],
       );
     }
     return const LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: [Color(0xFF000000), Color(0xFF050608), Color(0xFF0C0B08), Color(0xFF111827)],
-      stops: [0.0, 0.48, 0.76, 1.0],
+      colors: [Color(0xFF000000), Color(0xFF050608), Color(0xFF0B111B), Color(0xFF15120C)],
+      stops: [0.0, 0.42, 0.76, 1.0],
     );
   }
 }
