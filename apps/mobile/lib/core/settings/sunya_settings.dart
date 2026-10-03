@@ -13,7 +13,7 @@ class SunyaSettings {
     this.glassBlur = 14,
     this.glassEnabled = true,
     this.themeMode = ThemeMode.system,
-    this.aiProvider = 'sunya',
+    this.aiProvider = 'gemini',
     this.sunyaTrialStartedAt,
     this.sunyaPremium = false,
   });
@@ -90,7 +90,7 @@ class SunyaSettingsController extends StateNotifier<SunyaSettings> {
       glassBlur: p.getDouble('sunya.glassBlur') ?? state.glassBlur,
       glassEnabled: p.getBool('sunya.glassEnabled') ?? state.glassEnabled,
       themeMode: SunyaSettings._themeMode(mode),
-      aiProvider: p.getString('sunya.aiProvider') ?? state.aiProvider,
+      aiProvider: p.getString('sunya.aiProvider') ?? 'gemini',
       sunyaTrialStartedAt: DateTime.tryParse(p.getString('sunya.sunyaTrialStartedAt') ?? ''),
       sunyaPremium: p.getBool('sunya.sunyaPremium') ?? state.sunyaPremium,
     );
