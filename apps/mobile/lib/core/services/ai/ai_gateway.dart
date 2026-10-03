@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'sunya_ai_settings.dart';
 
 enum SunyaAiProvider { sunya, chatgpt, gemini, claude }
 
@@ -32,7 +31,7 @@ class SunyaAiGateway {
 
   Future<String?> chat({
     required String message,
-    required SunyaAiProvider provider,
+    required String provider,
     Map<String, dynamic> context = const {},
   }) async {
     if (!configured) return null;
