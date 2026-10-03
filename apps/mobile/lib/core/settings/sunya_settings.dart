@@ -31,7 +31,7 @@ class SunyaSettings {
   final DateTime? sunyaTrialStartedAt;
   final bool sunyaPremium;
 
-  bool get sunyaTrialActive => sunyaTrialStartedAt != null && DateTime.now().difference(sunyaTrialStartedAt!).inDays < 7;
+  bool get sunyaTrialActive => sunyaTrialStartedAt != null && DateTime.now().isBefore(sunyaTrialStartedAt!.add(const Duration(days: 7)));
   bool get sunyaAccess => sunyaPremium || sunyaTrialActive;
 
   SunyaSettings copyWith({
