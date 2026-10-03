@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'sunya_ai_settings.dart';
 
 enum SunyaAiProvider { sunya, chatgpt, gemini, claude }
 
