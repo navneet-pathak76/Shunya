@@ -50,6 +50,31 @@ class SunyaHealthSnapshot {
   final double exerciseMinutes;
   final int records;
   final String source;
+
+  Map<String, dynamic> toContext() => {
+    'steps': steps,
+    'distanceMeters': distanceMeters,
+    'activeCalories': activeCalories,
+    'totalCalories': totalCalories,
+    'basalCalories': basalCalories,
+    'waterMl': waterMl,
+    'weightKg': weightKg,
+    'heightCm': heightCm,
+    'bodyFatPercent': bodyFatPercent,
+    'bmi': bmi,
+    'heartRate': heartRate,
+    'restingHeartRate': restingHeartRate,
+    'hrv': hrv,
+    'spo2': oxygen,
+    'bloodPressure': {'systolic': systolicBp, 'diastolic': diastolicBp},
+    'bloodGlucose': glucose,
+    'bodyTemperatureC': temperatureC,
+    'respiratoryRate': respiratoryRate,
+    'sleepHours': sleepHours,
+    'exerciseMinutes': exerciseMinutes,
+    'records': records,
+    'source': source,
+  };
 }
 
 class SunyaHealthConnectService {
