@@ -158,24 +158,42 @@ jobs:
           from pathlib import Path
           import re
 
-          p = Path("android/app/build.gradle.kts")
+          app = Path("android/app")
+          gradle = app / "build.gradle"
+          kts = app / "build.gradle.kts"
+          p = gradle if gradle.exists() else kts
           s = p.read_text()
 
-          if "isCoreLibraryDesugaringEnabled = true" not in s:
-              s = s.replace(
-                  "android {",
-                  "android {\n    compileOptions {\n        isCoreLibraryDesugaringEnabled = true\n    }",
-                  1,
-              )
+          if p.suffix == ".kts":
+              if "isCoreLibraryDesugaringEnabled = true" not in s:
+                  s = s.replace(
+                      "android {",
+                      "android {\n    compileOptions {\n        isCoreLibraryDesugaringEnabled = true\n    }",
+                      1,
+                  )
+              dep = 'coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")'
+          else:
+              if "coreLibraryDesugaringEnabled true" not in s:
+                  s = s.replace(
+                      "android {",
+                      "android {\n    compileOptions {\n        coreLibraryDesugaringEnabled true\n    }",
+                      1,
+                  )
+              dep = 'coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.1.5"'
 
-          dep = 'coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")'
-          if dep not in s:
-              s = s.replace("dependencies {", "dependencies {\n    " + dep, 1)
+          if "desugar_jdk_libs" not in s:
+              s += "\n\ndependencies {\n    " + dep + "\n}\n"
 
-          s = re.sub(r"compileSdk\s*=\s*[^\n]+", "compileSdk = 36", s, count=1)
-          if "minSdk = 26" not in s:
-              s = re.sub(r"minSdk\s*=\s*[^\n]+", "minSdk = 26", s, count=1)
+          s = re.sub(r"compileSdk(?:Version|\s*=|\s+)\s*\d+", "compileSdk = 36" if p.suffix == ".kts" else "compileSdkVersion 36", s, count=1)
+          if p.suffix == ".kts":
+              if "minSdk = 26" not in s:
+                  s = re.sub(r"minSdk\s*=\s*\d+", "minSdk = 26", s, count=1)
+          else:
+              if "minSdkVersion 26" not in s:
+                  s = re.sub(r"minSdkVersion\s+\d+", "minSdkVersion 26", s, count=1)
+
           p.write_text(s)
+          print("Configured", p)
           PY
 
       - name: Normalize plugin Android API levels
