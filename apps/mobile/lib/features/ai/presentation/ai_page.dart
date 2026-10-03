@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/services/ai/ai_gateway.dart';
 import '../../../core/services/ai/sunya_ai_settings.dart';
 import '../../../core/services/ai/adaptive_health_engine.dart';
+import '../../../core/services/ai/health_context_builder.dart';
 import '../../../core/settings/sunya_settings.dart';
 import '../../../core/theme/sunya_theme.dart';
 import '../../../core/widgets/sunya_glass.dart';
@@ -58,22 +59,15 @@ class _AiPageState extends ConsumerState<AiPage> {
     final dob = body.profile?.dateOfBirth;
     final age = dob == null ? null : (DateTime.now().difference(dob).inDays / 365.25).floor();
 
-    final bodyHistory = body.measurements.take(30).map((m) => {
-      'date': m.date.toIso8601String(),
-      'weightKg': m.weightKg,
-      'heightCm': m.heightCm,
-      'bodyFatPercent': m.bodyFatPercent,
-      'bmi': m.bmi,
-      'notes': m.notes,
-    }).toList();
-    final regionHistory = body.regionMeasurements.take(60).map((m) => m.toJson()).toList();
-    final mealsHistory = nut.meals.map((m) => m.toJson()).toList();
-    final sleepHistory = sleep.entries.take(30).map((e) => {
-      'startedAt': e.startedAt.toIso8601String(),
-      'endedAt': e.endedAt.toIso8601String(),
-      'hours': e.hours,
-      'quality': e.quality,
-    }).toList();
+    final healthContext = SunyaHealthContextBuilder.build(
+      body: body,
+      hydration: hyd,
+      nutrition: nut,
+      sleep: sleep,
+      health: health,
+      name: settings.name,
+      goal: settings.goal,
+    );
 
     final plan = AdaptiveHealthEngine.build(
       HealthProfileInput(
@@ -89,37 +83,8 @@ class _AiPageState extends ConsumerState<AiPage> {
     );
 
     final context = {
-      'profile': {
-        'name': settings.name,
-        'age': age ?? settings.age,
-        'heightCm': body.heightCm ?? settings.heightCm,
-        'weightKg': body.weightKg ?? settings.weightKg,
-        'goal': settings.goal,
-      },
-      'trackedData': {
-        'body': {
-          'bmi': plan.bmi,
-          'weightKg': body.weightKg,
-          'bodyFatPercent': body.bodyFatPercent,
-          'measurements': body.measurements.length,
-        },
-        'nutrition': {'calories': nut.calories, 'protein': nut.protein, 'meals': nut.meals.length},
-        'hydration': {'consumedMl': hyd.consumedMl},
-        'sleep': {'latestHours': sleep.latest?.hours, 'averageHours': sleep.averageHours, 'entries': sleep.entries.length},
-        'healthConnect': {
-          'steps': health.steps,
-          'activeCalories': health.activeCalories,
-          'totalCalories': health.totalCalories,
-          'waterMl': health.waterMl,
-          'sleepHours': health.sleepHours,
-          'weightKg': health.weightKg,
-          'heartRate': health.heartRate,
-          'restingHeartRate': health.restingHeartRate,
-          'hrv': health.hrv,
-          'spo2': health.oxygen,
-          'records': health.records,
-        },
-      },
+      'profile': healthContext['user'],
+      'health': healthContext,
       'derivedPlan': {
         'recovery': plan.recoveryScore,
         'priority': plan.priority,
