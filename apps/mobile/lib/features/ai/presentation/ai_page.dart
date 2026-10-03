@@ -16,7 +16,7 @@ import '../../nutrition/presentation/nutrition_controller.dart';
 import '../../sleep/presentation/sleep_controller.dart';
 
 class AiPage extends ConsumerStatefulWidget {
-  const AiPage({super.key});
+  const AiPage({super.name});
   @override ConsumerState<AiPage> createState() => _AiPageState();
 }
 
@@ -33,7 +33,7 @@ class _AiPageState extends ConsumerState<AiPage> {
 
     final settings = ref.read(sunyaSettingsProvider);
     final selected = SunyaAiProvider.values.firstWhere(
-      (p) => p.key == settings.aiProvider,
+      (p) => p.name == settings.aiProvider,
       orElse: () => SunyaAiProvider.sunya,
     );
 
@@ -133,7 +133,7 @@ class _AiPageState extends ConsumerState<AiPage> {
 
     final remote = await SunyaAiGateway().chat(
       message: q,
-      provider: selected,
+      provider: selected.name,
       context: context,
     );
     final answer = remote ?? ('SUNYA: ' + plan.priority + ' is the current priority. ' + plan.actions.first);
@@ -145,7 +145,7 @@ class _AiPageState extends ConsumerState<AiPage> {
     final current = ref.read(sunyaSettingsProvider);
     await ref.read(sunyaSettingsProvider.notifier).update(
       current.copyWith(
-        aiProvider: SunyaAiProvider.sunya.key,
+        aiProvider: SunyaAiProvider.sunya.name,
         sunyaTrialStartedAt: current.sunyaTrialStartedAt ?? DateTime.now(),
       ),
     );
@@ -156,7 +156,7 @@ class _AiPageState extends ConsumerState<AiPage> {
   Widget build(BuildContext context) {
     final settings = ref.watch(sunyaSettingsProvider);
     final provider = SunyaAiProvider.values.firstWhere(
-      (p) => p.key == settings.aiProvider,
+      (p) => p.name == settings.aiProvider,
       orElse: () => SunyaAiProvider.sunya,
     );
 
@@ -204,7 +204,7 @@ class _AiPageState extends ConsumerState<AiPage> {
                       if (started && mounted) {
                         final current = ref.read(sunyaSettingsProvider);
                         await ref.read(sunyaSettingsProvider.notifier).update(
-                          current.copyWith(sunyaPremium: true, aiProvider: SunyaAiProvider.sunya.key),
+                          current.copyWith(sunyaPremium: true, aiProvider: SunyaAiProvider.sunya.name),
                         );
                         setState(() {});
                       }
@@ -268,7 +268,7 @@ class _AiPageState extends ConsumerState<AiPage> {
                     return;
                   }
                   await ref.read(sunyaSettingsProvider.notifier).update(
-                    ref.read(sunyaSettingsProvider).copyWith(aiProvider: item.key),
+                    ref.read(sunyaSettingsProvider).copyWith(aiProvider: item.name),
                   );
                 },
               );
