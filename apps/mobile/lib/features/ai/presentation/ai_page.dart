@@ -58,6 +58,22 @@ class _AiPageState extends ConsumerState<AiPage> {
     final dob = body.profile?.dateOfBirth;
     final age = dob == null ? null : (DateTime.now().difference(dob).inDays / 365.25).floor();
 
+    final bodyHistory = body.measurements.take(30).map((m) => {
+      'date': m.date.toIso8601String(),
+      'weightKg': m.weightKg,
+      'heightCm': m.heightCm,
+      'bodyFatPercent': m.bodyFatPercent,
+      'bmi': m.bmi,
+      'notes': m.notes,
+    }).toList();
+    final mealsHistory = nut.meals.map((m) => m.toJson()).toList();
+    final sleepHistory = sleep.entries.take(30).map((e) => {
+      'startedAt': e.startedAt.toIso8601String(),
+      'endedAt': e.endedAt.toIso8601String(),
+      'hours': e.hours,
+      'quality': e.quality,
+    }).toList();
+
     final plan = AdaptiveHealthEngine.build(
       HealthProfileInput(
         weightKg: body.weightKg,
