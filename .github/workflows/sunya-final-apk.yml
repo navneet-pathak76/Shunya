@@ -166,8 +166,21 @@ jobs:
           p.write_text(text)
           PY
 
+      - name: Analyze Flutter project
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      - name: Run Flutter tests
+        run: flutter test
+
       - name: Build release APK
-        run: flutter build apk --release
+        run: |
+          flutter build apk --release \
+            --dart-define=GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" \
+            --dart-define=GOOGLE_SERVER_CLIENT_ID="$GOOGLE_SERVER_CLIENT_ID" \
+            --dart-define=SUNYA_ADMIN_MODE="true"
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_SERVER_CLIENT_ID: ${{ secrets.GOOGLE_SERVER_CLIENT_ID }}
 
       - name: Verify release APK
         shell: bash
@@ -181,7 +194,7 @@ jobs:
       - name: Upload final APK
         uses: actions/upload-artifact@v4
         with:
-          name: sunya-final-apk
+          name: sunya-admin-early-access-final-apk
           path: apps/mobile/build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
           retention-days: 30
