@@ -29,7 +29,9 @@ class SunyaAuthService {
     await initialize();
     try {
       final user = await _google.attemptLightweightAuthentication();
-      return _map(user);
+      final account = _map(user);
+      if (account != null) await _persist(account);
+      return account;
     } catch (_) {
       return null;
     }
@@ -40,13 +42,15 @@ class SunyaAuthService {
     if (!_google.supportsAuthenticate()) return null;
     final user = await _google.authenticate();
     final account = _map(user);
-    if (account != null) {
-      final p = await SharedPreferences.getInstance();
-      await p.setString('sunya.account.id', account.id);
-      await p.setString('sunya.account.email', account.email);
-      if (account.name != null) await p.setString('sunya.account.name', account.name!);
-    }
+    if (account != null) await _persist(account);
     return account;
+  }
+
+  Future<void> _persist(SunyaAccount account) async {
+    final p = await SharedPreferences.getInstance();
+    await p.setString('sunya.account.id', account.id);
+    await p.setString('sunya.account.email', account.email);
+    if (account.name != null) await p.setString('sunya.account.name', account.name!);
   }
 
   Future<void> signOut() async {
