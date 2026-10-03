@@ -29,6 +29,10 @@ class _SunyaAuthGateState extends ConsumerState<SunyaAuthGate> {
       if (!mounted) return;
       final prefs = await SharedPreferences.getInstance();
       final adminUnlocked = adminMode && (prefs.getBool('sunya.adminEarlyAccess') ?? false);
+      if (adminUnlocked) {
+        final current = ref.read(sunyaSettingsProvider);
+        await ref.read(sunyaSettingsProvider.notifier).update(current.copyWith(aiProvider: 'sunya', sunyaPremium: true));
+      }
       setState(() {
         signedIn = account != null || adminUnlocked;
         adminEarlyAccess = adminUnlocked;
