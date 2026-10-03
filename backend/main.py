@@ -87,6 +87,45 @@ async def claude(prompt: str) -> str:
         return "".join(block.get("text", "") for block in blocks if block.get("type") == "text") or "I could not generate an answer right now."
 
 
+
+@app.get("/v1/ai/providers")
+def providers():
+    return {
+        "chatgpt": {"available": bool(os.getenv("OPENAI_API_KEY", "").strip()), "tier": "free"},
+        "gemini": {"available": bool(os.getenv("GEMINI_API_KEY", "").strip()), "tier": "free"},
+        "claude": {"available": bool(os.getenv("ANTHROPIC_API_KEY", "").strip()), "tier": "free"},
+        "sunya": {"available": bool(os.getenv("GEMINI_API_KEY", "").strip()), "tier": "premium"},
+    }
+
+
+class GoogleAuthRequest(BaseModel):
+    id_token: str
+
+
+@app.post("/v1/auth/google")
+async def google_auth(request: GoogleAuthRequest):
+    client_id = os.getenv("GOOGLE_WEB_CLIENT_ID", "").strip()
+    if not client_id:
+        raise HTTPException(status_code=503, detail="Google authentication is not configured")
+    try:
+        from google.auth.transport import requests as google_requests
+        from google.oauth2 import id_token as google_id_token
+
+        claims = google_id_token.verify_oauth2_token(
+            request.id_token,
+            google_requests.Request(),
+            client_id,
+        )
+        return {
+            "id": claims.get("sub"),
+            "email": claims.get("email"),
+            "name": claims.get("name"),
+            "picture": claims.get("picture"),
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=401, detail="Invalid Google identity token") from exc
+
+
 @app.post("/v1/ai/chat")
 async def chat(request: ChatRequest):
     try:
