@@ -10,17 +10,17 @@
     <stop offset="1" stop-color="#CFCFCF"/>
   </linearGradient>
   <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
-    <feGaussianBlur stdDeviation="4" result="blur"/>
+    <feGaussianBlur stdDeviation="3.2" result="blur"/>
     <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
   </filter>
 </defs>
 <g fill="none" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
   <path d="M238 256 C211 205 171 164 130 166 C80 168 55 218 69 268 C82 315 128 345 171 327 C202 314 224 286 238 256"
-        stroke="url(#ivory)" stroke-width="25"/>
+        stroke="url(#ivory)" stroke-width="23"/>
   <path d="M274 256 C301 205 341 164 382 166 C432 168 457 218 443 268 C430 315 384 345 341 327 C310 314 288 286 274 256"
-        stroke="url(#gold)" stroke-width="25"/>
-  <path d="M256 72 L256 440" stroke="url(#gold)" stroke-width="4"/>
+        stroke="url(#gold)" stroke-width="23"/>
+  <path d="M256 72 L256 440" stroke="url(#gold)" stroke-width="3.5"/>
 </g>
-<circle cx="256" cy="256" r="16" fill="url(#gold)"/>
+<circle cx="256" cy="256" r="17" fill="url(#gold)"/>
 <circle cx="256" cy="256" r="6" fill="#FFF5D5"/>
 </svg>
