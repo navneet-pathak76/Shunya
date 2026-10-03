@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../theme/sunya_theme.dart';
 
 class SunyaLogo extends StatelessWidget {
   const SunyaLogo({
@@ -15,11 +16,16 @@ class SunyaLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final mark = SvgPicture.asset(
       'assets/sunya_logo.svg',
       width: size,
       height: size,
       fit: BoxFit.contain,
+      colorFilter: ColorFilter.mode(
+        isDark ? SunyaTheme.ivory : SunyaTheme.ink,
+        BlendMode.srcIn,
+      ),
     );
 
     if (!showWordmark) return mark;
@@ -30,11 +36,11 @@ class SunyaLogo extends StatelessWidget {
         mark,
         const SizedBox(height: 8),
         Text(
-          compact ? 'S U N Y A' : 'S U N Y A',
+          'S U N Y A',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 letterSpacing: compact ? 5.5 : 7,
                 fontWeight: FontWeight.w300,
-                color: SunyaThemeIvory.of(context),
+                color: isDark ? SunyaTheme.ivory : SunyaTheme.ink,
               ),
         ),
         const SizedBox(height: 4),
@@ -44,7 +50,7 @@ class SunyaLogo extends StatelessWidget {
           style: TextStyle(
             fontSize: 9,
             letterSpacing: 1.7,
-            color: Color(0xFFD4AF37),
+            color: SunyaTheme.gold,
             fontWeight: FontWeight.w600,
           ),
         ),
