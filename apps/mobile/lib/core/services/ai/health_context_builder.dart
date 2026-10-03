@@ -91,7 +91,7 @@ class SunyaHealthContextBuilder {
       },
       'sleepHistory': sleepHistory,
       'personalBaseline': baseline.toJson(),
-      'healthConnect': health.toContext(),
+      'healthConnect': _nativeHealthContext(health),
     };
   }
 }
