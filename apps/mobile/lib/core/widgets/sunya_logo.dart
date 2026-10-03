@@ -58,10 +58,3 @@ class SunyaLogo extends StatelessWidget {
     );
   }
 }
-
-class SunyaThemeIvory {
-  static Color of(BuildContext context) =>
-      Theme.of(context).brightness == Brightness.dark
-          ? Colors.white
-          : const Color(0xFF111111);
-}
