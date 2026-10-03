@@ -10,6 +10,10 @@ class SunyaHealthSnapshot {
   final int steps;
   final double activeCalories, totalCalories, basalCalories, waterMl, sleepHours, distanceMeters, exerciseMinutes, nutritionCalories, nutritionProteinGrams;
   final double? weightKg, heightCm, bodyFatPercent, bmi, waistCm, bodyWaterKg, heartRate, restingHeartRate, hrv, oxygen, bloodPressureSystolic, bloodPressureDiastolic, bloodGlucose, bodyTemperature, respiratoryRate;
+  double? get systolicBp => bloodPressureSystolic;
+  double? get diastolicBp => bloodPressureDiastolic;
+  double? get glucose => bloodGlucose;
+  double? get temperatureC => bodyTemperature;
   final int records;
   final List<String> sourceNames;
   final String source;
