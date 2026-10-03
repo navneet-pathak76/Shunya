@@ -66,6 +66,7 @@ class _AiPageState extends ConsumerState<AiPage> {
       'bmi': m.bmi,
       'notes': m.notes,
     }).toList();
+    final regionHistory = body.regionMeasurements.take(60).map((m) => m.toJson()).toList();
     final mealsHistory = nut.meals.map((m) => m.toJson()).toList();
     final sleepHistory = sleep.entries.take(30).map((e) => {
       'startedAt': e.startedAt.toIso8601String(),
