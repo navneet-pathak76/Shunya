@@ -20,12 +20,34 @@ class SunyaApp extends ConsumerWidget {
       themeMode: settings.themeMode,
       builder: (context, child) {
         final brightness = Theme.of(context).brightness;
-        return DecoratedBox(
+        return Container(
           decoration: BoxDecoration(
             gradient: SunyaTheme.backgroundGradient(brightness),
           ),
-          child: SunyaAuthGate(
-            child: child ?? const SizedBox.shrink(),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              if (brightness == Brightness.dark)
+                IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: const BoxDecoration(
+                      gradient: RadialGradient(
+                        center: Alignment(0.78, 0.92),
+                        radius: 0.78,
+                        colors: [
+                          Color(0x22D4AF37),
+                          Color(0x090D1420),
+                          Color(0x00000000),
+                        ],
+                        stops: [0.0, 0.42, 1.0],
+                      ),
+                    ),
+                  ),
+                ),
+              SunyaAuthGate(
+                child: child ?? const SizedBox.shrink(),
+              ),
+            ],
           ),
         );
       },
