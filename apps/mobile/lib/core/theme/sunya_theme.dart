@@ -1,45 +1,45 @@
 import 'package:flutter/material.dart';
 
-/// SUNYA visual system.
-/// Light: white surfaces with restrained blue lighting.
-/// Dark: black surfaces with restrained blue lighting.
-/// Feature UI should consume Theme.of(context).colorScheme where possible.
 class SunyaTheme {
   SunyaTheme._();
 
-  static const blue = Color(0xFF2563EB);
-  static const blueBright = Color(0xFF3B82F6);
-  static const blueSoft = Color(0x332563EB);
-  static const blueBrightSoft = Color(0x333B82F6);
-  static const blueGlow = Color(0xFF60A5FA);
+  static const gold = Color(0xFFD4AF37);
+  static const goldBright = Color(0xFFF0C75E);
+  static const goldSoft = Color(0x26D4AF37);
+  static const goldGlow = Color(0xFFF8D98B);
+  static const ivory = Color(0xFFF5F5F5);
 
-  // Legacy semantic aliases intentionally map to the blue SUNYA system.
-  // Keeping these aliases prevents older feature widgets from reintroducing orange.
-  static const orange = blueBright;
-  static const orangeSoft = blueSoft;
+  // Legacy aliases keep existing feature widgets on the SUNYA brand palette.
+  static const blue = gold;
+  static const blueBright = goldBright;
+  static const blueSoft = goldSoft;
+  static const blueBrightSoft = Color(0x33F0C75E);
+  static const blueGlow = goldGlow;
+  static const orange = goldBright;
+  static const orangeSoft = goldSoft;
+
   static const background = Color(0x00000000);
-  static const border = Color(0x332563EB);
-  static const textPrimary = darkText;
-  static const textSecondary = darkTextSecondary;
+  static const border = Color(0x26D4AF37);
 
-  static const darkBackground = Color(0xFF020617);
-  static const darkSurface = Color(0xFF0B1220);
-  static const darkText = Color(0xFFF8FAFC);
-  static const darkTextSecondary = Color(0xFFB6C2D1);
-  static const darkTextMuted = Color(0xFF718096);
+  static const darkBackground = Color(0xFF050608);
+  static const darkSurface = Color(0xFF0D1015);
+  static const darkSurfaceElevated = Color(0xFF151922);
+  static const darkText = Color(0xFFF5F5F5);
+  static const darkTextSecondary = Color(0xFFC5C5C5);
+  static const darkTextMuted = Color(0xFF858585);
 
-  static const lightSurface = Color(0xFFFFFFFF);
-  static const lightText = Color(0xFF0F172A);
-  static const lightTextSecondary = Color(0xFF475569);
-  static const lightTextMuted = Color(0xFF64748B);
+  static const lightSurface = Color(0xFFFAFAF8);
+  static const lightText = Color(0xFF111111);
+  static const lightTextSecondary = Color(0xFF555555);
+  static const lightTextMuted = Color(0xFF777777);
 
-  static const success = Color(0xFF16A34A);
-  static const warning = Color(0xFFD97706);
-  static const error = Color(0xFFDC2626);
-  static const info = Color(0xFF2563EB);
-  static const sleep = Color(0xFF7C3AED);
-  static const nutrition = Color(0xFF16A34A);
-  static const hydration = Color(0xFF2563EB);
+  static const success = Color(0xFF35B87A);
+  static const warning = goldBright;
+  static const error = Color(0xFFE05B5B);
+  static const info = gold;
+  static const sleep = Color(0xFF8C7BFF);
+  static const nutrition = Color(0xFF73B87A);
+  static const hydration = Color(0xFF69A9FF);
 
   static const radiusSmall = 12.0;
   static const radiusMedium = 18.0;
@@ -52,8 +52,8 @@ class SunyaTheme {
         scaffoldBackgroundColor: Colors.transparent,
         colorScheme: const ColorScheme.light(
           surface: lightSurface,
-          primary: blue,
-          secondary: blueBright,
+          primary: gold,
+          secondary: goldBright,
           error: error,
         ),
         textTheme: const TextTheme(
@@ -72,45 +72,43 @@ class SunyaTheme {
           foregroundColor: lightText,
           elevation: 0,
           scrolledUnderElevation: 0,
-          centerTitle: false,
         ),
         cardTheme: CardThemeData(
-          color: lightSurface.withOpacity(.86),
+          color: lightSurface.withOpacity(.90),
           elevation: 0,
           margin: EdgeInsets.zero,
-          shadowColor: blue.withOpacity(.12),
+          shadowColor: gold.withOpacity(.16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMedium),
-            side: BorderSide(color: blue.withOpacity(.10)),
+            side: BorderSide(color: gold.withOpacity(.18)),
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: lightSurface.withOpacity(.82),
+          fillColor: lightSurface.withOpacity(.92),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(radiusMedium),
-            borderSide: BorderSide(color: blue.withOpacity(.12)),
+            borderSide: BorderSide(color: gold.withOpacity(.18)),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(radiusMedium),
-            borderSide: BorderSide(color: blue.withOpacity(.12)),
+            borderSide: BorderSide(color: gold.withOpacity(.18)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(radiusMedium),
-            borderSide: const BorderSide(color: blue, width: 1.5),
+            borderSide: const BorderSide(color: gold, width: 1.5),
           ),
         ),
         navigationBarTheme: NavigationBarThemeData(
-          backgroundColor: lightSurface.withOpacity(.94),
+          backgroundColor: lightSurface.withOpacity(.96),
           elevation: 0,
-          shadowColor: blue.withOpacity(.16),
-          indicatorColor: blueSoft,
+          indicatorColor: goldSoft,
           labelTextStyle: WidgetStateProperty.all(
             const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: lightText),
           ),
         ),
-        progressIndicatorTheme: const ProgressIndicatorThemeData(color: blue),
-        dividerTheme: DividerThemeData(color: blue.withOpacity(.10), thickness: 1),
+        progressIndicatorTheme: const ProgressIndicatorThemeData(color: gold),
+        dividerTheme: DividerThemeData(color: gold.withOpacity(.14), thickness: 1),
       );
 
   static ThemeData get dark => ThemeData(
@@ -119,8 +117,8 @@ class SunyaTheme {
         scaffoldBackgroundColor: Colors.transparent,
         colorScheme: const ColorScheme.dark(
           surface: darkSurface,
-          primary: blueBright,
-          secondary: blueGlow,
+          primary: goldBright,
+          secondary: gold,
           error: error,
         ),
         textTheme: const TextTheme(
@@ -142,42 +140,41 @@ class SunyaTheme {
           centerTitle: false,
         ),
         cardTheme: CardThemeData(
-          color: darkSurface.withOpacity(.82),
+          color: darkSurface.withOpacity(.84),
           elevation: 0,
           margin: EdgeInsets.zero,
-          shadowColor: blue.withOpacity(.24),
+          shadowColor: gold.withOpacity(.20),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMedium),
-            side: BorderSide(color: blue.withOpacity(.16)),
+            side: BorderSide(color: gold.withOpacity(.15)),
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: darkSurface.withOpacity(.76),
+          fillColor: darkSurface.withOpacity(.82),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(radiusMedium),
-            borderSide: BorderSide(color: blue.withOpacity(.16)),
+            borderSide: BorderSide(color: gold.withOpacity(.16)),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(radiusMedium),
-            borderSide: BorderSide(color: blue.withOpacity(.16)),
+            borderSide: BorderSide(color: gold.withOpacity(.16)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(radiusMedium),
-            borderSide: const BorderSide(color: blueBright, width: 1.5),
+            borderSide: const BorderSide(color: goldBright, width: 1.5),
           ),
         ),
         navigationBarTheme: NavigationBarThemeData(
-          backgroundColor: darkBackground.withOpacity(.94),
+          backgroundColor: darkBackground.withOpacity(.96),
           elevation: 0,
-          shadowColor: blue.withOpacity(.30),
-          indicatorColor: blueSoft,
+          indicatorColor: goldSoft,
           labelTextStyle: WidgetStateProperty.all(
             const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: darkText),
           ),
         ),
-        progressIndicatorTheme: const ProgressIndicatorThemeData(color: blueBright),
-        dividerTheme: DividerThemeData(color: blue.withOpacity(.14), thickness: 1),
+        progressIndicatorTheme: const ProgressIndicatorThemeData(color: goldBright),
+        dividerTheme: DividerThemeData(color: gold.withOpacity(.14), thickness: 1),
       );
 
   static LinearGradient backgroundGradient(Brightness brightness) {
@@ -185,14 +182,14 @@ class SunyaTheme {
       return const LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [Color(0xFFFFFFFF), Color(0xFFF8FBFF), Color(0xFFEFF6FF)],
+        colors: [Color(0xFFF8F7F2), Color(0xFFFFFFFF), Color(0xFFF1E8CE)],
         stops: [0.0, 0.58, 1.0],
       );
     }
     return const LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: [Color(0xFF000000), Color(0xFF020617), Color(0xFF07142F)],
+      colors: [Color(0xFF000000), Color(0xFF050608), Color(0xFF111A2A)],
       stops: [0.0, 0.58, 1.0],
     );
   }
