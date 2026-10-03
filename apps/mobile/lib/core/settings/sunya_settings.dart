@@ -13,6 +13,9 @@ class SunyaSettings {
     this.glassBlur = 14,
     this.glassEnabled = true,
     this.themeMode = ThemeMode.system,
+    this.aiProvider = 'sunya',
+    this.sunyaTrialStartedAt,
+    this.sunyaPremium = false,
   });
 
   final String name;
@@ -24,6 +27,12 @@ class SunyaSettings {
   final double glassBlur;
   final bool glassEnabled;
   final ThemeMode themeMode;
+  final String aiProvider;
+  final DateTime? sunyaTrialStartedAt;
+  final bool sunyaPremium;
+
+  bool get sunyaTrialActive => sunyaTrialStartedAt != null && DateTime.now().difference(sunyaTrialStartedAt!).inDays < 7;
+  bool get sunyaAccess => sunyaPremium || sunyaTrialActive;
 
   SunyaSettings copyWith({
     String? name,
@@ -35,6 +44,9 @@ class SunyaSettings {
     double? glassBlur,
     bool? glassEnabled,
     ThemeMode? themeMode,
+    String? aiProvider,
+    DateTime? sunyaTrialStartedAt,
+    bool? sunyaPremium,
   }) => SunyaSettings(
         name: name ?? this.name,
         age: age ?? this.age,
@@ -45,6 +57,9 @@ class SunyaSettings {
         glassBlur: glassBlur ?? this.glassBlur,
         glassEnabled: glassEnabled ?? this.glassEnabled,
         themeMode: themeMode ?? this.themeMode,
+        aiProvider: aiProvider ?? this.aiProvider,
+        sunyaTrialStartedAt: sunyaTrialStartedAt ?? this.sunyaTrialStartedAt,
+        sunyaPremium: sunyaPremium ?? this.sunyaPremium,
       );
 
   static ThemeMode _themeMode(String value) => switch (value) {
@@ -75,6 +90,9 @@ class SunyaSettingsController extends StateNotifier<SunyaSettings> {
       glassBlur: p.getDouble('sunya.glassBlur') ?? state.glassBlur,
       glassEnabled: p.getBool('sunya.glassEnabled') ?? state.glassEnabled,
       themeMode: SunyaSettings._themeMode(mode),
+      aiProvider: p.getString('sunya.aiProvider') ?? state.aiProvider,
+      sunyaTrialStartedAt: DateTime.tryParse(p.getString('sunya.sunyaTrialStartedAt') ?? ''),
+      sunyaPremium: p.getBool('sunya.sunyaPremium') ?? state.sunyaPremium,
     );
   }
 
@@ -91,6 +109,9 @@ class SunyaSettingsController extends StateNotifier<SunyaSettings> {
       p.setDouble('sunya.glassBlur', next.glassBlur),
       p.setBool('sunya.glassEnabled', next.glassEnabled),
       p.setString('sunya.theme', next.themeMode.name),
+      p.setString('sunya.aiProvider', next.aiProvider),
+      if (next.sunyaTrialStartedAt != null) p.setString('sunya.sunyaTrialStartedAt', next.sunyaTrialStartedAt!.toIso8601String()) else p.remove('sunya.sunyaTrialStartedAt'),
+      p.setBool('sunya.sunyaPremium', next.sunyaPremium),
     ]);
   }
 
