@@ -24,7 +24,7 @@ extension SunyaAiProviderX on SunyaAiProvider {
 
 class SunyaAiSettings {
   const SunyaAiSettings({
-    this.provider = SunyaAiProvider.sunya,
+    this.provider = SunyaAiProvider.gemini,
     this.trialStartedAt,
     this.premium = false,
   });
@@ -58,7 +58,7 @@ class SunyaAiSettingsController extends StateNotifier<SunyaAiSettings> {
 
   Future<void> load() async {
     final p = await SharedPreferences.getInstance();
-    final value = p.getString('sunya.aiProvider') ?? 'sunya';
+    final value = p.getString('sunya.aiProvider') ?? 'gemini';
     final trial = p.getString('sunya.aiTrialStartedAt');
     const adminEmail = String.fromEnvironment('SUNYA_ADMIN_EMAIL', defaultValue: '');
     final accountEmail = p.getString('sunya.account.email') ?? '';
@@ -66,7 +66,7 @@ class SunyaAiSettingsController extends StateNotifier<SunyaAiSettings> {
     state = SunyaAiSettings(
       provider: SunyaAiProvider.values.firstWhere(
         (x) => x.name == value,
-        orElse: () => SunyaAiProvider.sunya,
+        orElse: () => SunyaAiProvider.gemini,
       ),
       trialStartedAt: trial == null ? null : DateTime.tryParse(trial),
       premium: admin || (p.getBool('sunya.aiPremium') ?? false),
