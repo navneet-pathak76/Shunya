@@ -8,8 +8,9 @@ import '../../../core/widgets/sunya_logo.dart';
 final sunyaAuthServiceProvider = Provider((ref) => SunyaAuthService());
 
 class SunyaAuthPage extends ConsumerStatefulWidget {
-  const SunyaAuthPage({super.key, required this.onSignedIn});
+  const SunyaAuthPage({super.key, required this.onSignedIn, this.onAdminEarlyAccess});
   final VoidCallback onSignedIn;
+  final VoidCallback? onAdminEarlyAccess;
   @override ConsumerState<SunyaAuthPage> createState() => _SunyaAuthPageState();
 }
 
@@ -33,7 +34,7 @@ class _SunyaAuthPageState extends ConsumerState<SunyaAuthPage> {
       setState(() => loading = false);
       widget.onSignedIn();
     } catch (e) {
-      if (mounted) setState(() { loading = false; error = 'Sign-in failed. Please try again.'; });
+      if (mounted) setState(() { loading = false; error = 'Google sign-in is not configured for this APK. Add the Android OAuth client/SHA-1 and web server client ID.'; });
     }
   }
 
@@ -61,6 +62,16 @@ class _SunyaAuthPageState extends ConsumerState<SunyaAuthPage> {
             if (error != null) ...[
               const SizedBox(height: 12),
               Text(error!, textAlign: TextAlign.center),
+            ],
+            if (widget.onAdminEarlyAccess != null) ...[
+              const SizedBox(height: 14),
+              OutlinedButton.icon(
+                onPressed: widget.onAdminEarlyAccess,
+                icon: const Icon(Icons.admin_panel_settings_outlined),
+                label: const Text('Admin Early Access'),
+              ),
+              const SizedBox(height: 8),
+              const Text('Internal preview build only', textAlign: TextAlign.center, style: TextStyle(fontSize: 11)),
             ],
             const SizedBox(height: 20),
             const Text('You can change AI provider, health permissions, and privacy controls later in Settings.', textAlign: TextAlign.center),
