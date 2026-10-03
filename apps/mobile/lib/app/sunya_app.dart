@@ -27,16 +27,16 @@ class SunyaApp extends ConsumerWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              if (brightness == Brightness.dark)
-                IgnorePointer(
+              if (brightness == Brightness.dark) ...[
+                const IgnorePointer(
                   child: DecoratedBox(
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       gradient: RadialGradient(
-                        center: Alignment(0.78, 0.92),
-                        radius: 0.78,
+                        center: Alignment(-0.82, 0.92),
+                        radius: 0.92,
                         colors: [
-                          Color(0x22D4AF37),
-                          Color(0x090D1420),
+                          Color(0x1FD4AF37),
+                          Color(0x0A0D0D0F),
                           Color(0x00000000),
                         ],
                         stops: [0.0, 0.42, 1.0],
@@ -44,6 +44,23 @@ class SunyaApp extends ConsumerWidget {
                     ),
                   ),
                 ),
+                const IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        center: Alignment(0.88, -0.72),
+                        radius: 0.76,
+                        colors: [
+                          Color(0x14D4AF37),
+                          Color(0x050D0D0F),
+                          Color(0x00000000),
+                        ],
+                        stops: [0.0, 0.46, 1.0],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
               SunyaAuthGate(
                 child: child ?? const SizedBox.shrink(),
               ),
