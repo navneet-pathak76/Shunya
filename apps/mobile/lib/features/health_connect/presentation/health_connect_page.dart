@@ -47,15 +47,15 @@ class _HealthConnectPageState extends ConsumerState<HealthConnectPage> {
         children: [
           const SunyaLogo(size: 72),
           const SizedBox(height: 18),
-          Text('Your health data', style: Theme.of(context).textTheme.displaySmall),
+          Text('Health data', style: Theme.of(context).textTheme.displaySmall),
           const SizedBox(height: 8),
-          const Text('SUNYA can build your baseline in two ways: securely import permitted data from Google Health Connect, or let you enter and correct information manually.'),
+          const Text('Choose your data source. SUNYA can read permitted data from Google Health Connect or use information you enter manually. Both are analyzed together for your personal baseline.'),
           const SizedBox(height: 18),
           SunyaGlassCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Row(children: [Icon(Icons.health_and_safety_outlined, color: SunyaTheme.gold), SizedBox(width: 10), Text('Option 1  •  Google Health', style: TextStyle(fontWeight: FontWeight.w700))]),
+                const Row(children: [Icon(Icons.favorite_rounded, color: SunyaTheme.gold), SizedBox(width: 10), Text('Option 1  •  Google Health Connect', style: TextStyle(fontWeight: FontWeight.w700))]),
                 const SizedBox(height: 10),
                 const Text('Import activity, sleep, body measurements, hydration and supported vitals. Permissions remain controlled by Android Health Connect.'),
                 const SizedBox(height: 14),
@@ -64,7 +64,7 @@ class _HealthConnectPageState extends ConsumerState<HealthConnectPage> {
                   child: FilledButton.icon(
                     onPressed: loading ? null : connect,
                     icon: const Icon(Icons.favorite_outline),
-                    label: Text(loading ? 'Connecting…' : 'Connect Google Health'),
+                    label: Text(loading ? 'Connecting…' : 'Connect Google Health Connect'),
                   ),
                 ),
                 const SizedBox(height: 10),
