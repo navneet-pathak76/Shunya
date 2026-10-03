@@ -1,23 +1,5 @@
 import 'package:dio/dio.dart';
 
-enum SunyaAiProvider { sunya, chatgpt, gemini, claude }
-
-extension SunyaAiProviderX on SunyaAiProvider {
-  String get key => switch (this) {
-        SunyaAiProvider.sunya => 'sunya',
-        SunyaAiProvider.chatgpt => 'chatgpt',
-        SunyaAiProvider.gemini => 'gemini',
-        SunyaAiProvider.claude => 'claude',
-      };
-
-  String get label => switch (this) {
-        SunyaAiProvider.sunya => 'SUNYA AI',
-        SunyaAiProvider.chatgpt => 'ChatGPT',
-        SunyaAiProvider.gemini => 'Gemini',
-        SunyaAiProvider.claude => 'Claude',
-      };
-}
-
 class SunyaAiGateway {
   SunyaAiGateway({Dio? dio, String? baseUrl})
       : _dio = dio ?? Dio(),
@@ -40,7 +22,7 @@ class SunyaAiGateway {
         '$_baseUrl/v1/ai/chat',
         data: {
           'message': message,
-          'provider': provider.key,
+          'provider': provider,
           'context': context,
         },
       );
