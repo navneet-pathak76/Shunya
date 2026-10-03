@@ -7,6 +7,7 @@ import '../../../core/settings/sunya_settings.dart';
 import '../../../core/theme/sunya_theme.dart';
 import '../../../core/widgets/sunya_glass.dart';
 import '../../../core/widgets/sunya_logo.dart';
+import '../../../core/services/subscriptions/sunya_subscription_service.dart';
 import '../../health_connect/presentation/health_connect_page.dart';
 import '../../body/presentation/body_controller.dart';
 import '../../hydration/presentation/hydration_controller.dart';
@@ -170,6 +171,22 @@ class _AiPageState extends ConsumerState<AiPage> {
                   const Text('Start with a 7-day free trial. Premium is planned at ₹99/month, with deeper cross-domain analysis, personalized plans and the SUNYA model.'),
                   const SizedBox(height: 14),
                   SunyaPrimaryButton(label: 'Start 7-day free trial', icon: Icons.auto_awesome, onPressed: startTrial),
+                  const SizedBox(height: 10),
+                  SunyaPrimaryButton(
+                    label: 'Subscribe ₹99/month',
+                    icon: Icons.workspace_premium_outlined,
+                    onPressed: () async {
+                      final service = ref.read(sunyaSubscriptionProvider);
+                      final started = await service.purchaseMonthly();
+                      if (started && mounted) {
+                        final current = ref.read(sunyaSettingsProvider);
+                        await ref.read(sunyaSettingsProvider.notifier).update(
+                          current.copyWith(sunyaPremium: true, aiProvider: SunyaAiProvider.sunya.key),
+                        );
+                        setState(() {});
+                      }
+                    },
+                  ),
                 ],
               ),
             ),
