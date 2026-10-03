@@ -90,10 +90,19 @@ class SunyaHealthConnectService {
     await _health.configure();
     final types = availableTypes;
     if (types.isEmpty) return false;
-    return _health.requestAuthorization(
-      types,
-      permissions: List.filled(types.length, HealthDataAccess.READ),
-    );
+    var granted = false;
+    for (final type in types) {
+      try {
+        final ok = await _health.requestAuthorization(
+          [type],
+          permissions: const [HealthDataAccess.READ],
+        );
+        granted = granted || ok;
+      } catch (_) {
+        // A restricted metric must not block the remaining supported metrics.
+      }
+    }
+    return granted;
   }
 
   Future<bool> get available async {
