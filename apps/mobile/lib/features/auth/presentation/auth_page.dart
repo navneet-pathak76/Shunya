@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/services/auth/sunya_auth_service.dart';
 import '../../../core/settings/sunya_settings.dart';
 import '../../../core/widgets/sunya_glass.dart';
+import '../../../core/widgets/sunya_logo.dart';
 
 final sunyaAuthServiceProvider = Provider((ref) => SunyaAuthService());
 
@@ -44,9 +45,7 @@ class _SunyaAuthPageState extends ConsumerState<SunyaAuthPage> {
           shrinkWrap: true,
           padding: const EdgeInsets.all(24),
           children: [
-            const Icon(Icons.bolt_rounded, size: 54),
-            const SizedBox(height: 20),
-            Text('SUNYA', textAlign: TextAlign.center, style: Theme.of(context).textTheme.displaySmall),
+            const SunyaLogo(size: 110, showWordmark: true),
             const SizedBox(height: 8),
             Text('Your personal health intelligence layer', textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyLarge),
             const SizedBox(height: 28),
