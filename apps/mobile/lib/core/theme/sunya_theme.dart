@@ -182,15 +182,15 @@ class SunyaTheme {
       return const LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [Color(0xFFF8F7F2), Color(0xFFFFFFFF), Color(0xFFF1E8CE)],
-        stops: [0.0, 0.58, 1.0],
+        colors: [Color(0xFFF7F5EF), Color(0xFFFFFFFF), Color(0xFFF5E8C8), Color(0xFFEFE3C6)],
+        stops: [0.0, 0.42, 0.78, 1.0],
       );
     }
     return const LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: [Color(0xFF000000), Color(0xFF050608), Color(0xFF111A2A)],
-      stops: [0.0, 0.58, 1.0],
+      colors: [Color(0xFF000000), Color(0xFF050608), Color(0xFF0C0B08), Color(0xFF111827)],
+      stops: [0.0, 0.48, 0.76, 1.0],
     );
   }
 }
